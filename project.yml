@@ -1,0 +1,54 @@
+name: WallBoard
+options:
+  bundleIdPrefix: com.tonywall
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.4"
+  generateEmptyDirectories: true
+  projectFormatVersion: Xcode 15.0-compatible
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+
+packages:
+  FirebaseSDK:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "10.25.0"
+    to: "11.0.0"
+
+targets:
+  WallBoard:
+    type: application
+    platform: iOS
+    sources:
+      - path: WallBoard
+    resources:
+      - path: WallBoard/Resources
+    settings:
+      base:
+        INFOPLIST_GENERATION_MODE: GeneratedByXcode
+        PRODUCT_BUNDLE_IDENTIFIER: com.tonywall.wallboard
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - package: FirebaseSDK
+        product: FirebaseAuth
+      - package: FirebaseSDK
+        product: FirebaseFirestore
+    info:
+      path: WallBoard/Info.plist
+      properties:
+        CFBundleDisplayName: WallBoard
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen:
+          UIColorName: AccentColor
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight

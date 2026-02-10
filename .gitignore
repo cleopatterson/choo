@@ -1,0 +1,35 @@
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/swiftpm/
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SPM
+.build/
+Packages/
+
+# CocoaPods (not used, but just in case)
+Pods/
+
+# OS
+.DS_Store
+*.swp
+*~
+
+# Firebase
+GoogleService-Info.plist
+
+# Xcode auto-generated
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Secrets
+*.pem
+*.p12
+*.key
