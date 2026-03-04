@@ -33,3 +33,8 @@ xcuserdata/
 *.pem
 *.p12
 *.key
+Secrets.swift
+
+# Cloud Functions
+functions/lib/
+functions/node_modules/
