@@ -26,7 +26,7 @@ jobs:
 
           # Parse Firestore path from issue/PR body
           FAMILY_ID=$(printf '%s' "$ISSUE_BODY" | grep -oP 'families/\K[^/]+(?=/bugReports/)' || true)
-          REPORT_ID=$(printf '%s' "$ISSUE_BODY" | grep -oP 'bugReports/\K\w+' || true)
+          REPORT_ID=$(printf '%s' "$ISSUE_BODY" | grep -oP 'bugReports/\K[a-zA-Z0-9]+' || true)
 
           echo "Parsed FAMILY_ID=$FAMILY_ID REPORT_ID=$REPORT_ID"
 

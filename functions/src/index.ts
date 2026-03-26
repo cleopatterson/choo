@@ -563,7 +563,7 @@ export const onBugReportCreated = onDocumentCreated(
 const webhookSecret = defineSecret("BUG_WEBHOOK_SECRET");
 
 export const updateBugStatus = onRequest(
-  { secrets: [webhookSecret] },
+  { secrets: [webhookSecret], invoker: "public" },
   async (req, res) => {
     // Verify shared secret
     const authHeader = req.headers["x-webhook-secret"];
