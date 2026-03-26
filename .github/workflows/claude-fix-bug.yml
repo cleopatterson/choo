@@ -7,11 +7,10 @@ on:
     types: [labeled]
 
 jobs:
-  # Auto-fix when bug-report label is added (from Cloud Function)
   auto-fix:
     if: github.event_name == 'issues' && github.event.label.name == 'bug-report'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -28,26 +27,19 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           label_trigger: "bug-report"
-          claude_args: "--model claude-opus-4-6 --max-turns 30"
+          base_branch: main
+          branch_prefix: fix/
+          claude_args: "--max-turns 10 --model claude-sonnet-4-6"
           show_full_output: true
           prompt: |
             Fix the bug described in this issue. Read the issue title and body for details.
+            Read CLAUDE.md for project conventions. Keep the fix minimal.
+            Create a branch and pull request with the fix.
 
-            The app is a SwiftUI iOS family hub app (iOS 17+). Key conventions:
-            - @Observable ViewModels (not ObservableObject), @Bindable in views
-            - FirestoreService is the central data layer
-            - Dark mode glassmorphism design — see docs/DESIGN_SYSTEM.md
-            - Week starts Monday
-
-            Key paths: Models (Choo/Models/), ViewModels (Choo/ViewModels/), Views (Choo/Views/), Services (Choo/Services/), Web app (choo-web/src/)
-
-            Create a pull request with the fix.
-
-  # Also respond to @claude mentions in comments for follow-up
   comment-fix:
     if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     permissions:
       contents: write
       pull-requests: write
@@ -63,6 +55,6 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--model claude-opus-4-6 --max-turns 30"
+          claude_args: "--max-turns 10 --model claude-sonnet-4-6"
           show_full_output: true
           trigger_phrase: "@claude"
