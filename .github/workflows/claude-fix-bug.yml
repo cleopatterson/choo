@@ -1,0 +1,44 @@
+name: Claude Code Bug Fix
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  fix-bug:
+    if: github.event.label.name == 'bug-report'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fix bug with Claude Code
+        uses: anthropics/claude-code-action@v1
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        with:
+          prompt: |
+            You are fixing a bug report from the Choo family hub iOS app.
+            Read the linked GitHub issue for full details.
+
+            Instructions:
+            1. Read docs/DESIGN_SYSTEM.md for UI conventions.
+            2. The app is SwiftUI (iOS 17+), uses @Observable ViewModels (not ObservableObject),
+               @Bindable in views, FirestoreService as central data layer.
+            3. Read the relevant source files implied by the bug description.
+            4. Identify the root cause and implement a fix.
+            5. Follow existing code patterns — check similar files for style.
+
+            Key paths:
+            - Models: Choo/Models/
+            - ViewModels: Choo/ViewModels/
+            - Views: Choo/Views/
+            - Services: Choo/Services/
+            - Web app: choo-web/src/
+          direct_prompt: true

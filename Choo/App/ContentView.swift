@@ -5,10 +5,12 @@ struct ContentView: View {
     @State private var shoppingViewModel: ShoppingViewModel?
     @State private var calendarViewModel: CalendarViewModel?
     @State private var notesViewModel: NotesViewModel?
+    @State private var bugReportsViewModel: BugReportsViewModel?
     @State private var briefingViewModel: WeeklyBriefingViewModel?
     @State private var dinnerPlannerViewModel: DinnerPlannerViewModel?
     @State private var exerciseViewModel: ExerciseViewModel?
-    @State private var choresViewModel: ChoresViewModel?
+    @State private var houseViewModel: HouseViewModel?
+    @State private var suppliesViewModel: SuppliesViewModel?
     @State private var deviceCalendarService = DeviceCalendarService()
 
     var body: some View {
@@ -26,19 +28,23 @@ struct ContentView: View {
                 if let shoppingVM = shoppingViewModel,
                    let calendarVM = calendarViewModel,
                    let notesVM = notesViewModel,
+                   let bugReportsVM = bugReportsViewModel,
                    let briefingVM = briefingViewModel,
                    let dinnerVM = dinnerPlannerViewModel,
                    let exerciseVM = exerciseViewModel,
-                   let choresVM = choresViewModel {
+                   let houseVM = houseViewModel,
+                   let suppliesVM = suppliesViewModel {
                     MainTabView(
                         viewModel: viewModel,
                         shoppingViewModel: shoppingVM,
                         calendarViewModel: calendarVM,
                         notesViewModel: notesVM,
+                        bugReportsViewModel: bugReportsVM,
                         briefingViewModel: briefingVM,
                         dinnerPlannerViewModel: dinnerVM,
                         exerciseViewModel: exerciseVM,
-                        choresViewModel: choresVM
+                        houseViewModel: houseVM,
+                        suppliesViewModel: suppliesVM
                     )
                 } else {
                     LoadingView()
@@ -48,9 +54,6 @@ struct ContentView: View {
         .animation(.default, value: viewModel.authFlowState)
         .task { await viewModel.resolveAuthState() }
         .onChange(of: viewModel.authService.currentUser?.uid) {
-            Task { await viewModel.resolveAuthState() }
-        }
-        .onChange(of: viewModel.authService.isLoading) {
             Task { await viewModel.resolveAuthState() }
         }
         .onChange(of: viewModel.authFlowState) {
@@ -77,6 +80,11 @@ struct ContentView: View {
                     familyId: familyId,
                     displayName: displayName
                 )
+                bugReportsViewModel = BugReportsViewModel(
+                    firestoreService: firestore,
+                    familyId: familyId,
+                    displayName: displayName
+                )
                 briefingViewModel = WeeklyBriefingViewModel(
                     firestoreService: firestore,
                     claudeService: .shared,
@@ -97,9 +105,14 @@ struct ContentView: View {
                     userId: uid,
                     displayName: displayName
                 )
-                choresViewModel = ChoresViewModel(
+                houseViewModel = HouseViewModel(
                     firestoreService: firestore,
                     claudeService: .shared,
+                    familyId: familyId,
+                    displayName: displayName
+                )
+                suppliesViewModel = SuppliesViewModel(
+                    firestoreService: firestore,
                     familyId: familyId,
                     displayName: displayName
                 )
@@ -113,10 +126,12 @@ struct ContentView: View {
                 shoppingViewModel = nil
                 calendarViewModel = nil
                 notesViewModel = nil
+                bugReportsViewModel = nil
                 briefingViewModel = nil
                 dinnerPlannerViewModel = nil
                 exerciseViewModel = nil
-                choresViewModel = nil
+                houseViewModel = nil
+                suppliesViewModel = nil
                 SharedUserContext.clear()
             }
         }

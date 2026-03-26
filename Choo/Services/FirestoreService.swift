@@ -1,6 +1,7 @@
 import Foundation
 import FirebaseFirestore
 
+@MainActor
 @Observable
 final class FirestoreService {
     private let db = Firestore.firestore()
@@ -18,7 +19,11 @@ final class FirestoreService {
     private var exerciseCategoriesListener: ListenerRegistration?
     private var exercisePlanListener: ListenerRegistration?
     private var choreCategoriesListener: ListenerRegistration?
-    private var choresPlanListener: ListenerRegistration?
+    private var choreCompletionsListener: ListenerRegistration?
+    private var choreAssignmentsListener: ListenerRegistration?
+    private var suppliesListener: ListenerRegistration?
+    private var supplyCategoryOrderListener: ListenerRegistration?
+    private var bugReportsListener: ListenerRegistration?
 
     var currentFamily: Family?
     var familyMembers: [UserProfile] = []
@@ -35,24 +40,16 @@ final class FirestoreService {
     var exerciseCategories: [ExerciseCategory] = []
     var currentExercisePlan: ExercisePlan?
     var choreCategories: [ChoreCategory] = []
-    var currentChoresPlan: ChoresPlan?
+    var choreCompletions: [ChoreCompletion] = []
+    var choreAssignments: [String: String] = [:]
+    var choreDayPlan: [String: Int] = [:]
+    var supplies: [SupplyItem] = []
+    var supplyCategoryOrder: [String] = []
+    var hiddenSupplyCategories: Set<String> = []
+    var bugReports: [BugReport] = []
 
-    deinit {
-        familyListener?.remove()
-        membersListener?.remove()
-        shoppingListsListener?.remove()
-        shoppingItemsListener?.remove()
-        eventsListener?.remove()
-        notesListener?.remove()
-        dependentsListener?.remove()
-        mealPlanListener?.remove()
-        lastWeekMealPlanListener?.remove()
-        recipesListener?.remove()
-        exerciseCategoriesListener?.remove()
-        exercisePlanListener?.remove()
-        choreCategoriesListener?.remove()
-        choresPlanListener?.remove()
-    }
+    // Listener cleanup is handled by stopListening() on sign-out.
+    // deinit cannot access @MainActor-isolated properties.
 
     // MARK: - Invite Code Generation
 
@@ -65,7 +62,7 @@ final class FirestoreService {
     // MARK: - User Profile
 
     func createUserProfile(_ profile: UserProfile, uid: String) async throws {
-        try db.collection("users").document(uid).setData(from: profile)
+        try await db.collection("users").document(uid).setData(from: profile)
     }
 
     func getUserProfile(uid: String) async throws -> UserProfile? {
@@ -91,13 +88,14 @@ final class FirestoreService {
             inviteCode: inviteCode,
             inviteCodeExpiresAt: Date().addingTimeInterval(7 * 24 * 60 * 60)
         )
-        let docRef = try db.collection("families").addDocument(from: family)
+        let docRef = try await db.collection("families").addDocument(from: family)
         return docRef.documentID
     }
 
     func lookupFamilyByInviteCode(_ code: String) async throws -> Family? {
         let snapshot = try await db.collection("families")
             .whereField("inviteCode", isEqualTo: code.uppercased())
+            .whereField("inviteCodeExpiresAt", isGreaterThan: Timestamp(date: Date()))
             .limit(to: 1)
             .getDocuments()
 
@@ -154,6 +152,7 @@ final class FirestoreService {
     }
 
     func stopListening() {
+        // Remove all listeners
         familyListener?.remove()
         membersListener?.remove()
         shoppingListsListener?.remove()
@@ -164,6 +163,15 @@ final class FirestoreService {
         mealPlanListener?.remove()
         lastWeekMealPlanListener?.remove()
         recipesListener?.remove()
+        exerciseCategoriesListener?.remove()
+        exercisePlanListener?.remove()
+        choreCategoriesListener?.remove()
+        choreCompletionsListener?.remove()
+        choreAssignmentsListener?.remove()
+        suppliesListener?.remove()
+        bugReportsListener?.remove()
+
+        // Nil out all listeners
         familyListener = nil
         membersListener = nil
         shoppingListsListener = nil
@@ -174,10 +182,15 @@ final class FirestoreService {
         mealPlanListener = nil
         lastWeekMealPlanListener = nil
         recipesListener = nil
-        exerciseCategoriesListener?.remove()
-        exercisePlanListener?.remove()
         exerciseCategoriesListener = nil
         exercisePlanListener = nil
+        choreCategoriesListener = nil
+        choreCompletionsListener = nil
+        choreAssignmentsListener = nil
+        suppliesListener = nil
+        bugReportsListener = nil
+
+        // Reset all data
         currentFamily = nil
         familyMembers = []
         dependents = []
@@ -190,12 +203,12 @@ final class FirestoreService {
         recipes = []
         exerciseCategories = []
         currentExercisePlan = nil
-        choreCategoriesListener?.remove()
-        choresPlanListener?.remove()
-        choreCategoriesListener = nil
-        choresPlanListener = nil
         choreCategories = []
-        currentChoresPlan = nil
+        choreCompletions = []
+        choreAssignments = [:]
+        choreDayPlan = [:]
+        supplies = []
+        bugReports = []
     }
 
     // MARK: - Shopping Lists
@@ -235,7 +248,7 @@ final class FirestoreService {
             createdBy: createdBy,
             createdAt: Date()
         )
-        let docRef = try db.collection("families").document(familyId)
+        let docRef = try await db.collection("families").document(familyId)
             .collection("shoppingLists")
             .addDocument(from: list)
         return docRef.documentID
@@ -287,7 +300,7 @@ final class FirestoreService {
             isHeading: isHeading,
             sortOrder: sortOrder
         )
-        _ = try db.collection("families").document(familyId)
+        _ = try await db.collection("families").document(familyId)
             .collection("shoppingLists").document(listId)
             .collection("items")
             .addDocument(from: item)
@@ -385,14 +398,16 @@ final class FirestoreService {
             isTodo: isTodo,
             todoEmoji: todoEmoji
         )
-        _ = try db.collection("families").document(familyId)
+        _ = try await db.collection("families").document(familyId)
             .collection("events")
             .addDocument(from: event)
     }
 
     func updateEvent(familyId: String, event: FamilyEvent) async throws {
-        guard let eventId = event.id else { return }
-        try db.collection("families").document(familyId)
+        guard let eventId = event.id else {
+            throw NSError(domain: "FirestoreService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing event ID"])
+        }
+        try await db.collection("families").document(familyId)
             .collection("events").document(eventId)
             .setData(from: event, merge: true)
     }
@@ -440,7 +455,7 @@ final class FirestoreService {
 
     func addDependent(familyId: String, name: String, type: FamilyMember.MemberType, addedBy: String) async throws {
         let member = FamilyMember(familyId: familyId, displayName: name, type: type, addedBy: addedBy)
-        _ = try db.collection("families").document(familyId)
+        _ = try await db.collection("families").document(familyId)
             .collection("dependents")
             .addDocument(from: member)
     }
@@ -503,7 +518,7 @@ final class FirestoreService {
             updatedAt: now,
             isList: isList
         )
-        _ = try db.collection("families").document(familyId)
+        _ = try await db.collection("families").document(familyId)
             .collection("notes")
             .addDocument(from: note)
     }
@@ -524,6 +539,58 @@ final class FirestoreService {
             .delete()
     }
 
+    // MARK: - Bug Reports
+
+    func listenToBugReports(familyId: String) {
+        bugReportsListener?.remove()
+        bugReports = []
+        bugReportsListener = db.collection("families").document(familyId)
+            .collection("bugReports")
+            .order(by: "updatedAt", descending: true)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let self, let snapshot, error == nil else { return }
+                for change in snapshot.documentChanges {
+                    switch change.type {
+                    case .added:
+                        if let report = try? change.document.data(as: BugReport.self),
+                           !self.bugReports.contains(where: { $0.id == report.id }) {
+                            self.bugReports.append(report)
+                        }
+                    case .modified:
+                        if let report = try? change.document.data(as: BugReport.self),
+                           let idx = self.bugReports.firstIndex(where: { $0.id == report.id }) {
+                            self.bugReports[idx] = report
+                        }
+                    case .removed:
+                        self.bugReports.removeAll { $0.id == change.document.documentID }
+                    }
+                }
+            }
+    }
+
+    func createBugReport(familyId: String, title: String, description: String, createdBy: String, severity: BugSeverity) async throws {
+        let now = Date()
+        let report = BugReport(
+            familyId: familyId,
+            title: title,
+            description: description,
+            createdBy: createdBy,
+            createdAt: now,
+            updatedAt: now,
+            severity: severity.rawValue,
+            status: BugStatus.open.rawValue
+        )
+        _ = try await db.collection("families").document(familyId)
+            .collection("bugReports")
+            .addDocument(from: report)
+    }
+
+    func deleteBugReport(familyId: String, reportId: String) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("bugReports").document(reportId)
+            .delete()
+    }
+
     // MARK: - Meal Plans
 
     func listenToMealPlan(familyId: String, weekStart: Date) {
@@ -539,9 +606,9 @@ final class FirestoreService {
 
     func saveMealPlan(familyId: String, mealPlan: MealPlan) async throws {
         let docId = MealPlan.docId(for: mealPlan.weekStart)
-        try db.collection("families").document(familyId)
+        try await db.collection("families").document(familyId)
             .collection("mealPlans").document(docId)
-            .setData(from: mealPlan, merge: true)
+            .setData(from: mealPlan)
     }
 
     func listenToLastWeekMealPlan(familyId: String, weekStart: Date) {
@@ -601,39 +668,20 @@ final class FirestoreService {
         // Skip if default count already matches
         guard snapshot.documents.count != Recipe.defaults.count else { return }
 
-        // Delete stale defaults
-        let deleteBatch = db.batch()
-        for doc in snapshot.documents {
-            deleteBatch.deleteDocument(doc.reference)
-        }
-        try await deleteBatch.commit()
-
-        // Clear recipe-generated shopping items
-        if let listId = shoppingLists.first?.id {
-            let itemsRef = familyRef.collection("shoppingLists").document(listId).collection("items")
-            let recipeItems = try await itemsRef.whereField("sourceRecipeId", isGreaterThan: "").getDocuments()
-            let cleanBatch = db.batch()
-            for doc in recipeItems.documents {
-                cleanBatch.deleteDocument(doc.reference)
-            }
-            try await cleanBatch.commit()
-        }
-
-        // Clear meal plans
-        let plansSnapshot = try await familyRef.collection("mealPlans").getDocuments()
-        let plansBatch = db.batch()
-        for doc in plansSnapshot.documents {
-            plansBatch.deleteDocument(doc.reference)
-        }
-        try await plansBatch.commit()
-
-        // Seed fresh defaults
+        // Seed fresh defaults first (before deleting old ones)
         let seedBatch = db.batch()
         for recipe in Recipe.defaults {
             let ref = recipesRef.document()
             try seedBatch.setData(from: recipe, forDocument: ref)
         }
         try await seedBatch.commit()
+
+        // Only now delete stale defaults (after new ones are safely written)
+        let deleteBatch = db.batch()
+        for doc in snapshot.documents {
+            deleteBatch.deleteDocument(doc.reference)
+        }
+        try await deleteBatch.commit()
     }
 
     func stopListeningToRecipes() {
@@ -643,14 +691,16 @@ final class FirestoreService {
     }
 
     func updateRecipe(familyId: String, recipe: Recipe) async throws {
-        guard let recipeId = recipe.id else { return }
-        try db.collection("families").document(familyId)
+        guard let recipeId = recipe.id else {
+            throw NSError(domain: "FirestoreService", code: 1, userInfo: [NSLocalizedDescriptionKey: "Missing recipe ID"])
+        }
+        try await db.collection("families").document(familyId)
             .collection("recipes").document(recipeId)
             .setData(from: recipe, merge: true)
     }
 
     func addRecipe(familyId: String, recipe: Recipe) async throws -> Recipe {
-        let ref = try db.collection("families").document(familyId)
+        let ref = try await db.collection("families").document(familyId)
             .collection("recipes")
             .addDocument(from: recipe)
         var saved = recipe
@@ -700,7 +750,7 @@ final class FirestoreService {
             sortOrder: sortOrder,
             sourceRecipeId: sourceRecipeId
         )
-        _ = try db.collection("families").document(familyId)
+        _ = try await db.collection("families").document(familyId)
             .collection("shoppingLists").document(listId)
             .collection("items")
             .addDocument(from: item)
@@ -718,6 +768,115 @@ final class FirestoreService {
             batch.deleteDocument(doc.reference)
         }
         try await batch.commit()
+    }
+
+    func addShoppingItemFull(familyId: String, listId: String, item: ShoppingItem) async throws {
+        try db.collection("families").document(familyId)
+            .collection("shoppingLists").document(listId)
+            .collection("items")
+            .addDocument(from: item)
+    }
+
+    func deleteCheckedShoppingItems(familyId: String, listId: String) async throws -> [ShoppingItem] {
+        let snapshot = try await db.collection("families").document(familyId)
+            .collection("shoppingLists").document(listId)
+            .collection("items")
+            .whereField("isChecked", isEqualTo: true)
+            .getDocuments()
+
+        var deleted: [ShoppingItem] = []
+        let batch = db.batch()
+        for doc in snapshot.documents {
+            if let item = try? doc.data(as: ShoppingItem.self) {
+                deleted.append(item)
+            }
+            batch.deleteDocument(doc.reference)
+        }
+        try await batch.commit()
+        return deleted
+    }
+
+    // MARK: - Supplies
+
+    func listenToSupplies(familyId: String) {
+        suppliesListener?.remove()
+        supplies = []
+        suppliesListener = db.collection("families").document(familyId)
+            .collection("supplies")
+            .order(by: "name")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                guard let self, let snapshot else { return }
+                for change in snapshot.documentChanges {
+                    if let item = try? change.document.data(as: SupplyItem.self) {
+                        switch change.type {
+                        case .added:
+                            if !self.supplies.contains(where: { $0.id == item.id }) {
+                                self.supplies.append(item)
+                            }
+                        case .modified:
+                            if let idx = self.supplies.firstIndex(where: { $0.id == item.id }) {
+                                self.supplies[idx] = item
+                            }
+                        case .removed:
+                            self.supplies.removeAll { $0.id == change.document.documentID }
+                        }
+                    }
+                }
+            }
+    }
+
+    func addSupplyItem(familyId: String, item: SupplyItem) async throws {
+        try db.collection("families").document(familyId)
+            .collection("supplies")
+            .addDocument(from: item)
+    }
+
+    func updateSupplyItem(familyId: String, itemId: String, data: [String: Any]) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("supplies").document(itemId)
+            .updateData(data)
+    }
+
+    func deleteSupplyItem(familyId: String, itemId: String) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("supplies").document(itemId)
+            .delete()
+    }
+
+    func markSupplyPurchased(familyId: String, itemId: String) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("supplies").document(itemId)
+            .updateData([
+                "lastPurchasedDate": Timestamp(date: Date()),
+                "isLow": false,
+            ])
+    }
+
+    func markSupplyLow(familyId: String, itemId: String, isLow: Bool) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("supplies").document(itemId)
+            .updateData(["isLow": isLow])
+    }
+
+    func listenToSupplyCategoryOrder(familyId: String) {
+        supplyCategoryOrderListener?.remove()
+        supplyCategoryOrderListener = db.collection("families").document(familyId)
+            .collection("shoppingData").document("supplyCategoryOrder")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                guard let self, let snapshot, snapshot.exists,
+                      let data = snapshot.data() else { return }
+                self.supplyCategoryOrder = data["order"] as? [String] ?? []
+                self.hiddenSupplyCategories = Set(data["hidden"] as? [String] ?? [])
+            }
+    }
+
+    func saveSupplyCategoryOrder(familyId: String, ordered: [String], hidden: Set<String>) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("shoppingData").document("supplyCategoryOrder")
+            .setData([
+                "order": ordered,
+                "hidden": Array(hidden),
+            ])
     }
 
     // MARK: - Exercise Categories
@@ -747,17 +906,18 @@ final class FirestoreService {
                         self.exerciseCategories.removeAll { $0.id == change.document.documentID }
                     }
                 }
+                self.exerciseCategories.sort { $0.sortOrder < $1.sortOrder }
             }
     }
 
     func saveExerciseCategory(familyId: String, userId: String, category: ExerciseCategory) async throws {
         if let catId = category.id {
-            try db.collection("families").document(familyId)
+            try await db.collection("families").document(familyId)
                 .collection("exerciseData").document(userId)
                 .collection("categories").document(catId)
                 .setData(from: category, merge: true)
         } else {
-            _ = try db.collection("families").document(familyId)
+            _ = try await db.collection("families").document(familyId)
                 .collection("exerciseData").document(userId)
                 .collection("categories")
                 .addDocument(from: category)
@@ -771,15 +931,43 @@ final class FirestoreService {
             .delete()
     }
 
+    func reorderExerciseCategories(familyId: String, userId: String, orderedIds: [String]) async throws {
+        let batch = db.batch()
+        let ref = db.collection("families").document(familyId)
+            .collection("exerciseData").document(userId)
+            .collection("categories")
+        for (index, catId) in orderedIds.enumerated() {
+            batch.updateData(["sortOrder": index], forDocument: ref.document(catId))
+        }
+        try await batch.commit()
+    }
+
     func seedDefaultExerciseCategories(familyId: String, userId: String) async throws {
         let ref = db.collection("families").document(familyId)
             .collection("exerciseData").document(userId)
             .collection("categories")
         let snapshot = try await ref.limit(to: 1).getDocuments()
-        guard snapshot.documents.isEmpty else { return }
+        if snapshot.documents.isEmpty {
+            // First time — seed all defaults
+            let batch = db.batch()
+            for category in ExerciseCategory.defaults {
+                let docRef = ref.document()
+                try batch.setData(from: category, forDocument: docRef)
+            }
+            try await batch.commit()
+        } else {
+            // Add any new default categories that don't exist yet (e.g. Cycling, Cardio)
+            try await addMissingDefaultExerciseCategories(ref: ref, familyId: familyId, userId: userId)
+        }
+    }
+
+    private func addMissingDefaultExerciseCategories(ref: CollectionReference, familyId: String, userId: String) async throws {
+        let existingNames = Set(exerciseCategories.map(\.name))
+        let missing = ExerciseCategory.defaults.filter { !existingNames.contains($0.name) }
+        guard !missing.isEmpty else { return }
 
         let batch = db.batch()
-        for category in ExerciseCategory.defaults {
+        for category in missing {
             let docRef = ref.document()
             try batch.setData(from: category, forDocument: docRef)
         }
@@ -802,10 +990,10 @@ final class FirestoreService {
 
     func saveExercisePlan(familyId: String, userId: String, plan: ExercisePlan) async throws {
         let docId = ExercisePlan.docId(for: plan.weekStart)
-        try db.collection("families").document(familyId)
+        try await db.collection("families").document(familyId)
             .collection("exerciseData").document(userId)
             .collection("weekPlans").document(docId)
-            .setData(from: plan, merge: true)
+            .setData(from: plan)
     }
 
     func stopListeningToExercise() {
@@ -844,17 +1032,18 @@ final class FirestoreService {
                         self.choreCategories.removeAll { $0.id == change.document.documentID }
                     }
                 }
+                self.choreCategories.sort { $0.sortOrder < $1.sortOrder }
             }
     }
 
     func saveChoreCategory(familyId: String, category: ChoreCategory) async throws {
         if let catId = category.id {
-            try db.collection("families").document(familyId)
+            try await db.collection("families").document(familyId)
                 .collection("choresData").document("shared")
                 .collection("categories").document(catId)
                 .setData(from: category, merge: true)
         } else {
-            _ = try db.collection("families").document(familyId)
+            _ = try await db.collection("families").document(familyId)
                 .collection("choresData").document("shared")
                 .collection("categories")
                 .addDocument(from: category)
@@ -868,49 +1057,111 @@ final class FirestoreService {
             .delete()
     }
 
-    func seedDefaultChoreCategories(familyId: String) async throws {
+    func reorderChoreCategories(familyId: String, orderedIds: [String]) async throws {
+        let batch = db.batch()
         let ref = db.collection("families").document(familyId)
             .collection("choresData").document("shared")
             .collection("categories")
-        let snapshot = try await ref.limit(to: 1).getDocuments()
-        guard snapshot.documents.isEmpty else { return }
-
-        let batch = db.batch()
-        for category in ChoreCategory.defaults {
-            let docRef = ref.document()
-            try batch.setData(from: category, forDocument: docRef)
+        for (index, catId) in orderedIds.enumerated() {
+            batch.updateData(["sortOrder": index], forDocument: ref.document(catId))
         }
         try await batch.commit()
     }
 
-    // MARK: - Chores Plans
-
-    func listenToChoresPlan(familyId: String, weekStart: Date) {
-        choresPlanListener?.remove()
-        let docId = ChoresPlan.docId(for: weekStart)
-        choresPlanListener = db.collection("families").document(familyId)
+    func seedDefaultChoreCategories(familyId: String) async throws {
+        let ref = db.collection("families").document(familyId)
             .collection("choresData").document("shared")
-            .collection("weekPlans").document(docId)
+            .collection("categories")
+        let snapshot = try await ref.getDocuments()
+
+        if snapshot.documents.isEmpty {
+            let batch = db.batch()
+            for category in ChoreCategory.defaults {
+                let docRef = ref.document()
+                try batch.setData(from: category, forDocument: docRef)
+            }
+            try await batch.commit()
+            return
+        }
+
+        // Merge missing default chore types into existing categories
+        let existing = snapshot.documents.compactMap { try? $0.data(as: ChoreCategory.self) }
+        let existingNames = Set(existing.flatMap { $0.choreTypes.map { $0.name.lowercased() } })
+
+        for defaultCat in ChoreCategory.defaults {
+            guard let match = existing.first(where: { $0.name == defaultCat.name }),
+                  let matchId = match.id else { continue }
+            let newTypes = defaultCat.choreTypes.filter { !existingNames.contains($0.name.lowercased()) }
+            guard !newTypes.isEmpty else { continue }
+            var updated = match
+            updated.choreTypes.append(contentsOf: newTypes)
+            try await ref.document(matchId).setData(from: updated, merge: true)
+        }
+    }
+
+    // MARK: - Chore Completions
+
+    func listenToChoreCompletions(familyId: String) {
+        choreCompletionsListener?.remove()
+        choreCompletions = []
+        choreCompletionsListener = db.collection("families").document(familyId)
+            .collection("choresData").document("shared")
+            .collection("completions")
+            .order(by: "completedDate", descending: true)
+            .limit(to: 200)
             .addSnapshotListener { [weak self] snapshot, error in
-                guard let snapshot, error == nil else { return }
-                self?.currentChoresPlan = try? snapshot.data(as: ChoresPlan.self)
+                guard let self, let snapshot, error == nil else { return }
+                self.choreCompletions = snapshot.documents.compactMap {
+                    try? $0.data(as: ChoreCompletion.self)
+                }
             }
     }
 
-    func saveChoresPlan(familyId: String, plan: ChoresPlan) async throws {
-        let docId = ChoresPlan.docId(for: plan.weekStart)
-        try db.collection("families").document(familyId)
+    func saveChoreCompletion(familyId: String, completion: ChoreCompletion) async throws {
+        _ = try await db.collection("families").document(familyId)
             .collection("choresData").document("shared")
-            .collection("weekPlans").document(docId)
-            .setData(from: plan, merge: true)
+            .collection("completions")
+            .addDocument(from: completion)
+    }
+
+    // MARK: - Chore Assignments
+
+    func listenToChoreAssignments(familyId: String) {
+        choreAssignmentsListener?.remove()
+        choreAssignments = [:]
+        choreDayPlan = [:]
+        choreAssignmentsListener = db.collection("families").document(familyId)
+            .collection("choresData").document("shared")
+            .collection("assignments").document("current")
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let snapshot, error == nil else { return }
+                if let data = try? snapshot.data(as: ChoreAssignments.self) {
+                    self?.choreAssignments = data.assignments
+                    self?.choreDayPlan = data.dayPlan ?? [:]
+                } else {
+                    self?.choreAssignments = [:]
+                    self?.choreDayPlan = [:]
+                }
+            }
+    }
+
+    func saveChoreAssignments(familyId: String, assignments: [String: String], dayPlan: [String: Int] = [:]) async throws {
+        try await db.collection("families").document(familyId)
+            .collection("choresData").document("shared")
+            .collection("assignments").document("current")
+            .setData(from: ChoreAssignments(assignments: assignments, dayPlan: dayPlan.isEmpty ? nil : dayPlan), merge: false)
     }
 
     func stopListeningToChores() {
         choreCategoriesListener?.remove()
-        choresPlanListener?.remove()
+        choreCompletionsListener?.remove()
+        choreAssignmentsListener?.remove()
         choreCategoriesListener = nil
-        choresPlanListener = nil
+        choreCompletionsListener = nil
+        choreAssignmentsListener = nil
         choreCategories = []
-        currentChoresPlan = nil
+        choreCompletions = []
+        choreAssignments = [:]
+        choreDayPlan = [:]
     }
 }

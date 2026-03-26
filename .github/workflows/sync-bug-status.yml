@@ -1,0 +1,51 @@
+name: Sync Bug Status to Firestore
+
+on:
+  issues:
+    types: [closed]
+  pull_request:
+    types: [closed]
+
+jobs:
+  sync-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Firestore bug status
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body || github.event.pull_request.body }}
+          IS_PR_MERGED: ${{ github.event.pull_request.merged }}
+          EVENT_NAME: ${{ github.event_name }}
+          WEBHOOK_URL: ${{ secrets.BUG_WEBHOOK_URL }}
+          WEBHOOK_SECRET: ${{ secrets.BUG_WEBHOOK_SECRET }}
+          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ',') }}
+        run: |
+          # Only process bug-report issues or PRs that reference bugs
+          if [ "$EVENT_NAME" = "issues" ]; then
+            echo "$ISSUE_LABELS" | grep -q "bug-report" || exit 0
+          fi
+
+          # Parse Firestore path from issue/PR body using grep
+          FAMILY_ID=$(printf '%s' "$ISSUE_BODY" | grep -oP 'families/\K[^/]+(?=/bugReports/)' || true)
+          REPORT_ID=$(printf '%s' "$ISSUE_BODY" | grep -oP 'bugReports/\K\w+' || true)
+
+          if [ -z "$FAMILY_ID" ] || [ -z "$REPORT_ID" ]; then
+            echo "No Firestore path found in body — skipping"
+            exit 0
+          fi
+
+          # Determine new status
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$IS_PR_MERGED" = "true" ]; then
+            STATUS="fixed"
+          elif [ "$EVENT_NAME" = "issues" ]; then
+            STATUS="closed"
+          else
+            echo "PR not merged — skipping"
+            exit 0
+          fi
+
+          echo "Updating bug $REPORT_ID to $STATUS"
+
+          curl -sf -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -H "x-webhook-secret: $WEBHOOK_SECRET" \
+            -d "{\"familyId\": \"$FAMILY_ID\", \"reportId\": \"$REPORT_ID\", \"status\": \"$STATUS\"}"

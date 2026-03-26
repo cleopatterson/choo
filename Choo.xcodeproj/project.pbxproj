@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20301FA57EDE4F6089F3AF3E /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
+		9B17334A253E4872AA0B997A /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
+		0D84A1D120864E5D99FC0906 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
 		084B608C2059387BAB27B341 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5C1F5794F7C17CC413EF39 /* Family.swift */; };
 		08C7369D0F81E6F0AEE398AE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 73832FD5F89D92BEC7C179ED /* FirebaseAuth */; };
 		11692FD12F4584CF00C75371 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 11692FD02F4584CF00C75371 /* FirebaseMessaging */; };
@@ -14,19 +17,6 @@
 		11692FD52F45860500C75371 /* PushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11692FD42F45860500C75371 /* PushNotificationService.swift */; };
 		11692FD72F45861A00C75371 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11692FD62F45861A00C75371 /* AppDelegate.swift */; };
 		13E57D2F360D2FD0D60AE5B5 /* Color+Choo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665C19AE4156398DB6E1A9A9 /* Color+Choo.swift */; };
-		EE01FF02AA03BB04CC05DD06 /* ExerciseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */; };
-		EX01AA01BB01CC01DD01EE01 /* ExerciseCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */; };
-		EX02AA02BB02CC02DD02EE02 /* ExercisePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */; };
-		EX03AA03BB03CC03DD03EE03 /* ExerciseBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */; };
-		EX04AA04BB04CC04DD04EE04 /* ExerciseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX04AA04BB04CC04DD04FF04 /* ExerciseViewModel.swift */; };
-		EX05AA05BB05CC05DD05EE05 /* ExerciseBriefingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX05AA05BB05CC05DD05FF05 /* ExerciseBriefingView.swift */; };
-		EX06AA06BB06CC06DD06EE06 /* ExerciseHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX06AA06BB06CC06DD06FF06 /* ExerciseHeroView.swift */; };
-		EX07AA07BB07CC07DD07EE07 /* ExerciseWeekStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX07AA07BB07CC07DD07FF07 /* ExerciseWeekStripView.swift */; };
-		EX08AA08BB08CC08DD08EE08 /* ExerciseStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */; };
-		EX09AA09BB09CC09DD09EE09 /* ExerciseCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */; };
-		EX10AA10BB10CC10DD10EE10 /* ExerciseAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */; };
-		EX11AA11BB11CC11DD11EE11 /* ExerciseManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */; };
-		EX12AA12BB12CC12DD12EE12 /* SessionTypeFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */; };
 		17E8615C6900DD6ACF8ED712 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001192C619E71C637DFE1367 /* MainTabView.swift */; };
 		182EC30ED37D6FD10554B770 /* AccountTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C8F162E2980E67863D623 /* AccountTabView.swift */; };
 		1A2B3C4D5E6F7A8B9C0D1E2F /* SharedUserContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A2A3A4A5A6A7A8A9B0B1B2 /* SharedUserContext.swift */; };
@@ -44,7 +34,7 @@
 		645011972BB595A0086E69C8 /* String+Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0810EFAEA0F035B0D6C4777F /* String+Validation.swift */; };
 		6AC392470206C411003B8AD5 /* ShoppingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */; };
 		6F28C02E8672143B8C90505C /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E586D3AF4287BA20A89F /* LoadingView.swift */; };
-		6F7A8B9C0D1E2F3A4B5C6D7E /* ChooShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6F7A8B9C0D1E2F3A4B5C6D7E /* ChooShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		76B92C8DF9D52C41219F1662 /* FamilyEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6286BA6AF6CB781455502EFE /* FamilyEvent.swift */; };
 		7A8B9C0D1E2F3A4B5C6D7E8F /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F7A8B9C0D1E2F3 /* ShareViewController.swift */; };
 		7F6EFB0BCB5D280B860B31E2 /* NotesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE1A5AE3BEFE3AF8642115B /* NotesTabView.swift */; };
@@ -60,6 +50,7 @@
 		B71F3753AF30EB9207C04F18 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C51136155B81ECF1A4075B5 /* ErrorBannerView.swift */; };
 		BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01BB02CC03DD04EE05FF06 /* Secrets.swift */; };
 		BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */; };
+		HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */; };
 		BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */; };
 		BB31CC32DD33EE34FF35AA36 /* WeeklyBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */; };
 		BB41CC42DD43EE44FF45AA46 /* WeeklyBriefingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */; };
@@ -73,6 +64,7 @@
 		BBC1CCC2DDC3EEC4FFC5AAC6 /* AlsoThisWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BBC2CCC3DDC4EEC5FFC6 /* AlsoThisWeekView.swift */; };
 		BBD1CCD2DDD3EED4FFD5AAD6 /* NextWeekPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD1BBD2CCD3DDD4EED5FFD6 /* NextWeekPreviewView.swift */; };
 		BBE1CCE2DDE3EEE4FFE5AAE6 /* BriefingPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE1BBE2CCE3DDE4EEE5FFE6 /* BriefingPagerView.swift */; };
+		BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */; };
 		C3D4E5F6A7B80920314253A4 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A4B5C6D7E8092031425364 /* CalendarViewModel.swift */; };
 		C5D2A1AFD43DC13ACB94932F /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B3E6DA15F871616F9194B3 /* AuthService.swift */; };
 		C66E3028A5F993A5B6670648 /* ShoppingItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B209CC975714FEF95B77FB1 /* ShoppingItem.swift */; };
@@ -82,36 +74,64 @@
 		CC05DD06EE07FF08AA09BB0A /* DinnerStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05BB06CC07DD08EE09FF0A /* DinnerStripView.swift */; };
 		CC06DD07EE08FF09AA0ABB0B /* RecipePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */; };
 		CC07DD08EE09FF0AAA0BBB0C /* RecipeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */; };
+		CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */; };
+		CH02AA02BB02CC02DD02EE02 /* ChoresPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */; };
+		CH03AA03BB03CC03DD03EE03 /* ChoresBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH03AA03BB03CC03DD03FF03 /* ChoresBriefing.swift */; };
+		CH04AA04BB04CC04DD04EE04 /* HouseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH04AA04BB04CC04DD04FF04 /* HouseViewModel.swift */; };
+		CH05AA05BB05CC05DD05EE05 /* HouseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH05AA05BB05CC05DD05FF05 /* HouseTabView.swift */; };
+		CH06AA06BB06CC06DD06EE06 /* HouseHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH06AA06BB06CC06DD06FF06 /* HouseHeroView.swift */; };
+		CH07AA07BB07CC07DD07EE07 /* HouseChoreListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH07AA07BB07CC07DD07FF07 /* HouseChoreListView.swift */; };
+		CH08AA08BB08CC08DD08EE08 /* HouseStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH08AA08BB08CC08DD08FF08 /* HouseStatsBar.swift */; };
+		CH09AA09BB09CC09DD09EE09 /* HouseCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH09AA09BB09CC09DD09FF09 /* HouseCategoriesView.swift */; };
+		CH10AA10BB10CC10DD10EE10 /* HouseChoreActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH10AA10BB10CC10DD10FF10 /* HouseChoreActionSheet.swift */; };
+		CH11AA11BB11CC11DD11EE11 /* HouseManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH11AA11BB11CC11DD11FF11 /* HouseManageSheet.swift */; };
+		CH12AA12BB12CC12DD12EE12 /* HouseChoreTypeFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH12AA12BB12CC12DD12FF12 /* HouseChoreTypeFormSheet.swift */; };
+		CH13AA13BB13CC13DD13EE13 /* ChoreCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */; };
+		CH14AA14BB14CC14DD14EE14 /* HouseWeekStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH14AA14BB14CC14DD14FF14 /* HouseWeekStripView.swift */; };
+		CH15AA15BB15CC15DD15EE15 /* HouseDayPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH15AA15BB15CC15DD15FF15 /* HouseDayPlanSheet.swift */; };
+		SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */; };
+		SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */; };
+		SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */; };
+		SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */; };
+		SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */; };
+		SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */; };
+		SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */; };
+		SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */; };
+		SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */; };
+		NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */; };
 		D353641979177AEEFD928218 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9327671FF1BE49FDA994712F /* AuthViewModel.swift */; };
 		D4E5F6A7B8C90A31425364B5 /* NotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */; };
 		D4F5A6B7C8E93AB524D6E7F8 /* CalendarSourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4F5A6B7D829A413C5D6E7 /* CalendarSourcesView.swift */; };
 		D5E6F7A8B9CA0B1C2D3E4F5A /* NSWHolidays.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */; };
 		D9A1B2C3E4F506172839ABCD /* MemberAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C3D4F5A617283940BCDE /* MemberAvatarView.swift */; };
+		DB01BB01CC01DD01EE01FF01 /* DinnerBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */; };
 		E0A69EB92008784552707E65 /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */; };
 		E5F6A7B8C9DA0B42536475C6 /* EventFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9AA0B4253647586 /* EventFormView.swift */; };
 		E6F7A8B9CADB1D24869708FA /* FamilyMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */; };
 		E8A7A04F6D54AB6F69708FA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 641A8036E05FE462ABFA13A6 /* Assets.xcassets */; };
 		E9F1A2B3C4D5068E7F901B2C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A8E9F1B2C3046D5E8F7A91 /* NotificationService.swift */; };
+		EE01FF02AA03BB04CC05DD06 /* ExerciseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */; };
+		EX01AA01BB01CC01DD01EE01 /* ExerciseCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */; };
+		EX02AA02BB02CC02DD02EE02 /* ExercisePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */; };
+		EX03AA03BB03CC03DD03EE03 /* ExerciseBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */; };
+		EX04AA04BB04CC04DD04EE04 /* ExerciseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX04AA04BB04CC04DD04FF04 /* ExerciseViewModel.swift */; };
+		EX05AA05BB05CC05DD05EE05 /* ExerciseBriefingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX05AA05BB05CC05DD05FF05 /* ExerciseBriefingView.swift */; };
+		EX06AA06BB06CC06DD06EE06 /* ExerciseHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX06AA06BB06CC06DD06FF06 /* ExerciseHeroView.swift */; };
+		EX07AA07BB07CC07DD07EE07 /* ExerciseWeekStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX07AA07BB07CC07DD07FF07 /* ExerciseWeekStripView.swift */; };
+		EX08AA08BB08CC08DD08EE08 /* ExerciseStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */; };
+		EX09AA09BB09CC09DD09EE09 /* ExerciseCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */; };
+		EX10AA10BB10CC10DD10EE10 /* ExerciseAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */; };
+		EXDP0AA0BB0CC0DD0EE0 /* ExerciseDayPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */; };
+		EX11AA11BB11CC11DD11EE11 /* ExerciseManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */; };
+		EX12AA12BB12CC12DD12EE12 /* SessionTypeFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */; };
 		F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B4C5D6E7F819203142DEFA /* EventDetailView.swift */; };
 		F2E1D0C9B8A7F6E5D4C3B2A1 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* ConfettiView.swift */; };
 		F412CB9E7DFCE7CD26ABC735 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460AC73DC67EB151644A7C40 /* SignUpView.swift */; };
 		F6A7B8C9DAEB0C53647586D7 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D7E8F9AABB0C5364758697 /* NoteEditorView.swift */; };
-		TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */ = {isa = PBXBuildFile; fileRef = TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */; };
-		DB01BB01CC01DD01EE01FF01 /* DinnerBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */; };
-		BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */; };
 		HC01BB01CC01DD01EE01FF01 /* HeroCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HC01BB01CC01DD01EE01AA01 /* HeroCardView.swift */; };
-		CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */; };
-		CH02AA02BB02CC02DD02EE02 /* ChoresPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */; };
-		CH03AA03BB03CC03DD03EE03 /* ChoresBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH03AA03BB03CC03DD03FF03 /* ChoresBriefing.swift */; };
-		CH04AA04BB04CC04DD04EE04 /* ChoresViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH04AA04BB04CC04DD04FF04 /* ChoresViewModel.swift */; };
-		CH05AA05BB05CC05DD05EE05 /* ChoresTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH05AA05BB05CC05DD05FF05 /* ChoresTabView.swift */; };
-		CH06AA06BB06CC06DD06EE06 /* ChoresHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH06AA06BB06CC06DD06FF06 /* ChoresHeroView.swift */; };
-		CH07AA07BB07CC07DD07EE07 /* ChoresWeekStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH07AA07BB07CC07DD07FF07 /* ChoresWeekStripView.swift */; };
-		CH08AA08BB08CC08DD08EE08 /* ChoresStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH08AA08BB08CC08DD08FF08 /* ChoresStatsBar.swift */; };
-		CH09AA09BB09CC09DD09EE09 /* ChoresCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH09AA09BB09CC09DD09FF09 /* ChoresCategoriesView.swift */; };
-		CH10AA10BB10CC10DD10EE10 /* ChoresAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH10AA10BB10CC10DD10FF10 /* ChoresAddSheet.swift */; };
-		CH11AA11BB11CC11DD11EE11 /* ChoresManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH11AA11BB11CC11DD11FF11 /* ChoresManageSheet.swift */; };
-		CH12AA12BB12CC12DD12EE12 /* ChoreTypeFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH12AA12BB12CC12DD12FF12 /* ChoreTypeFormSheet.swift */; };
+		TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */ = {isa = PBXBuildFile; fileRef = TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */; };
+		WPM1AA01BB01CC01DD01EE01 /* WeekPlanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */; };
+		EOB1AA01BB01CC01DD01EE01 /* ExerciseOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,20 +145,23 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		FA6B7C8D9E0F1A2B3C4D5E6F /* Embed App Extensions */ = {
+		FA6B7C8D9E0F1A2B3C4D5E6F /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				6F7A8B9C0D1E2F3A4B5C6D7E /* ChooShareExtension.appex in Embed App Extensions */,
+				6F7A8B9C0D1E2F3A4B5C6D7E /* ChooShareExtension.appex in Embed Foundation Extensions */,
 			);
-			name = "Embed App Extensions";
+			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportEditorView.swift; sourceTree = "<group>"; };
+		ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportsViewModel.swift; sourceTree = "<group>"; };
+		FB8B1D3D30BB47D4B8876586 /* BugReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReport.swift; sourceTree = "<group>"; };
 		001192C619E71C637DFE1367 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		043C8F162E2980E67863D623 /* AccountTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTabView.swift; sourceTree = "<group>"; };
 		0810EFAEA0F035B0D6C4777F /* String+Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Validation.swift"; sourceTree = "<group>"; };
@@ -161,6 +184,7 @@
 		8D007C8A0C198F144744F379 /* ShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingList.swift; sourceTree = "<group>"; };
 		9327671FF1BE49FDA994712F /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		A1A2A3A4A5A6A7A8A9B0B1B2 /* SharedUserContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedUserContext.swift; sourceTree = "<group>"; };
+		NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		A1C2D3E4F5B6078291A3B4C5 /* DeviceCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCalendarService.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -176,6 +200,7 @@
 		AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEditView.swift; sourceTree = "<group>"; };
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
 		AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySetupView.swift; sourceTree = "<group>"; };
+		HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefing.swift; sourceTree = "<group>"; };
 		AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefingViewModel.swift; sourceTree = "<group>"; };
@@ -196,21 +221,48 @@
 		B5C6D7E8F9AA0B4253647586 /* EventFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventFormView.swift; sourceTree = "<group>"; };
 		B877E586D3AF4287BA20A89F /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		B90DF107D1C79EB5F8344E00 /* ChooApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooApp.swift; sourceTree = "<group>"; };
+		BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingCardView.swift; sourceTree = "<group>"; };
 		C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreService.swift; sourceTree = "<group>"; };
 		C1C2C3C4C5C6C7C8C9D0D1D2 /* Choo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Choo.entitlements; sourceTree = "<group>"; };
 		C3E4F5A6B7D829A413C5D6E7 /* CalendarSourcesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarSourcesView.swift; sourceTree = "<group>"; };
 		C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSWHolidays.swift; sourceTree = "<group>"; };
 		C4D5E6F7A8B9C0D1E2F3A4B5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C6D7E8F9AABB0C5364758697 /* NoteEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteEditorView.swift; sourceTree = "<group>"; };
+		CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreCategory.swift; sourceTree = "<group>"; };
+		CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresPlan.swift; sourceTree = "<group>"; };
+		CH03AA03BB03CC03DD03FF03 /* ChoresBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresBriefing.swift; sourceTree = "<group>"; };
+		CH04AA04BB04CC04DD04FF04 /* HouseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseViewModel.swift; sourceTree = "<group>"; };
+		CH05AA05BB05CC05DD05FF05 /* HouseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseTabView.swift; sourceTree = "<group>"; };
+		CH06AA06BB06CC06DD06FF06 /* HouseHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseHeroView.swift; sourceTree = "<group>"; };
+		CH07AA07BB07CC07DD07FF07 /* HouseChoreListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseChoreListView.swift; sourceTree = "<group>"; };
+		CH08AA08BB08CC08DD08FF08 /* HouseStatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseStatsBar.swift; sourceTree = "<group>"; };
+		CH09AA09BB09CC09DD09FF09 /* HouseCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseCategoriesView.swift; sourceTree = "<group>"; };
+		CH10AA10BB10CC10DD10FF10 /* HouseChoreActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseChoreActionSheet.swift; sourceTree = "<group>"; };
+		CH11AA11BB11CC11DD11FF11 /* HouseManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseManageSheet.swift; sourceTree = "<group>"; };
+		CH12AA12BB12CC12DD12FF12 /* HouseChoreTypeFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseChoreTypeFormSheet.swift; sourceTree = "<group>"; };
+		CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreCompletion.swift; sourceTree = "<group>"; };
+		CH14AA14BB14CC14DD14FF14 /* HouseWeekStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseWeekStripView.swift; sourceTree = "<group>"; };
+		CH15AA15BB15CC15DD15FF15 /* HouseDayPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseDayPlanSheet.swift; sourceTree = "<group>"; };
+		SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItem.swift; sourceTree = "<group>"; };
+		SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViewModel.swift; sourceTree = "<group>"; };
+		SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientReviewSheet.swift; sourceTree = "<group>"; };
+		SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunDoneSheet.swift; sourceTree = "<group>"; };
+		SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyEditSheet.swift; sourceTree = "<group>"; };
+		SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesSectionView.swift; sourceTree = "<group>"; };
+		SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyAddSheet.swift; sourceTree = "<group>"; };
+		SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItemFormSheet.swift; sourceTree = "<group>"; };
+		SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyCategoryManageSheet.swift; sourceTree = "<group>"; };
 		D1D2D3D4D5D6D7D8D9E0E1E2 /* AddShoppingItemIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddShoppingItemIntent.swift; sourceTree = "<group>"; };
 		D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingViewModel.swift; sourceTree = "<group>"; };
 		D4633E5B8EAC81D83F51316C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5E6F7A8B9C0D1E2F3A4B5C6 /* ChooShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChooShareExtension.entitlements; sourceTree = "<group>"; };
 		D7A8E9F1B2C3046D5E8F7A91 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerBriefing.swift; sourceTree = "<group>"; };
 		E1B2C3D4F5A617283940BCDE /* MemberAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAvatarView.swift; sourceTree = "<group>"; };
 		E1E2E3E4E5E6E7E8E9F0F1F2 /* AddEventIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventIntent.swift; sourceTree = "<group>"; };
 		E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChooShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseTabView.swift; sourceTree = "<group>"; };
+		EE5C1F5794F7C17CC413EF39 /* Family.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Family.swift; sourceTree = "<group>"; };
 		EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCategory.swift; sourceTree = "<group>"; };
 		EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisePlan.swift; sourceTree = "<group>"; };
 		EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseBriefing.swift; sourceTree = "<group>"; };
@@ -221,29 +273,17 @@
 		EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseStatsBar.swift; sourceTree = "<group>"; };
 		EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCategoriesView.swift; sourceTree = "<group>"; };
 		EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAddSheet.swift; sourceTree = "<group>"; };
+		EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDayPlanSheet.swift; sourceTree = "<group>"; };
 		EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseManageSheet.swift; sourceTree = "<group>"; };
 		EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTypeFormSheet.swift; sourceTree = "<group>"; };
-		EE5C1F5794F7C17CC413EF39 /* Family.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Family.swift; sourceTree = "<group>"; };
 		F1F2F3F4F5F6F7F8F9A0A1A2 /* ChooShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooShortcuts.swift; sourceTree = "<group>"; };
 		F3A4B5C6D7E8092031425364 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
 		F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMember.swift; sourceTree = "<group>"; };
 		F987C7B40D1ECF03EE3124C6 /* Choo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Choo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabAccent.swift; sourceTree = "<group>"; };
-		DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerBriefing.swift; sourceTree = "<group>"; };
-		BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingCardView.swift; sourceTree = "<group>"; };
 		HC01BB01CC01DD01EE01AA01 /* HeroCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCardView.swift; sourceTree = "<group>"; };
-		CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreCategory.swift; sourceTree = "<group>"; };
-		CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresPlan.swift; sourceTree = "<group>"; };
-		CH03AA03BB03CC03DD03FF03 /* ChoresBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresBriefing.swift; sourceTree = "<group>"; };
-		CH04AA04BB04CC04DD04FF04 /* ChoresViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresViewModel.swift; sourceTree = "<group>"; };
-		CH05AA05BB05CC05DD05FF05 /* ChoresTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresTabView.swift; sourceTree = "<group>"; };
-		CH06AA06BB06CC06DD06FF06 /* ChoresHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresHeroView.swift; sourceTree = "<group>"; };
-		CH07AA07BB07CC07DD07FF07 /* ChoresWeekStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresWeekStripView.swift; sourceTree = "<group>"; };
-		CH08AA08BB08CC08DD08FF08 /* ChoresStatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresStatsBar.swift; sourceTree = "<group>"; };
-		CH09AA09BB09CC09DD09FF09 /* ChoresCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresCategoriesView.swift; sourceTree = "<group>"; };
-		CH10AA10BB10CC10DD10FF10 /* ChoresAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresAddSheet.swift; sourceTree = "<group>"; };
-		CH11AA11BB11CC11DD11FF11 /* ChoresManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoresManageSheet.swift; sourceTree = "<group>"; };
-		CH12AA12BB12CC12DD12FF12 /* ChoreTypeFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreTypeFormSheet.swift; sourceTree = "<group>"; };
+		TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabAccent.swift; sourceTree = "<group>"; };
+		WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekPlanManager.swift; sourceTree = "<group>"; };
+		EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseOnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -274,6 +314,13 @@
 				AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */,
 				AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */,
 				B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */,
+				SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */,
+				SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */,
+				SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */,
+				SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */,
+				SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */,
+				SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */,
+				SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */,
 			);
 			path = Shopping;
 			sourceTree = "<group>";
@@ -308,11 +355,13 @@
 			children = (
 				9327671FF1BE49FDA994712F /* AuthViewModel.swift */,
 				F3A4B5C6D7E8092031425364 /* CalendarViewModel.swift */,
-				CH04AA04BB04CC04DD04FF04 /* ChoresViewModel.swift */,
+				CH04AA04BB04CC04DD04FF04 /* HouseViewModel.swift */,
 				AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */,
 				EX04AA04BB04CC04DD04FF04 /* ExerciseViewModel.swift */,
-				A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */,
+				A4B5C6D7E8F90A3142536475 /* 
+				ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */,
 				D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */,
+				SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */,
 				AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */,
 			);
 			path = ViewModels;
@@ -365,37 +414,6 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		CH21FF22AA23BB24CC25DD26 /* Chores */ = {
-			isa = PBXGroup;
-			children = (
-				CH10AA10BB10CC10DD10FF10 /* ChoresAddSheet.swift */,
-				CH09AA09BB09CC09DD09FF09 /* ChoresCategoriesView.swift */,
-				CH06AA06BB06CC06DD06FF06 /* ChoresHeroView.swift */,
-				CH11AA11BB11CC11DD11FF11 /* ChoresManageSheet.swift */,
-				CH08AA08BB08CC08DD08FF08 /* ChoresStatsBar.swift */,
-				CH05AA05BB05CC05DD05FF05 /* ChoresTabView.swift */,
-				CH12AA12BB12CC12DD12FF12 /* ChoreTypeFormSheet.swift */,
-				CH07AA07BB07CC07DD07FF07 /* ChoresWeekStripView.swift */,
-			);
-			path = Chores;
-			sourceTree = "<group>";
-		};
-		EE21FF22AA23BB24CC25DD26 /* Exercise */ = {
-			isa = PBXGroup;
-			children = (
-				EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */,
-				EX05AA05BB05CC05DD05FF05 /* ExerciseBriefingView.swift */,
-				EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */,
-				EX06AA06BB06CC06DD06FF06 /* ExerciseHeroView.swift */,
-				EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */,
-				EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */,
-				EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */,
-				EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */,
-				EX07AA07BB07CC07DD07FF07 /* ExerciseWeekStripView.swift */,
-			);
-			path = Exercise;
-			sourceTree = "<group>";
-		};
 		67005C32069BA2C56DFBA199 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -418,6 +436,7 @@
 			children = (
 				CH03AA03BB03CC03DD03FF03 /* ChoresBriefing.swift */,
 				CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */,
+				CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */,
 				CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */,
 				DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */,
 				EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */,
@@ -428,11 +447,13 @@
 				6286BA6AF6CB781455502EFE /* FamilyEvent.swift */,
 				F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */,
 				AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */,
-				12F4BD804C1D091A627301E6 /* Note.swift */,
+				12F4BD804C1D091A627301E6 /* 
+				FB8B1D3D30BB47D4B8876586 /* BugReport.swift */,
 				C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */,
 				AA02BB03CC04DD05EE06FF07 /* Recipe.swift */,
 				2B209CC975714FEF95B77FB1 /* ShoppingItem.swift */,
 				8D007C8A0C198F144744F379 /* ShoppingList.swift */,
+				SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */,
 				TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */,
 				5E76E645E1121618BE1729BF /* UserProfile.swift */,
 				AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */,
@@ -454,7 +475,8 @@
 		AF0C70BED3863CF96FB75837 /* Notes */ = {
 			isa = PBXGroup;
 			children = (
-				C6D7E8F9AABB0C5364758697 /* NoteEditorView.swift */,
+				C6D7E8F9AABB0C5364758697 /* 
+				1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */,
 				4CE1A5AE3BEFE3AF8642115B /* NotesTabView.swift */,
 			);
 			path = Notes;
@@ -488,12 +510,32 @@
 				AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */,
 				A1C2D3E4F5B6078291A3B4C5 /* DeviceCalendarService.swift */,
 				C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */,
+				HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */,
 				D7A8E9F1B2C3046D5E8F7A91 /* NotificationService.swift */,
 				B1B2B3B4B5B6B7B8B9C0C1C2 /* PendingShareManager.swift */,
 				A1A2A3A4A5A6A7A8A9B0B1B2 /* SharedUserContext.swift */,
+				NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */,
 				AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */,
+				WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */,
 			);
 			path = Services;
+			sourceTree = "<group>";
+		};
+		CH21FF22AA23BB24CC25DD26 /* House */ = {
+			isa = PBXGroup;
+			children = (
+				CH09AA09BB09CC09DD09FF09 /* HouseCategoriesView.swift */,
+				CH10AA10BB10CC10DD10FF10 /* HouseChoreActionSheet.swift */,
+				CH07AA07BB07CC07DD07FF07 /* HouseChoreListView.swift */,
+				CH12AA12BB12CC12DD12FF12 /* HouseChoreTypeFormSheet.swift */,
+				CH15AA15BB15CC15DD15FF15 /* HouseDayPlanSheet.swift */,
+				CH06AA06BB06CC06DD06FF06 /* HouseHeroView.swift */,
+				CH11AA11BB11CC11DD11FF11 /* HouseManageSheet.swift */,
+				CH08AA08BB08CC08DD08FF08 /* HouseStatsBar.swift */,
+				CH05AA05BB05CC05DD05FF05 /* HouseTabView.swift */,
+				CH14AA14BB14CC14DD14FF14 /* HouseWeekStripView.swift */,
+			);
+			path = House;
 			sourceTree = "<group>";
 		};
 		DD01EE02FF03AA04BB05CC06 /* Config */ = {
@@ -539,6 +581,24 @@
 			path = Choo;
 			sourceTree = "<group>";
 		};
+		EE21FF22AA23BB24CC25DD26 /* Exercise */ = {
+			isa = PBXGroup;
+			children = (
+				EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */,
+				EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */,
+				EX05AA05BB05CC05DD05FF05 /* ExerciseBriefingView.swift */,
+				EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */,
+				EX06AA06BB06CC06DD06FF06 /* ExerciseHeroView.swift */,
+				EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */,
+				EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */,
+				EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */,
+				EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */,
+				EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */,
+				EX07AA07BB07CC07DD07FF07 /* ExerciseWeekStripView.swift */,
+			);
+			path = Exercise;
+			sourceTree = "<group>";
+		};
 		EFBFF13979BA03A8665628A4 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -572,7 +632,7 @@
 				FB0A418F05C3CEFC92D1666D /* Sources */,
 				E67910D545BFB09E9A1159B9 /* Resources */,
 				A397E53BABFCA813E9274466 /* Frameworks */,
-				FA6B7C8D9E0F1A2B3C4D5E6F /* Embed App Extensions */,
+				FA6B7C8D9E0F1A2B3C4D5E6F /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
@@ -613,7 +673,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2620;
 			};
 			buildConfigurationList = E95F534B09AEC257FF30080E /* Build configuration list for PBXProject "Choo" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -662,6 +722,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC0D1E2F3A4B5C6D7E8F9A0B /* PendingShareManager.swift in Sources */,
+				20301FA57EDE4F6089F3AF3E /* BugReportEditorView.swift in Sources */,
+				9B17334A253E4872AA0B997A /* BugReportsViewModel.swift in Sources */,
+				0D84A1D120864E5D99FC0906 /* BugReport.swift in Sources */,
 				8B9C0D1E2F3A4B5C6D7E8F9A /* ShareFormView.swift in Sources */,
 				9C0D1E2F3A4B5C6D7E8F9A0B /* SharedUserContext.swift in Sources */,
 				7A8B9C0D1E2F3A4B5C6D7E8F /* ShareViewController.swift in Sources */,
@@ -685,8 +748,11 @@
 				F2E1D0C9B8A7F6E5D4C3B2A1 /* ConfettiView.swift in Sources */,
 				9FA50B12C1FFB64C6D2CF2A7 /* ContentView.swift in Sources */,
 				B2D3E4F5A6C7189302B4C5D6 /* DeviceCalendarService.swift in Sources */,
+				WPM1AA01BB01CC01DD01EE01 /* WeekPlanManager.swift in Sources */,
+				EOB1AA01BB01CC01DD01EE01 /* ExerciseOnboardingView.swift in Sources */,
 				EE01FF02AA03BB04CC05DD06 /* ExerciseTabView.swift in Sources */,
 				EX10AA10BB10CC10DD10EE10 /* ExerciseAddSheet.swift in Sources */,
+				EXDP0AA0BB0CC0DD0EE0 /* ExerciseDayPlanSheet.swift in Sources */,
 				EX05AA05BB05CC05DD05EE05 /* ExerciseBriefingView.swift in Sources */,
 				EX01AA01BB01CC01DD01EE01 /* ExerciseCategory.swift in Sources */,
 				EX09AA09BB09CC09DD09EE09 /* ExerciseCategoriesView.swift in Sources */,
@@ -722,6 +788,7 @@
 				CC07DD08EE09FF0AAA0BBB0C /* RecipeEditView.swift in Sources */,
 				CC06DD07EE08FF09AA0ABB0B /* RecipePickerView.swift in Sources */,
 				1A2B3C4D5E6F7A8B9C0D1E2F /* SharedUserContext.swift in Sources */,
+				NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */,
 				C66E3028A5F993A5B6670648 /* ShoppingItem.swift in Sources */,
 				834DEF9398767C49550DF022 /* ShoppingList.swift in Sources */,
 				6AC392470206C411003B8AD5 /* ShoppingTabView.swift in Sources */,
@@ -738,6 +805,7 @@
 				F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */,
 				BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */,
 				BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */,
+				HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */,
 				BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */,
 				BB31CC32DD33EE34FF35AA36 /* WeeklyBriefing.swift in Sources */,
 				BB41CC42DD43EE44FF45AA46 /* WeeklyBriefingViewModel.swift in Sources */,
@@ -756,17 +824,29 @@
 				BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */,
 				HC01BB01CC01DD01EE01FF01 /* HeroCardView.swift in Sources */,
 				CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */,
+				CH13AA13BB13CC13DD13EE13 /* ChoreCompletion.swift in Sources */,
 				CH02AA02BB02CC02DD02EE02 /* ChoresPlan.swift in Sources */,
 				CH03AA03BB03CC03DD03EE03 /* ChoresBriefing.swift in Sources */,
-				CH04AA04BB04CC04DD04EE04 /* ChoresViewModel.swift in Sources */,
-				CH05AA05BB05CC05DD05EE05 /* ChoresTabView.swift in Sources */,
-				CH06AA06BB06CC06DD06EE06 /* ChoresHeroView.swift in Sources */,
-				CH07AA07BB07CC07DD07EE07 /* ChoresWeekStripView.swift in Sources */,
-				CH08AA08BB08CC08DD08EE08 /* ChoresStatsBar.swift in Sources */,
-				CH09AA09BB09CC09DD09EE09 /* ChoresCategoriesView.swift in Sources */,
-				CH10AA10BB10CC10DD10EE10 /* ChoresAddSheet.swift in Sources */,
-				CH11AA11BB11CC11DD11EE11 /* ChoresManageSheet.swift in Sources */,
-				CH12AA12BB12CC12DD12EE12 /* ChoreTypeFormSheet.swift in Sources */,
+				CH04AA04BB04CC04DD04EE04 /* HouseViewModel.swift in Sources */,
+				CH05AA05BB05CC05DD05EE05 /* HouseTabView.swift in Sources */,
+				CH06AA06BB06CC06DD06EE06 /* HouseHeroView.swift in Sources */,
+				CH07AA07BB07CC07DD07EE07 /* HouseChoreListView.swift in Sources */,
+				CH08AA08BB08CC08DD08EE08 /* HouseStatsBar.swift in Sources */,
+				CH09AA09BB09CC09DD09EE09 /* HouseCategoriesView.swift in Sources */,
+				CH10AA10BB10CC10DD10EE10 /* HouseChoreActionSheet.swift in Sources */,
+				CH11AA11BB11CC11DD11EE11 /* HouseManageSheet.swift in Sources */,
+				CH12AA12BB12CC12DD12EE12 /* HouseChoreTypeFormSheet.swift in Sources */,
+				CH14AA14BB14CC14DD14EE14 /* HouseWeekStripView.swift in Sources */,
+				CH15AA15BB15CC15DD15EE15 /* HouseDayPlanSheet.swift in Sources */,
+				SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */,
+				SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */,
+				SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */,
+				SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */,
+				SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */,
+				SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */,
+				SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */,
+				SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */,
+				SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -817,9 +897,10 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -841,6 +922,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.10;
@@ -883,9 +965,10 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -900,6 +983,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.10;
@@ -912,7 +996,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Choo/Choo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				INFOPLIST_FILE = Choo/Info.plist;
 				INFOPLIST_GENERATION_MODE = GeneratedByXcode;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -931,7 +1014,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Choo/Choo.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				INFOPLIST_FILE = Choo/Info.plist;
 				INFOPLIST_GENERATION_MODE = GeneratedByXcode;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -949,7 +1031,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ChooShareExtension/ChooShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				INFOPLIST_FILE = ChooShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -970,7 +1051,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = ChooShareExtension/ChooShareExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = V4NUPMNDU4;
 				INFOPLIST_FILE = ChooShareExtension/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
