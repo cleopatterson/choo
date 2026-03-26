@@ -12,6 +12,7 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +22,7 @@ jobs:
       - name: Fix bug with Claude Code
         uses: anthropics/claude-code-action@v1
         with:
-          use_oauth: true
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             You are fixing a bug report from the Choo family hub iOS app.
             Read the linked GitHub issue for full details.
@@ -40,4 +41,3 @@ jobs:
             - Views: Choo/Views/
             - Services: Choo/Services/
             - Web app: choo-web/src/
-          direct_prompt: true
