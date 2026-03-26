@@ -1,12 +1,16 @@
 name: Claude Code Bug Fix
 
 on:
+  issue_comment:
+    types: [created]
   issues:
     types: [labeled]
 
 jobs:
   fix-bug:
-    if: github.event.label.name == 'bug-report'
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'issues' && github.event.label.name == 'bug-report')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,21 +27,4 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          prompt: |
-            You are fixing a bug report from the Choo family hub iOS app.
-            Read the linked GitHub issue for full details.
-
-            Instructions:
-            1. Read docs/DESIGN_SYSTEM.md for UI conventions.
-            2. The app is SwiftUI (iOS 17+), uses @Observable ViewModels (not ObservableObject),
-               @Bindable in views, FirestoreService as central data layer.
-            3. Read the relevant source files implied by the bug description.
-            4. Identify the root cause and implement a fix.
-            5. Follow existing code patterns — check similar files for style.
-
-            Key paths:
-            - Models: Choo/Models/
-            - ViewModels: Choo/ViewModels/
-            - Views: Choo/Views/
-            - Services: Choo/Services/
-            - Web app: choo-web/src/
+          trigger_phrase: "@claude"
