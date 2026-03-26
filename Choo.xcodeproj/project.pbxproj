@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		20301FA57EDE4F6089F3AF3E /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
-		9B17334A253E4872AA0B997A /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
-		0D84A1D120864E5D99FC0906 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
-		6192100F86C5481D9ED120A9 /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
-		20C25EA2E27E4FF6B85BB3ED /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
-		D92729E5ED3347D8952B9E50 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
 		084B608C2059387BAB27B341 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5C1F5794F7C17CC413EF39 /* Family.swift */; };
 		08C7369D0F81E6F0AEE398AE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 73832FD5F89D92BEC7C179ED /* FirebaseAuth */; };
 		11692FD12F4584CF00C75371 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 11692FD02F4584CF00C75371 /* FirebaseMessaging */; };
@@ -23,6 +17,7 @@
 		17E8615C6900DD6ACF8ED712 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001192C619E71C637DFE1367 /* MainTabView.swift */; };
 		182EC30ED37D6FD10554B770 /* AccountTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043C8F162E2980E67863D623 /* AccountTabView.swift */; };
 		1A2B3C4D5E6F7A8B9C0D1E2F /* SharedUserContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A2A3A4A5A6A7A8A9B0B1B2 /* SharedUserContext.swift */; };
+		20C25EA2E27E4FF6B85BB3ED /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
 		247EFC4B223AB211481BA1CA /* FamilySetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */; };
 		2B3C4D5E6F7A8B9C0D1E2F3A /* PendingShareManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1B2B3B4B5B6B7B8B9C0C1C2 /* PendingShareManager.swift */; };
 		3C4D5E6F7A8B9C0D1E2F3A4B /* AddShoppingItemIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D2D3D4D5D6D7D8D9E0E1E2 /* AddShoppingItemIntent.swift */; };
@@ -34,6 +29,7 @@
 		56DCDBE90F095C4C2321957A /* ChooApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B90DF107D1C79EB5F8344E00 /* ChooApp.swift */; };
 		5948BD525B77304B4031F7FB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5A180F4D7B41624CE4F3F8FC /* GoogleService-Info.plist */; };
 		5E6F7A8B9C0D1E2F3A4B5C6D /* ChooShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F2F3F4F5F6F7F8F9A0A1A2 /* ChooShortcuts.swift */; };
+		6192100F86C5481D9ED120A9 /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
 		645011972BB595A0086E69C8 /* String+Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0810EFAEA0F035B0D6C4777F /* String+Validation.swift */; };
 		6AC392470206C411003B8AD5 /* ShoppingTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */; };
 		6F28C02E8672143B8C90505C /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B877E586D3AF4287BA20A89F /* LoadingView.swift */; };
@@ -53,7 +49,6 @@
 		B71F3753AF30EB9207C04F18 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C51136155B81ECF1A4075B5 /* ErrorBannerView.swift */; };
 		BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01BB02CC03DD04EE05FF06 /* Secrets.swift */; };
 		BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */; };
-		HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */; };
 		BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */; };
 		BB31CC32DD33EE34FF35AA36 /* WeeklyBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */; };
 		BB41CC42DD43EE44FF45AA46 /* WeeklyBriefingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */; };
@@ -92,20 +87,11 @@
 		CH13AA13BB13CC13DD13EE13 /* ChoreCompletion.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */; };
 		CH14AA14BB14CC14DD14EE14 /* HouseWeekStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH14AA14BB14CC14DD14FF14 /* HouseWeekStripView.swift */; };
 		CH15AA15BB15CC15DD15EE15 /* HouseDayPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH15AA15BB15CC15DD15FF15 /* HouseDayPlanSheet.swift */; };
-		SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */; };
-		SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */; };
-		SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */; };
-		SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */; };
-		SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */; };
-		SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */; };
-		SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */; };
-		SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */; };
-		SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */; };
-		NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */; };
 		D353641979177AEEFD928218 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9327671FF1BE49FDA994712F /* AuthViewModel.swift */; };
 		D4E5F6A7B8C90A31425364B5 /* NotesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */; };
 		D4F5A6B7C8E93AB524D6E7F8 /* CalendarSourcesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E4F5A6B7D829A413C5D6E7 /* CalendarSourcesView.swift */; };
 		D5E6F7A8B9CA0B1C2D3E4F5A /* NSWHolidays.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */; };
+		D92729E5ED3347D8952B9E50 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
 		D9A1B2C3E4F506172839ABCD /* MemberAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C3D4F5A617283940BCDE /* MemberAvatarView.swift */; };
 		DB01BB01CC01DD01EE01FF01 /* DinnerBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */; };
 		E0A69EB92008784552707E65 /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */; };
@@ -114,6 +100,7 @@
 		E8A7A04F6D54AB6F69708FA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 641A8036E05FE462ABFA13A6 /* Assets.xcassets */; };
 		E9F1A2B3C4D5068E7F901B2C /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A8E9F1B2C3046D5E8F7A91 /* NotificationService.swift */; };
 		EE01FF02AA03BB04CC05DD06 /* ExerciseTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */; };
+		EOB1AA01BB01CC01DD01EE01 /* ExerciseOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */; };
 		EX01AA01BB01CC01DD01EE01 /* ExerciseCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */; };
 		EX02AA02BB02CC02DD02EE02 /* ExercisePlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */; };
 		EX03AA03BB03CC03DD03EE03 /* ExerciseBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */; };
@@ -124,17 +111,27 @@
 		EX08AA08BB08CC08DD08EE08 /* ExerciseStatsBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */; };
 		EX09AA09BB09CC09DD09EE09 /* ExerciseCategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */; };
 		EX10AA10BB10CC10DD10EE10 /* ExerciseAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */; };
-		EXDP0AA0BB0CC0DD0EE0 /* ExerciseDayPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */; };
 		EX11AA11BB11CC11DD11EE11 /* ExerciseManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */; };
 		EX12AA12BB12CC12DD12EE12 /* SessionTypeFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */; };
+		EXDP0AA0BB0CC0DD0EE0 /* ExerciseDayPlanSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */; };
 		F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B4C5D6E7F819203142DEFA /* EventDetailView.swift */; };
 		F2E1D0C9B8A7F6E5D4C3B2A1 /* ConfettiView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* ConfettiView.swift */; };
 		F412CB9E7DFCE7CD26ABC735 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 460AC73DC67EB151644A7C40 /* SignUpView.swift */; };
 		F6A7B8C9DAEB0C53647586D7 /* NoteEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6D7E8F9AABB0C5364758697 /* NoteEditorView.swift */; };
 		HC01BB01CC01DD01EE01FF01 /* HeroCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HC01BB01CC01DD01EE01AA01 /* HeroCardView.swift */; };
+		HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */; };
+		NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */; };
+		SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */; };
+		SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */; };
+		SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */; };
+		SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */; };
+		SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */; };
+		SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */; };
+		SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */; };
+		SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */; };
+		SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */; };
 		TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */ = {isa = PBXBuildFile; fileRef = TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */; };
 		WPM1AA01BB01CC01DD01EE01 /* WeekPlanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */; };
-		EOB1AA01BB01CC01DD01EE01 /* ExerciseOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -162,9 +159,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportEditorView.swift; sourceTree = "<group>"; };
-		ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportsViewModel.swift; sourceTree = "<group>"; };
-		FB8B1D3D30BB47D4B8876586 /* BugReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReport.swift; sourceTree = "<group>"; };
 		001192C619E71C637DFE1367 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		043C8F162E2980E67863D623 /* AccountTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTabView.swift; sourceTree = "<group>"; };
 		0810EFAEA0F035B0D6C4777F /* String+Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Validation.swift"; sourceTree = "<group>"; };
@@ -174,6 +168,7 @@
 		11692FD62F45861A00C75371 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		12F4BD804C1D091A627301E6 /* Note.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Note.swift; sourceTree = "<group>"; };
 		1FB007C6BFC93EF90F09CFF2 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportEditorView.swift; sourceTree = "<group>"; };
 		2B209CC975714FEF95B77FB1 /* ShoppingItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingItem.swift; sourceTree = "<group>"; };
 		460AC73DC67EB151644A7C40 /* SignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView.swift; sourceTree = "<group>"; };
 		4CE1A5AE3BEFE3AF8642115B /* NotesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesTabView.swift; sourceTree = "<group>"; };
@@ -187,7 +182,6 @@
 		8D007C8A0C198F144744F379 /* ShoppingList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingList.swift; sourceTree = "<group>"; };
 		9327671FF1BE49FDA994712F /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		A1A2A3A4A5A6A7A8A9B0B1B2 /* SharedUserContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedUserContext.swift; sourceTree = "<group>"; };
-		NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* ConfettiView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfettiView.swift; sourceTree = "<group>"; };
 		A1C2D3E4F5B6078291A3B4C5 /* DeviceCalendarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCalendarService.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
@@ -203,7 +197,6 @@
 		AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEditView.swift; sourceTree = "<group>"; };
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
 		AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySetupView.swift; sourceTree = "<group>"; };
-		HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefing.swift; sourceTree = "<group>"; };
 		AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefingViewModel.swift; sourceTree = "<group>"; };
@@ -217,6 +210,7 @@
 		AAC1BBC2CCC3DDC4EEC5FFC6 /* AlsoThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlsoThisWeekView.swift; sourceTree = "<group>"; };
 		AAD1BBD2CCD3DDD4EED5FFD6 /* NextWeekPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextWeekPreviewView.swift; sourceTree = "<group>"; };
 		AAE1BBE2CCE3DDE4EEE5FFE6 /* BriefingPagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingPagerView.swift; sourceTree = "<group>"; };
+		ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportsViewModel.swift; sourceTree = "<group>"; };
 		B1B2B3B4B5B6B7B8B9C0C1C2 /* PendingShareManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingShareManager.swift; sourceTree = "<group>"; };
 		B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingTabView.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* AddBillIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddBillIntent.swift; sourceTree = "<group>"; };
@@ -246,15 +240,6 @@
 		CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChoreCompletion.swift; sourceTree = "<group>"; };
 		CH14AA14BB14CC14DD14FF14 /* HouseWeekStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseWeekStripView.swift; sourceTree = "<group>"; };
 		CH15AA15BB15CC15DD15FF15 /* HouseDayPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseDayPlanSheet.swift; sourceTree = "<group>"; };
-		SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItem.swift; sourceTree = "<group>"; };
-		SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViewModel.swift; sourceTree = "<group>"; };
-		SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientReviewSheet.swift; sourceTree = "<group>"; };
-		SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunDoneSheet.swift; sourceTree = "<group>"; };
-		SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyEditSheet.swift; sourceTree = "<group>"; };
-		SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesSectionView.swift; sourceTree = "<group>"; };
-		SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyAddSheet.swift; sourceTree = "<group>"; };
-		SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItemFormSheet.swift; sourceTree = "<group>"; };
-		SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyCategoryManageSheet.swift; sourceTree = "<group>"; };
 		D1D2D3D4D5D6D7D8D9E0E1E2 /* AddShoppingItemIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddShoppingItemIntent.swift; sourceTree = "<group>"; };
 		D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingViewModel.swift; sourceTree = "<group>"; };
 		D4633E5B8EAC81D83F51316C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -266,6 +251,7 @@
 		E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChooShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE11FF12AA13BB14CC15DD16 /* ExerciseTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseTabView.swift; sourceTree = "<group>"; };
 		EE5C1F5794F7C17CC413EF39 /* Family.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Family.swift; sourceTree = "<group>"; };
+		EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseOnboardingView.swift; sourceTree = "<group>"; };
 		EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCategory.swift; sourceTree = "<group>"; };
 		EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisePlan.swift; sourceTree = "<group>"; };
 		EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseBriefing.swift; sourceTree = "<group>"; };
@@ -276,17 +262,28 @@
 		EX08AA08BB08CC08DD08FF08 /* ExerciseStatsBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseStatsBar.swift; sourceTree = "<group>"; };
 		EX09AA09BB09CC09DD09FF09 /* ExerciseCategoriesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseCategoriesView.swift; sourceTree = "<group>"; };
 		EX10AA10BB10CC10DD10FF10 /* ExerciseAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseAddSheet.swift; sourceTree = "<group>"; };
-		EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDayPlanSheet.swift; sourceTree = "<group>"; };
 		EX11AA11BB11CC11DD11FF11 /* ExerciseManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseManageSheet.swift; sourceTree = "<group>"; };
 		EX12AA12BB12CC12DD12FF12 /* SessionTypeFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTypeFormSheet.swift; sourceTree = "<group>"; };
+		EXDP0AA0BB0CC0DD0FF0 /* ExerciseDayPlanSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseDayPlanSheet.swift; sourceTree = "<group>"; };
 		F1F2F3F4F5F6F7F8F9A0A1A2 /* ChooShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooShortcuts.swift; sourceTree = "<group>"; };
 		F3A4B5C6D7E8092031425364 /* CalendarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewModel.swift; sourceTree = "<group>"; };
 		F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilyMember.swift; sourceTree = "<group>"; };
 		F987C7B40D1ECF03EE3124C6 /* Choo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Choo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FB8B1D3D30BB47D4B8876586 /* BugReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReport.swift; sourceTree = "<group>"; };
 		HC01BB01CC01DD01EE01AA01 /* HeroCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroCardView.swift; sourceTree = "<group>"; };
+		HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
+		SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItem.swift; sourceTree = "<group>"; };
+		SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViewModel.swift; sourceTree = "<group>"; };
+		SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientReviewSheet.swift; sourceTree = "<group>"; };
+		SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunDoneSheet.swift; sourceTree = "<group>"; };
+		SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyEditSheet.swift; sourceTree = "<group>"; };
+		SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesSectionView.swift; sourceTree = "<group>"; };
+		SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyAddSheet.swift; sourceTree = "<group>"; };
+		SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItemFormSheet.swift; sourceTree = "<group>"; };
+		SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyCategoryManageSheet.swift; sourceTree = "<group>"; };
 		TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabAccent.swift; sourceTree = "<group>"; };
 		WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekPlanManager.swift; sourceTree = "<group>"; };
-		EOB1AA01BB01CC01DD01FF01 /* ExerciseOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseOnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -407,7 +404,7 @@
 				99CDEBDAE43B9C78BDD8B76C /* Account */,
 				46416607ACE096F691C2FBF2 /* Auth */,
 				44F48C33483D2DC930D8C5B3 /* Calendar */,
-				CH21FF22AA23BB24CC25DD26 /* Chores */,
+				CH21FF22AA23BB24CC25DD26 /* House */,
 				EE21FF22AA23BB24CC25DD26 /* Exercise */,
 				0BB5AE61C29F8400E28FDCCF /* Main */,
 				AF0C70BED3863CF96FB75837 /* Notes */,
@@ -632,6 +629,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 61B2FCDC346547A519D05E0D /* Build configuration list for PBXNativeTarget "Choo" */;
 			buildPhases = (
+				118B6DCF2F74DF2E0084480A /* ShellScript */,
 				FB0A418F05C3CEFC92D1666D /* Sources */,
 				E67910D545BFB09E9A1159B9 /* Resources */,
 				A397E53BABFCA813E9274466 /* Frameworks */,
@@ -718,6 +716,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		118B6DCF2F74DF2E0084480A /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"$SRCROOT/..\" && HOME=/Users/tonywall git pull --ff-only 2>&1 | tee /tmp/xcode-git-pull.log || true\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		CD3E4F5A6B7C8D9E0F1A2B3C /* Sources */ = {
