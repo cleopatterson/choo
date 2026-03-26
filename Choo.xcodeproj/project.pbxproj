@@ -358,7 +358,7 @@
 				CH04AA04BB04CC04DD04FF04 /* HouseViewModel.swift */,
 				AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */,
 				EX04AA04BB04CC04DD04FF04 /* ExerciseViewModel.swift */,
-				A4B5C6D7E8F90A3142536475 /* 
+				A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */,
 				ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */,
 				D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */,
 				SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */,
@@ -447,7 +447,7 @@
 				6286BA6AF6CB781455502EFE /* FamilyEvent.swift */,
 				F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */,
 				AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */,
-				12F4BD804C1D091A627301E6 /* 
+				12F4BD804C1D091A627301E6 /* Note.swift */,
 				FB8B1D3D30BB47D4B8876586 /* BugReport.swift */,
 				C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */,
 				AA02BB03CC04DD05EE06FF07 /* Recipe.swift */,
@@ -475,7 +475,7 @@
 		AF0C70BED3863CF96FB75837 /* Notes */ = {
 			isa = PBXGroup;
 			children = (
-				C6D7E8F9AABB0C5364758697 /* 
+				C6D7E8F9AABB0C5364758697 /* NoteEditorView.swift */,
 				1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */,
 				4CE1A5AE3BEFE3AF8642115B /* NotesTabView.swift */,
 			);
