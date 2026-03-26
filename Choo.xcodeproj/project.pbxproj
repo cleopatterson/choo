@@ -10,6 +10,9 @@
 		20301FA57EDE4F6089F3AF3E /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
 		9B17334A253E4872AA0B997A /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
 		0D84A1D120864E5D99FC0906 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
+		6192100F86C5481D9ED120A9 /* BugReportEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB173FEB2DA4ED285466914 /* BugReportEditorView.swift */; };
+		20C25EA2E27E4FF6B85BB3ED /* BugReportsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */; };
+		D92729E5ED3347D8952B9E50 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
 		084B608C2059387BAB27B341 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5C1F5794F7C17CC413EF39 /* Family.swift */; };
 		08C7369D0F81E6F0AEE398AE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 73832FD5F89D92BEC7C179ED /* FirebaseAuth */; };
 		11692FD12F4584CF00C75371 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 11692FD02F4584CF00C75371 /* FirebaseMessaging */; };
@@ -722,9 +725,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC0D1E2F3A4B5C6D7E8F9A0B /* PendingShareManager.swift in Sources */,
-				20301FA57EDE4F6089F3AF3E /* BugReportEditorView.swift in Sources */,
-				9B17334A253E4872AA0B997A /* BugReportsViewModel.swift in Sources */,
-				0D84A1D120864E5D99FC0906 /* BugReport.swift in Sources */,
 				8B9C0D1E2F3A4B5C6D7E8F9A /* ShareFormView.swift in Sources */,
 				9C0D1E2F3A4B5C6D7E8F9A0B /* SharedUserContext.swift in Sources */,
 				7A8B9C0D1E2F3A4B5C6D7E8F /* ShareViewController.swift in Sources */,
@@ -736,6 +736,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				182EC30ED37D6FD10554B770 /* AccountTabView.swift in Sources */,
+				6192100F86C5481D9ED120A9 /* BugReportEditorView.swift in Sources */,
+				20C25EA2E27E4FF6B85BB3ED /* BugReportsViewModel.swift in Sources */,
+				D92729E5ED3347D8952B9E50 /* BugReport.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1A3 /* AddBillIntent.swift in Sources */,
 				4D5E6F7A8B9C0D1E2F3A4B5C /* AddEventIntent.swift in Sources */,
 				3C4D5E6F7A8B9C0D1E2F3A4B /* AddShoppingItemIntent.swift in Sources */,
