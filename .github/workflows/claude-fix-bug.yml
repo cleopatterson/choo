@@ -38,7 +38,6 @@ jobs:
             Key paths: Models (Choo/Models/), ViewModels (Choo/ViewModels/), Views (Choo/Views/), Services (Choo/Services/), Web app (choo-web/src/)
 
             Create a pull request with the fix.
-          direct_prompt: true
 
   # Also respond to @claude mentions in comments for follow-up
   comment-fix:
