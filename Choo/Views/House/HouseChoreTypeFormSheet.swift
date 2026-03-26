@@ -53,7 +53,7 @@ struct HouseChoreTypeFormSheet: View {
                     HStack {
                         Text("Duration")
                         Spacer()
-                        Stepper("\(durationMinutes) min", value: $durationMinutes, in: 0...480, step: 5)
+                        Stepper("\(durationMinutes) min", value: $durationMinutes, in: 0...480, step: 15)
                             .fixedSize()
                     }
 
