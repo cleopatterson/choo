@@ -20,9 +20,8 @@ jobs:
 
       - name: Fix bug with Claude Code
         uses: anthropics/claude-code-action@v1
-        env:
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
         with:
+          use_oauth: true
           prompt: |
             You are fixing a bug report from the Choo family hub iOS app.
             Read the linked GitHub issue for full details.
