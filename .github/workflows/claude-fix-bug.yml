@@ -7,10 +7,9 @@ on:
     types: [labeled]
 
 jobs:
-  fix-bug:
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'issues' && github.event.label.name == 'bug-report')
+  # Auto-fix when bug-report label is added (from Cloud Function)
+  auto-fix:
+    if: github.event_name == 'issues' && github.event.label.name == 'bug-report'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -23,7 +22,40 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fix bug with Claude Code
+      - name: Auto-fix bug with Claude Code
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Fix the bug described in this issue. Read the issue title and body for details.
+
+            The app is a SwiftUI iOS family hub app (iOS 17+). Key conventions:
+            - @Observable ViewModels (not ObservableObject), @Bindable in views
+            - FirestoreService is the central data layer
+            - Dark mode glassmorphism design — see docs/DESIGN_SYSTEM.md
+            - Week starts Monday
+
+            Key paths: Models (Choo/Models/), ViewModels (Choo/ViewModels/), Views (Choo/Views/), Services (Choo/Services/), Web app (choo-web/src/)
+
+            Create a pull request with the fix.
+          direct_prompt: true
+
+  # Also respond to @claude mentions in comments for follow-up
+  comment-fix:
+    if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Respond to Claude mention
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
