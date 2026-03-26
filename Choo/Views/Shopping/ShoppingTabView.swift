@@ -214,44 +214,30 @@ struct ShoppingTabView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
                 } else {
-                    // Item list with swipe support
-                    List {
+                    // Item list
+                    VStack(spacing: 0) {
                         ForEach(items) { item in
                             runItemRow(item)
-                                .listRowInsets(EdgeInsets())
-                                .listRowBackground(Color.clear)
-                                .listRowSeparator(.hidden)
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                                     Task { await viewModel.toggleItem(item) }
                                 }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button(role: .destructive) {
-                                        itemToDelete = item
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
+                                .contextMenu {
                                     Button {
                                         editText = item.name
                                         editingItem = item
                                     } label: {
                                         Label("Edit", systemImage: "pencil")
                                     }
-                                    .tint(.orange)
+                                    Button(role: .destructive) {
+                                        itemToDelete = item
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
                         }
-                        .onMove { source, destination in
-                            viewModel.moveItems(from: source, to: destination)
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                withAnimation { reorderMode = false }
-                            }
-                        }
                     }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .scrollDisabled(true)
-                    .frame(height: CGFloat(items.count) * 48)
                 }
 
                 // Quick add
