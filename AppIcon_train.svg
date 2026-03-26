@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background: Choo Purple -->
+  <rect width="1024" height="1024" rx="224" ry="224" fill="#8B5CF6"/>
+
+  <!-- Train - centered, simple outline style -->
+  <g fill="none" stroke="white" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" transform="translate(12, 40)">
+
+    <!-- Main carriage body -->
+    <rect x="230" y="370" width="420" height="240" rx="28"/>
+
+    <!-- Cabin/cab (taller section on right) -->
+    <rect x="510" y="280" width="140" height="330" rx="22"/>
+
+    <!-- Window on cabin -->
+    <rect x="540" y="316" width="80" height="64" rx="10"/>
+
+    <!-- Windows on carriage -->
+    <rect x="274" y="420" width="76" height="64" rx="10"/>
+    <rect x="390" y="420" width="76" height="64" rx="10"/>
+
+    <!-- Chimney/smokestack -->
+    <rect x="300" y="300" width="48" height="70" rx="10"/>
+
+    <!-- Steam puffs -->
+    <circle cx="324" cy="252" r="28"/>
+    <circle cx="282" cy="212" r="20"/>
+    <circle cx="258" cy="172" r="14"/>
+
+    <!-- Rail/track line -->
+    <line x1="160" y1="670" x2="864" y2="670"/>
+
+    <!-- Wheels -->
+    <circle cx="320" cy="650" r="46"/>
+    <circle cx="470" cy="650" r="46"/>
+    <circle cx="600" cy="650" r="46"/>
+
+    <!-- Wheel centers -->
+    <circle cx="320" cy="650" r="10" fill="white" stroke="none"/>
+    <circle cx="470" cy="650" r="10" fill="white" stroke="none"/>
+    <circle cx="600" cy="650" r="10" fill="white" stroke="none"/>
+
+    <!-- Front buffer/bumper -->
+    <path d="M230 540 L195 610 L230 610" />
+  </g>
+</svg>

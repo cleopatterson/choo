@@ -42,9 +42,8 @@ struct ChooApp: App {
               let familyId = SharedUserContext.familyId,
               let displayName = SharedUserContext.displayName else { return }
 
-        PendingShareManager.clearPendingNotes()
-
         Task {
+            var allSucceeded = true
             for note in pending {
                 do {
                     try await firestoreService.createNote(
@@ -54,8 +53,13 @@ struct ChooApp: App {
                         createdBy: displayName
                     )
                 } catch {
+                    allSucceeded = false
                     print("Failed to create shared note '\(note.title)': \(error.localizedDescription)")
                 }
+            }
+            // Only clear after all notes saved successfully to prevent data loss
+            if allSucceeded {
+                PendingShareManager.clearPendingNotes()
             }
         }
     }

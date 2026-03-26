@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 @Observable
 final class DinnerPlannerViewModel {
     let firestoreService: FirestoreService
@@ -8,6 +9,7 @@ final class DinnerPlannerViewModel {
     let displayName: String
 
     var selectedDayIndex: Int?    // 0-6, triggers recipe picker
+    var lastAssignedRecipe: Recipe?  // set after meal assignment for ingredient review
     var errorMessage: String?
     var briefingHeadline = "Dinners this week"
     var briefingSummary = ""
@@ -132,7 +134,7 @@ final class DinnerPlannerViewModel {
 
         do {
             try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-            await addRecipeToShoppingList(recipe)
+            lastAssignedRecipe = recipe
             debounceBriefingRegeneration()
         } catch {
             errorMessage = error.localizedDescription
@@ -170,44 +172,6 @@ final class DinnerPlannerViewModel {
     }
 
     // MARK: - Shopping List Sync
-
-    private func addRecipeToShoppingList(_ recipe: Recipe) async {
-        guard let recipeId = recipe.id,
-              let listId = firestoreService.shoppingLists.first?.id else { return }
-
-        // Skip if this recipe's items are already in the list
-        let existingRecipeItems = firestoreService.shoppingItems
-            .filter { $0.sourceRecipeId == recipeId }
-        guard existingRecipeItems.isEmpty else { return }
-
-        // Existing item names for dedup (e.g. "Veggies" from another recipe)
-        let existingNames = Set(firestoreService.shoppingItems.map {
-            $0.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        })
-
-        let nextOrder = (firestoreService.shoppingItems.compactMap { $0.sortOrder }.max() ?? -1) + 1
-        var items: [(name: String, quantity: String?, sortOrder: Int)] = []
-
-        for ingredient in recipe.ingredients {
-            let key = ingredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !existingNames.contains(key) else { continue }
-            items.append((name: ingredient.name, quantity: ingredient.quantity, sortOrder: nextOrder + items.count))
-        }
-
-        guard !items.isEmpty else { return }
-
-        do {
-            try await firestoreService.addShoppingItemsFromRecipeBatch(
-                familyId: familyId,
-                listId: listId,
-                items: items,
-                addedBy: displayName,
-                sourceRecipeId: recipeId
-            )
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-    }
 
     private func removeRecipeFromShoppingList(recipeId: String) async {
         guard let listId = firestoreService.shoppingLists.first?.id else { return }
@@ -273,6 +237,136 @@ final class DinnerPlannerViewModel {
 
     var todayRecipe: Recipe? {
         todayAssignment.flatMap { recipe(for: $0) }
+    }
+
+    // MARK: - Auto-Plan
+
+    func autoPlanWeek() async throws {
+        let context = buildAutoPlanContext()
+        let contextJSON = try JSONEncoder().encode(context)
+        let contextString = String(data: contextJSON, encoding: .utf8) ?? "{}"
+
+        let system = """
+        You are a household dinner coordinator for an Australian family. You plan \
+        what to cook each night based on available cooking time and meal variety.
+
+        You receive a JSON context with:
+        - week_start: the Monday date for this week
+        - recipes: all available meals with prep_time_minutes, cuisine, and last_cooked_days_ago
+        - last_week_recipe_ids: recipes cooked last week (avoid repeating)
+        - days: per-day info with evening_free_minutes and evening_events
+
+        Respond with JSON only, no other text:
+        {
+          "plan": [
+            {"day": 0, "recipe_id": "some-id"},
+            {"day": 1, "recipe_id": "another-id"},
+            ...
+          ]
+        }
+
+        Rules:
+        1. day is 0-6 (Monday=0 through Sunday=6)
+        2. You MUST plan ALL 7 days — every single day must have a recipe_id
+        3. Use recipe_id from the provided recipes list — never invent IDs
+        4. Include "Bitsa" (fend-for-yourself / leftovers) exactly once per week — \
+        ideally on a busy evening, midweek, or when the family is eating out
+        5. If a day's evening_events contains a "Dinner with..." event, the family is \
+        eating out — assign Bitsa to that night (nobody needs to cook)
+        6. Never suggest a meal whose prep time exceeds the evening's free time
+        7. Exclude recipes from last_week_recipe_ids where possible
+        8. Prioritise recipes with higher last_cooked_days_ago (variety)
+        9. No same-cuisine meals on consecutive nights
+        10. Keep big-cook meals (prep 60+ min) for weekends when there's more time
+        11. Include at least one fish night per week (any recipe with "Fish" in the name)
+        12. Balance the week: mix easy and medium effort, light and rich
+        """
+
+        let response: DinnerAutoPlanResponse = try await claudeService.callClaudeJSON(
+            system: system,
+            prompt: contextString,
+            maxTokens: 600
+        )
+
+        // Map AI response to MealAssignments
+        let recipes = firestoreService.recipes
+        var newAssignments: [String: MealAssignment] = [:]
+
+        for entry in response.plan {
+            let dayKey = String(entry.day)
+            if let recipeId = entry.recipe_id,
+               let recipe = recipes.first(where: { $0.id == recipeId }) {
+                newAssignments[dayKey] = MealAssignment(
+                    recipeId: recipeId,
+                    recipeName: recipe.name,
+                    recipeIcon: recipe.icon
+                )
+            }
+        }
+
+        guard !newAssignments.isEmpty else { return }
+
+        let plan = MealPlan(
+            familyId: familyId,
+            weekStart: weekStart,
+            assignments: newAssignments
+        )
+
+        try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
+        debounceBriefingRegeneration()
+    }
+
+    private func buildAutoPlanContext() -> DinnerPlanContext {
+        let recipes = firestoreService.recipes
+        let events = firestoreService.events
+        let now = Date()
+
+        // Build recipe info with last-cooked tracking
+        let allMealPlans = [firestoreService.currentMealPlan, firestoreService.lastWeekMealPlan].compactMap { $0 }
+        let recentRecipeIds = Set(allMealPlans.flatMap { $0.assignments.values.map(\.recipeId) })
+
+        let recipeInfos: [DinnerPlanContext.RecipeInfo] = recipes.compactMap { recipe in
+            guard let id = recipe.id else { return nil }
+            let lastCookedDaysAgo = recentRecipeIds.contains(id) ? 3 : 14  // Simplified: recent = 3d, not recent = 14d
+            return DinnerPlanContext.RecipeInfo(
+                id: id,
+                name: recipe.name,
+                prep_time_minutes: recipe.prepTimeMinutes ?? 30,
+                cuisine: recipe.cuisine ?? "other",
+                last_cooked_days_ago: lastCookedDaysAgo
+            )
+        }
+
+        // Build per-day info
+        let dayInfos: [DinnerPlanContext.DayInfo] = (0..<7).map { dayIndex in
+            let date = weekDays[dayIndex]
+            let dayEvents = events.filter { event in
+                calendar.isDate(event.startDate, inSameDayAs: date)
+            }
+            // Estimate evening free minutes: assume 120 min available, subtract evening events (17:00-21:00)
+            let eveningMinutes = dayEvents.reduce(0) { total, event in
+                let hour = calendar.component(.hour, from: event.startDate)
+                guard hour >= 17 else { return total }
+                let duration = event.endDate.timeIntervalSince(event.startDate) / 60
+                return total + Int(duration)
+            }
+            let freeMinutes = max(0, 120 - eveningMinutes)
+
+            let eventTitles = dayEvents.map(\.title)
+
+            return DinnerPlanContext.DayInfo(
+                day: dayIndex,
+                evening_free_minutes: freeMinutes,
+                evening_events: eventTitles
+            )
+        }
+
+        return DinnerPlanContext(
+            week_start: Self.dayFormatter.string(from: weekStart),
+            recipes: recipeInfos,
+            last_week_recipe_ids: Array(lastWeekRecipeIds),
+            days: dayInfos
+        )
     }
 
     // MARK: - AI Briefing
@@ -440,4 +534,37 @@ final class DinnerPlannerViewModel {
         f.dateFormat = "EEE d"
         return f
     }()
+}
+
+// MARK: - Auto-Plan Models
+
+struct DinnerPlanContext: Encodable {
+    var week_start: String
+    var recipes: [RecipeInfo]
+    var last_week_recipe_ids: [String]
+    var days: [DayInfo]
+
+    struct RecipeInfo: Encodable {
+        var id: String
+        var name: String
+        var prep_time_minutes: Int
+        var cuisine: String
+        var last_cooked_days_ago: Int
+    }
+
+    struct DayInfo: Encodable {
+        var day: Int
+        var evening_free_minutes: Int
+        var evening_events: [String]
+    }
+}
+
+struct DinnerAutoPlanResponse: Decodable {
+    var plan: [DinnerDayPlan]
+
+    struct DinnerDayPlan: Decodable {
+        var day: Int
+        var recipe_id: String?
+        var status: String?
+    }
 }

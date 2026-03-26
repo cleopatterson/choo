@@ -1,0 +1,238 @@
+EXERCISE TAB — IMPLEMENTATION BRIEF
+=====================================
+
+I need to add a new Exercise tab for weekly exercise planning. This follows the same patterns already established in two existing tabs: the Calendar tab (which has a Weekly Briefing feature with an AI-generated editorial summary) and the Shopping tab (which has a Dinner This Week planner at the top with horizontally scrollable day cards).
+
+I have an HTML prototype to share as visual reference. Please follow it closely for layout, spacing, and interaction patterns.
+
+
+APP CONTEXT
+-----------
+- SwiftUI app with dark purple/magenta theme (#1a0e2e background, #241540 card backgrounds)
+- Teal (#4ecdc4) as the primary accent colour
+- Uses standard emoji throughout instead of custom icons
+- Existing tabs: Calendar, Shopping, Notes, Profile — Exercise is being added as a 5th tab (💪 icon)
+- Claude API (Haiku model) is already integrated for the Calendar tab's weekly briefing
+
+
+WHAT THE USER SEES (top to bottom)
+-----------------------------------
+
+1. HEADER
+   - "Exercise" title (28px, bold) with "Week of [date range]" subtitle
+   - Settings gear icon top-right
+   - Matches the header pattern used on Shopping and Calendar tabs
+
+2. AI WEEKLY BRIEFING 
+   - This MUST match the editorial treatment from the Calendar tab's Weekly Briefing
+   - Dark gradient card (bg-card blending to slightly lighter purple)
+   - Subtle radial gradient glow in top-right corner (teal, low opacity)
+   - Small "✦ Weekly briefing" badge in teal, uppercase, letterspaced — subtle, not prominent
+   - A punchy editorial HEADLINE (21px, bold) e.g. "Strong week — Thursday's the big one"
+     - The headline should use <em> / italic for emphasis on one phrase, rendered in teal
+     - Headlines should be short, editorial, magazine-style — not generic motivation
+   - A SUBTEXT paragraph (14px, regular weight, text-mid colour) — 3-4 sentences that:
+     - References actual session names and days specifically
+     - Comments on balance, variety, sequencing (e.g. "Yin Yoga bookends on Mon and Fri frame the heavier mid-week")
+     - Flags anything to watch (e.g. "Keep Wednesday's swim easy before Thursday's 10k")
+     - Notes gaps or suggestions naturally within the prose (e.g. "No lower body weights — Tuesday arvo has room")
+   - NO coach label, NO avatar, NO tags/pills, NO tip box — just headline and subtext
+   - Same regeneration pattern as the Calendar briefing: generates once per week, refreshes if schedule changes, 30-second debounce, shimmer animation while loading
+
+3. TODAY'S HERO CARD
+   - Green gradient background (linear-gradient from #1b4332 through #2d6a4f to #40916c)
+   - Teal border accent
+   - Radial glow in top-right corner
+   - Shows the next upcoming session for today:
+     - Small uppercase label: "UP NEXT · THIS MORNING" (teal)
+     - Session name large (22px bold): e.g. "Yin Yoga"
+     - Detail line: "Deep stretches & recovery · 45 min"
+     - Floating emoji (42px) in top-right with gentle bob animation (3s ease-in-out infinite, 6px translateY)
+   - Pill badges at bottom: time of day + what else is on today (e.g. "🏃 Run at lunch too")
+
+4. THIS WEEK — HORIZONTAL SCROLL DAY CARDS
+   - This follows the SAME horizontal scroll pattern as the Dinner This Week cards on the Shopping tab
+   - Section header: "This Week" with "Edit week ›" link
+   - Horizontally scrollable row of 7 day cards, each 130px wide
+   - Each card has:
+     - Header: day name (Mon/Tue/etc) + date number
+     - Stacked session slots showing what's planned for that day
+   - Each session slot within a card shows:
+     - Category colour bar on left edge (3px solid border-left)
+     - Category emoji (16px)
+     - Category label (10px uppercase, dim)
+     - Session type name (11px, truncated with ellipsis if needed)
+     - Time of day label (9px, dim): Morning / Lunch / Arvo
+   - Empty slots show a dashed "+ Add" button
+   - Today's card: teal border, subtle teal gradient from top, teal day name
+   - Past days: 0.5 opacity (matching the Calendar tab's fade-through pattern)
+   - Rest days show a 😴 emoji with "Rest day" text in dim colour
+   - Tapping a card opens the bottom sheet to add/edit sessions
+
+5. STATS BAR
+   - 3 compact stat chips in a row (matching the Shopping tab's stats bar pattern)
+   - "Sessions" count (teal accent), "Categories" count, "Rest days" count
+   - Each chip: bg-card background, border, centered number + uppercase label
+
+6. YOUR CATEGORIES (accordion section)
+   - Section header: "Your Categories" with "+ Add category" link
+   - Each category is a collapsible card:
+     - Header row: emoji in coloured background pill + category name + session type count + "N× this week" badge (teal) + chevron
+     - Tapping header expands/collapses the card
+     - Expanded content shows all session types for that category:
+       - Each type: colour dot + name + description + scheduled count (if any)
+       - "+ Add [category] type" dashed button at bottom
+   - First category starts expanded, rest collapsed
+
+   Category colour mapping:
+   - Yoga: 🧘 teal (#4ecdc4)
+   - Run: 🏃 orange (#f39c12)
+   - Swim: 🏊 blue (#74b9ff)
+   - Weights: 🏋️ red (#ff6b6b)
+   - Pilates: 🤸 pink (#e84393)
+
+   Each category colour has a soft variant (15% opacity) used for emoji background pills and badges.
+
+
+INTERACTION: ADDING A SESSION (bottom sheet)
+--------------------------------------------
+
+This is a two-step bottom sheet (slides up from bottom, dark card background, drag handle, overlay behind):
+
+STEP 1 — Pick time slot + category:
+- Time slot picker: 3 horizontal pills (Morning ☀️ / Lunch 🌤️ / Arvo 🌅)
+  - Default selected: Morning
+  - Selected state: teal border, teal-soft background, teal text
+- Category list: each option shows emoji in coloured pill + category name + comma-separated list of types
+- "Rest day" option at bottom (reduced opacity, 😴 icon)
+
+STEP 2 — Pick session type:
+- "‹ Back" link in teal
+- Title: "Pick a [category] session"
+- Subtitle: "For [Day] [time]"
+- List of session types for the chosen category, each showing colour dot + name + description
+- Tapping a type assigns it and closes the sheet
+
+
+DATA MODEL
+----------
+
+ExerciseCategory:
+  - id: UUID
+  - name: String (e.g. "Yoga")
+  - emoji: String (e.g. "🧘")
+  - colour: Color (the accent colour for this category)
+  - sessionTypes: [SessionType]
+
+SessionType:
+  - id: UUID
+  - name: String (e.g. "Yin Yoga")
+  - description: String (e.g. "Deep stretches · 45 min · Recovery")
+  - categoryId: UUID
+
+ExerciseSlot:
+  - id: UUID
+  - dayOfWeek: Int (0=Monday, 6=Sunday)
+  - timeSlot: TimeSlot enum (morning, lunch, arvo)
+  - sessionTypeId: UUID (references a SessionType)
+
+WeekPlan:
+  - weekStartDate: Date
+  - slots: [ExerciseSlot]
+  - restDays: Set<Int> (day indices marked as rest)
+
+The user creates categories and session types once, then reuses them each week by assigning them to day+time slots.
+
+
+CLAUDE API INTEGRATION (exercise briefing)
+------------------------------------------
+
+This follows the EXACT same pattern as the Calendar tab's weekly briefing. Reference that implementation.
+
+When it runs:
+- Once per week on week-start day (Monday)
+- Regenerates if exercise schedule changes (debounce 30 seconds)
+- Shimmer animation on the briefing card while loading
+
+What gets sent (JSON payload):
+- This week's exercise slots: day, time, category name, session type name, description
+- Rest days
+- Category distribution (e.g. "3× yoga, 3× run, 2× swim, 1× weights, 1× pilates")
+- Total session count
+
+What comes back (JSON):
+- headline: String (under 40 chars, editorial tone, uses emphasis on one phrase)
+- summary: String (3-4 sentences, conversational, references actual sessions by name)
+
+Prompt guidance for the system prompt:
+- Write in a warm, editorial voice — like a magazine wellness column, not a personal trainer
+- Reference the user's actual session names and days
+- Comment on balance and variety — flag if one category is overrepresented or missing
+- Note sequencing (e.g. recovery sessions before/after intense days)
+- Suggest adjustments naturally within the prose, not as bullet points
+- Keep it to 3-4 sentences maximum
+- NO generic motivational filler ("You've got this!", "Great job!", "Stay strong!")
+- NO coach persona or branding
+
+Caching:
+- Cache response locally, serve from cache if schedule hasn't changed
+- Roughly 1-3 API calls per week per user
+- Use Haiku model for speed and cost
+
+
+SWIFTUI ARCHITECTURE
+--------------------
+
+View layer (inside Exercise tab's ScrollView):
+- ExerciseBriefingView — editorial headline + AI summary paragraph
+- ExerciseHeroView — today's next session hero card with floating emoji
+- ExerciseWeekStripView — ScrollView(.horizontal) of ExerciseDayCardView items
+- ExerciseStatsBar — HStack of 3 stat chips
+- ExerciseCategoriesView — ForEach over categories, each an expandable DisclosureGroup
+  - SessionTypeRow — individual type within a category
+- ExerciseAddSheet — two-step sheet (.sheet modifier or .fullScreenCover)
+
+Data layer:
+- ExerciseViewModel (ObservableObject) that owns:
+  - categories: [ExerciseCategory]
+  - weekPlan: WeekPlan
+  - briefingHeadline: String
+  - briefingSummary: String
+  - isLoadingBriefing: Bool
+- Persisted via SwiftData or Core Data
+- Triggers Claude API call when weekPlan changes (debounced)
+
+Key patterns to match from existing tabs:
+- Horizontal scroll: same snap behaviour and card sizing as Dinner strip on Shopping tab
+- AI briefing: same editorial dark card treatment as Calendar tab's Weekly Briefing cover
+- Colour-coded categories: same approach as calendar event categories
+- Past day fading: same 0.5 opacity treatment as Calendar tab's past events
+- Bottom sheet: same slide-up pattern as the recipe picker on Shopping tab
+- Stats bar: same 3-chip layout as Shopping tab's meal stats
+
+
+REFERENCE TAB PATTERNS
+----------------------
+
+Calendar tab — Weekly Briefing:
+- Dark editorial cover card with headline + AI paragraph
+- "✦ Weekly briefing" badge, small and subtle
+- Headline uses italic/emphasis for one key phrase
+- Summary is warm, conversational, references actual events
+- Regenerates on schedule change with debounce + shimmer
+- Past events fade through the week
+
+Shopping tab — Dinner This Week:
+- Horizontally scrollable day cards (130px wide, snap scroll)
+- Each card: day header + content slots stacked vertically
+- Today highlighted with accent border + gradient
+- Bottom sheet for picking items (recipe picker = exercise session picker)
+- Stats bar below the strip
+- Category section below with expandable cards
+
+Both tabs use:
+- Dark purple theme (--bg: #1a0e2e, --bg-card: #241540)
+- Teal accent (#4ecdc4) for highlights and interactive elements
+- Standard emoji for visual icons
+- DM Sans typeface
+- 16px horizontal padding, 16px radius cards, 10px radius inner elements

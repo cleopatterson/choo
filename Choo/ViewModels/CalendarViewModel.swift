@@ -1,10 +1,7 @@
 import Foundation
 import EventKit
 
-extension Notification.Name {
-    static let chooNavigateToDate = Notification.Name("chooNavigateToDate")
-}
-
+@MainActor
 @Observable
 final class CalendarViewModel {
     let firestoreService: FirestoreService
@@ -306,44 +303,6 @@ final class CalendarViewModel {
         let year = Calendar.current.component(.year, from: selectedDate)
         deviceCalendarService.refreshCache(for: year)
         _cacheKey = "" // invalidate visible days cache
-    }
-
-    /// Next upcoming non-bill, non-todo event today, sorted by start time.
-    var todayNextEvent: FamilyEvent? {
-        let cal = Calendar.current
-        let today = cal.startOfDay(for: Date())
-        let now = Date()
-        let todayEvents = filteredEvents(for: today)
-            .filter { $0.isBill != true && $0.isTodo != true }
-            .sorted { $0.startDate < $1.startDate }
-
-        // Find the next event that hasn't ended yet
-        return todayEvents.first { event in
-            if event.isAllDay == true { return true }
-            return event.endDate > now
-        } ?? todayEvents.first
-    }
-
-    /// Label for the hero card: "UP NEXT · THIS MORNING" etc.
-    var todayNextEventLabel: String {
-        guard let event = todayNextEvent else { return "TODAY" }
-        if event.isAllDay == true { return "UP NEXT · TODAY" }
-        let hour = Calendar.current.component(.hour, from: event.startDate)
-        let period: String
-        if hour < 12 {
-            period = "THIS MORNING"
-        } else if hour < 17 {
-            period = "THIS AFTERNOON"
-        } else {
-            period = "TONIGHT"
-        }
-        return "UP NEXT · \(period)"
-    }
-
-    /// Total events today for the "+N more" pill.
-    var todayEventCount: Int {
-        let today = Calendar.current.startOfDay(for: Date())
-        return filteredEvents(for: today).filter { $0.isBill != true && $0.isTodo != true }.count
     }
 
     func scrollToToday() {

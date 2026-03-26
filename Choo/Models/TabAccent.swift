@@ -4,14 +4,14 @@ enum TabAccent {
     case calendar
     case shopping
     case exercise
-    case chores
+    case house
 
     var color: Color {
         switch self {
         case .calendar: .chooPurple
         case .shopping: .chooAmber
         case .exercise: .chooTeal
-        case .chores: .chooCoral
+        case .house: .chooRose
         }
     }
 
@@ -35,11 +35,11 @@ enum TabAccent {
                 Color(red: 0.176, green: 0.416, blue: 0.310),
                 Color(red: 0.251, green: 0.569, blue: 0.424)
             ]
-        case .chores:
+        case .house:
             [
-                Color(red: 0.24, green: 0.10, blue: 0.10),
-                Color(red: 0.32, green: 0.14, blue: 0.12),
-                Color(red: 0.20, green: 0.08, blue: 0.14)
+                Color(red: 0.30, green: 0.16, blue: 0.22),
+                Color(red: 0.36, green: 0.20, blue: 0.28),
+                Color(red: 0.26, green: 0.14, blue: 0.24)
             ]
         }
     }

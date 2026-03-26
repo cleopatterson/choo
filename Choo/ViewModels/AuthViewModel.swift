@@ -9,6 +9,7 @@ enum AuthFlowState: Equatable {
     case ready
 }
 
+@MainActor
 @Observable
 final class AuthViewModel {
     let authService: AuthService

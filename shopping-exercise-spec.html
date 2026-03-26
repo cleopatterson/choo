@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping Tab + Exercise Update — Consistent Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+  :root {
+    --bg: #0F0A1F;
+    --bg-card: #1A1230;
+    --bg-surface: #1e1238;
+    --text: #f0e6ff;
+    --text-mid: rgba(240, 230, 255, 0.72);
+    --text-dim: rgba(240, 230, 255, 0.42);
+    --border: rgba(255,255,255,0.06);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --purple: #b794f6;
+    --purple-soft: rgba(139,92,246,0.15);
+    --teal: #4ecdc4;
+    --teal-soft: rgba(78,205,196,0.15);
+    --orange: #f39c12;
+    --orange-soft: rgba(243,156,18,0.12);
+    --blue: #74b9ff;
+    --blue-soft: rgba(116,185,255,0.12);
+    --red: #ff6b6b;
+    --red-soft: rgba(255,107,107,0.15);
+    --pink: #e84393;
+    --pink-soft: rgba(232,67,147,0.12);
+    --green: #00b894;
+    --green-soft: rgba(0,184,148,0.12);
+    --amber: #fb923c;
+    --amber-soft: rgba(251,146,60,0.15);
+    --yellow: #fdcb6e;
+    --yellow-soft: rgba(253,203,110,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: #080510;
+    color: var(--text);
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1000px; margin: 0 auto; }
+
+  .page-title { text-align: center; margin-bottom: 40px; }
+  .page-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-title p { font-size: 14px; color: var(--text-dim); max-width: 640px; margin: 0 auto; line-height: 1.5; }
+
+  .section-label {
+    text-align: center; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);
+    padding: 28px 0 14px;
+  }
+  .section-label .tab-badge {
+    display: inline-block;
+    padding: 3px 8px; border-radius: 6px;
+    margin-right: 4px;
+  }
+  .section-label .tab-badge.shop { background: var(--amber-soft); color: var(--amber); }
+  .section-label .tab-badge.exer { background: var(--teal-soft); color: var(--teal); }
+
+  /* ═══════════════════════════════════
+     SHARED STRIP CARD SHELL
+     ═══════════════════════════════════ */
+  .strip-scroll {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding: 0 0 8px; scroll-snap-type: x proximity;
+  }
+  .strip-scroll::-webkit-scrollbar { display: none; }
+
+  .card {
+    flex: 0 0 120px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+  }
+  .card.today-amber {
+    border-color: rgba(251,146,60,0.3);
+    background: linear-gradient(180deg, rgba(251,146,60,0.05) 0%, var(--bg-card) 50%);
+  }
+  .card.today-teal {
+    border-color: rgba(78,205,196,0.3);
+    background: linear-gradient(180deg, rgba(78,205,196,0.05) 0%, var(--bg-card) 50%);
+  }
+  .c-head {
+    padding: 10px 10px 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .c-day { font-size: 11px; font-weight: 600; color: var(--text-dim); }
+  .card.today-amber .c-day,
+  .card.today-teal .c-day { color: var(--text); }
+  .c-date { font-size: 10px; color: var(--text-dim); font-weight: 500; }
+  .c-today-tag {
+    font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; padding: 2px 5px; border-radius: 4px;
+  }
+  .c-today-tag.amber { background: var(--amber-soft); color: var(--amber); }
+  .c-today-tag.teal { background: var(--teal-soft); color: var(--teal); }
+
+  /* Shared card body — centred emoji + title + sub */
+  .card-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; text-align: center; padding: 6px 8px 10px;
+  }
+  .card-emoji-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; margin: 4px 0 6px; height: 38px;
+  }
+  .card-emoji { font-size: 28px; }
+  .card-emoji-single { font-size: 30px; }
+  .card-titles {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1px; margin-bottom: auto;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 600; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;
+  }
+  .card-title-sep {
+    font-size: 8px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px;
+  }
+  .card-sub {
+    font-size: 10px; color: var(--text-dim); margin-top: 2px;
+  }
+
+  /* Shopping buy tag */
+  .card-buy {
+    font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 5px;
+    background: var(--amber-soft); color: var(--amber); margin-top: 4px;
+  }
+
+  /* Empty / rest states */
+  .card-empty {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; opacity: 0.45; padding: 10px;
+  }
+  .card-empty-emoji { font-size: 26px; margin-bottom: 4px; }
+  .card-empty-text { font-size: 10px; color: var(--text-dim); }
+
+  /* ═══════════════════════════════════
+     SHARED HERO SHELL — COMPACT (OPTION A)
+     ═══════════════════════════════════ */
+  .hero-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; max-width: 820px; margin: 0 auto;
+  }
+  .col-label {
+    text-align: center; font-size: 10px; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+
+  .hero {
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .h-bar {
+    padding: 14px 18px 0;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    opacity: 0.75;
+  }
+  .h-bar.amber { color: var(--amber); }
+  .h-bar.teal { color: var(--teal); }
+
+  .ha-body { padding: 14px 18px 18px; }
+  .ha-top {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
+  }
+  .ha-info { flex: 1; min-width: 0; }
+  .ha-title { font-size: 19px; font-weight: 700; line-height: 1.25; }
+  .ha-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .ha-emoji-float {
+    flex-shrink: 0; width: 64px; height: 64px;
+    border-radius: 14px; display: flex;
+    align-items: center; justify-content: center;
+    font-size: 34px;
+  }
+  .ha-emoji-float.amber-bg {
+    background: linear-gradient(135deg, rgba(251,146,60,0.15) 0%, rgba(251,146,60,0.06) 100%);
+    border: 1px solid rgba(251,146,60,0.12);
+  }
+  .ha-emoji-float.teal-bg {
+    background: linear-gradient(135deg, rgba(78,205,196,0.15) 0%, rgba(78,205,196,0.06) 100%);
+    border: 1px solid rgba(78,205,196,0.12);
+  }
+  .ha-emoji-float .ef-pair {
+    display: flex; align-items: center; gap: 1px; font-size: 26px;
+  }
+  .ha-divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  .h-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .hm {
+    font-size: 11px; font-weight: 500;
+    padding: 5px 10px; border-radius: 16px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .hm.surface { background: rgba(255,255,255,0.06); color: var(--text-mid); }
+  .hm.teal { background: var(--teal-soft); color: var(--teal); }
+  .hm.orange { background: var(--orange-soft); color: var(--orange); }
+  .hm.red { background: var(--red-soft); color: var(--red); }
+  .hm.blue { background: var(--blue-soft); color: var(--blue); }
+  .hm.pink { background: var(--pink-soft); color: var(--pink); }
+  .hm.green { background: var(--green-soft); color: var(--green); }
+  .hm.amber { background: var(--amber-soft); color: var(--amber); }
+  .hm.yellow { background: var(--yellow-soft); color: var(--yellow); }
+
+  /* Cuisine-flavour pills */
+  .hm.italian { background: rgba(255,99,71,0.12); color: #ff6347; }
+  .hm.asian { background: rgba(255,165,0,0.12); color: #ffa500; }
+  .hm.mexican { background: rgba(255,69,0,0.12); color: #ff7b54; }
+  .hm.greek { background: rgba(72,209,204,0.12); color: #48d1cc; }
+  .hm.bbq { background: rgba(210,105,30,0.12); color: #d2691e; }
+  .hm.comfort { background: rgba(147,112,219,0.12); color: #9370db; }
+
+  /* ═══════════════════════════════════
+     SPEC SECTIONS
+     ═══════════════════════════════════ */
+  .spec {
+    background: var(--bg); border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 30px; margin-bottom: 16px;
+  }
+  .spec h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .spec .sub { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5; }
+  .kp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kp { padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+  .kp.full { grid-column: 1 / -1; }
+  .kp-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .kp-num.amber { color: var(--amber); }
+  .kp-num.teal { color: var(--teal); }
+  .kp-num.purple { color: var(--purple); }
+  .kp-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .kp-desc { font-size: 12px; line-height: 1.6; color: var(--text-mid); }
+  .kp-desc strong { color: var(--text); font-weight: 600; }
+
+  /* Data model table */
+  .dm {
+    width: 100%; border-collapse: collapse; margin-top: 12px;
+  }
+  .dm th {
+    text-align: left; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-dim); padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dm td {
+    font-size: 12px; padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-mid); vertical-align: top;
+  }
+  .dm td:first-child {
+    font-weight: 600; color: var(--teal);
+    font-family: 'DM Sans', monospace; font-size: 11px; white-space: nowrap;
+  }
+  .dm-section td {
+    font-weight: 700 !important; color: var(--amber) !important;
+    padding-top: 16px; border-bottom: none;
+  }
+
+  /* Consistency comparison */
+  .compare-box {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--border); border-radius: 12px; overflow: hidden;
+    margin-top: 12px;
+  }
+  .compare-cell {
+    padding: 14px 16px; background: var(--bg-surface);
+  }
+  .compare-cell:first-child { border-radius: 12px 0 0 12px; }
+  .compare-cell:last-child { border-radius: 0 12px 12px 0; }
+  .cc-label {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+  .cc-label.amber { color: var(--amber); }
+  .cc-label.teal { color: var(--teal); }
+  .cc-item {
+    font-size: 12px; color: var(--text-mid); line-height: 1.8;
+  }
+  .cc-item strong { color: var(--text); font-weight: 600; }
+
+  @media (max-width: 700px) {
+    .hero-row { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .kp-grid { grid-template-columns: 1fr; }
+    .kp.full { grid-column: auto; }
+    .compare-box { grid-template-columns: 1fr; }
+    .compare-cell:first-child { border-radius: 12px 12px 0 0; }
+    .compare-cell:last-child { border-radius: 0 0 12px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="page-title">
+    <h1>Shopping Tab + Exercise Update</h1>
+    <p>Consistent card and hero system across both tabs. Strip: day/emoji/title/sub. Hero: compact emoji + title + pills. Intensity becomes a ⚡ pill on both tabs.</p>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       SHOPPING STRIP
+       ═══════════════════════════════════ -->
+  <div class="section-label"><span class="tab-badge shop">🛒</span> Shopping Strip</div>
+
+  <div class="strip-scroll">
+    <div class="card today-amber">
+      <div class="c-head"><span class="c-day">Mon</span><span class="c-today-tag amber">Tonight</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🍅</span></div>
+        <div class="card-titles">
+          <span class="card-title">Tomato Soup</span>
+        </div>
+        <div class="card-sub">30 min</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Tue</span><span class="c-date">3</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🍝</span></div>
+        <div class="card-titles"><span class="card-title">Spag Bol</span></div>
+        <div class="card-sub">45 min</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Wed</span><span class="c-date">4</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🐑</span></div>
+        <div class="card-titles"><span class="card-title">Slow Lamb</span></div>
+        <div class="card-sub">4 hrs · AM prep</div>
+        <div class="card-buy">🛒 5 to buy</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Thu</span><span class="c-date">5</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🍛</span></div>
+        <div class="card-titles"><span class="card-title">Thai Curry</span></div>
+        <div class="card-sub">35 min</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Fri</span><span class="c-date">6</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🌮</span></div>
+        <div class="card-titles"><span class="card-title">Fish Tacos</span></div>
+        <div class="card-sub">25 min</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Sat</span><span class="c-date">7</span></div>
+      <div class="card-body">
+        <div class="card-emoji-row"><span class="card-emoji-single">🍔</span></div>
+        <div class="card-titles"><span class="card-title">BBQ Burgers</span></div>
+        <div class="card-sub">40 min</div>
+        <div class="card-buy">🛒 6 to buy</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="c-head"><span class="c-day">Sun</span><span class="c-date">8</span></div>
+      <div class="card-empty">
+        <div class="card-empty-emoji">🤷</div>
+        <div class="card-empty-text">Fend night</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       SHOPPING HERO
+       ═══════════════════════════════════ -->
+  <div class="section-label"><span class="tab-badge shop">🛒</span> Shopping Hero</div>
+
+  <div class="hero-row">
+    <div>
+      <div class="col-label">Quick weeknight (Monday)</div>
+      <div class="hero">
+        <div class="h-bar amber">Tonight · Monday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Tomato Soup</div>
+              <div class="ha-sub">30 min · Serves 4</div>
+            </div>
+            <div class="ha-emoji-float amber-bg">🍅</div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm italian">Italian</span>
+            <span class="hm surface">Bread</span>
+            <span class="hm green">⚡ Easy</span>
+            <span class="hm green">Light</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Big cook day (Wednesday)</div>
+      <div class="hero">
+        <div class="h-bar amber">Tonight · Wednesday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Slow Lamb</div>
+              <div class="ha-sub">4 hrs · AM prep · Serves 6</div>
+            </div>
+            <div class="ha-emoji-float amber-bg">🐑</div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm greek">Greek</span>
+            <span class="hm surface">Rice</span>
+            <span class="hm red">⚡ Big cook</span>
+            <span class="hm red">Rich</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- More shopping heroes -->
+  <div class="hero-row" style="margin-top: 16px;">
+    <div>
+      <div class="col-label">Midweek balance (Thursday)</div>
+      <div class="hero">
+        <div class="h-bar amber">Tonight · Thursday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Thai Curry</div>
+              <div class="ha-sub">35 min · Serves 4</div>
+            </div>
+            <div class="ha-emoji-float amber-bg">🍛</div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm asian">Asian</span>
+            <span class="hm surface">Rice</span>
+            <span class="hm yellow">⚡ Medium</span>
+            <span class="hm yellow">Moderate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Quick & light (Friday)</div>
+      <div class="hero">
+        <div class="h-bar amber">Tonight · Friday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Fish Tacos</div>
+              <div class="ha-sub">25 min · Serves 4</div>
+            </div>
+            <div class="ha-emoji-float amber-bg">🌮</div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm mexican">Mexican</span>
+            <span class="hm surface">Wraps</span>
+            <span class="hm green">⚡ Easy</span>
+            <span class="hm green">Light</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       UPDATED EXERCISE HERO (intensity pill)
+       ═══════════════════════════════════ -->
+  <div class="section-label"><span class="tab-badge exer">💪</span> Exercise Hero — Updated</div>
+
+  <div class="hero-row">
+    <div>
+      <div class="col-label">Two sessions (Monday)</div>
+      <div class="hero">
+        <div class="h-bar teal">Today · Monday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Yin Yoga & Manly Loop</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 30min</div>
+            </div>
+            <div class="ha-emoji-float teal-bg"><span class="ef-pair">🧘🏃</span></div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm teal">Flex</span>
+            <span class="hm orange">Cardio</span>
+            <span class="hm amber">~380 cal</span>
+            <span class="hm orange">⚡ High</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Single session (Thursday)</div>
+      <div class="hero">
+        <div class="h-bar teal">Today · Thursday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Harbour Bridge 10k</div>
+              <div class="ha-sub">Morning · Target 48min</div>
+            </div>
+            <div class="ha-emoji-float teal-bg">🏃</div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm orange">Cardio</span>
+            <span class="hm red">~620 cal</span>
+            <span class="hm red">⚡ Peak</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- More exercise examples -->
+  <div class="hero-row" style="margin-top: 16px;">
+    <div>
+      <div class="col-label">Heavy dual (Wednesday)</div>
+      <div class="hero">
+        <div class="h-bar teal">Today · Wednesday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Power Yoga & Ocean Swim</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 45min</div>
+            </div>
+            <div class="ha-emoji-float teal-bg"><span class="ef-pair">🧘🏊</span></div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm teal">Flex</span>
+            <span class="hm blue">Cardio</span>
+            <span class="hm red">~600 cal</span>
+            <span class="hm red">⚡ Peak</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Recovery day (Friday)</div>
+      <div class="hero">
+        <div class="h-bar teal">Today · Friday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-info">
+              <div class="ha-title">Yin Yoga & Core Work</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 15min</div>
+            </div>
+            <div class="ha-emoji-float teal-bg"><span class="ef-pair">🧘🤸</span></div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm teal">Flex</span>
+            <span class="hm pink">Core</span>
+            <span class="hm green">~220 cal</span>
+            <span class="hm green">⚡ Moderate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       CONSISTENCY MAP
+       ═══════════════════════════════════ -->
+  <div class="spec" style="margin-top: 36px;">
+    <h2>Consistency Map</h2>
+    <div class="sub">How the two tabs share an identical structure while keeping their own accent colours and content.</div>
+
+    <div class="compare-box">
+      <div class="compare-cell">
+        <div class="cc-label amber">🛒 Shopping</div>
+        <div class="cc-item"><strong>Strip:</strong> Day / Emoji / Title / Prep time</div>
+        <div class="cc-item"><strong>Hero emoji:</strong> Single dinner emoji, right-aligned in amber box</div>
+        <div class="cc-item"><strong>Hero title:</strong> Dinner name</div>
+        <div class="cc-item"><strong>Hero subtitle:</strong> Prep time · Serves X</div>
+        <div class="cc-item"><strong>Pills:</strong> Cuisine · Carb · ⚡ Effort · Richness</div>
+        <div class="cc-item"><strong>Accent:</strong> Amber</div>
+        <div class="cc-item"><strong>Bar label:</strong> "Tonight"</div>
+      </div>
+      <div class="compare-cell">
+        <div class="cc-label teal">💪 Exercise</div>
+        <div class="cc-item"><strong>Strip:</strong> Day / Emoji(s) / Title(s) / —</div>
+        <div class="cc-item"><strong>Hero emoji:</strong> Single or pair, right-aligned in teal box</div>
+        <div class="cc-item"><strong>Hero title:</strong> Session name(s)</div>
+        <div class="cc-item"><strong>Hero subtitle:</strong> Time slots · Duration</div>
+        <div class="cc-item"><strong>Pills:</strong> Category(s) · Calories · ⚡ Day load</div>
+        <div class="cc-item"><strong>Accent:</strong> Teal</div>
+        <div class="cc-item"><strong>Bar label:</strong> "Today"</div>
+      </div>
+    </div>
+
+    <div class="kp-grid" style="margin-top: 16px;">
+      <div class="kp full">
+        <div class="kp-num amber">The ⚡ pill — shared pattern</div>
+        <div class="kp-title">Same visual, different meaning, same colour ramp</div>
+        <div class="kp-desc">
+          Both tabs use a <strong>⚡ lightning bolt pill</strong> to express effort/intensity. Shopping: <strong>⚡ Easy</strong> (green), <strong>⚡ Medium</strong> (yellow), <strong>⚡ Big cook</strong> (red). Exercise: <strong>⚡ Light</strong> (green), <strong>⚡ Moderate</strong> (yellow), <strong>⚡ High</strong> (orange), <strong>⚡ Peak</strong> (red). Same green→red colour ramp, same pill format, same position in the pill row. You can scan either tab and instantly read the effort without thinking about which tab you're on.
+        </div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num amber">Shopping-specific pills</div>
+        <div class="kp-title">Cuisine · Carb · Richness</div>
+        <div class="kp-desc">
+          <strong>Cuisine</strong> — Italian (tomato red), Asian (orange), Mexican (flame), Greek (teal), BBQ (brown), Comfort (purple). Coloured by flavour region.<br><br>
+          <strong>Carb type</strong> — Rice, Pasta, Noodles, Bread, Wraps, None. Neutral grey surface pill.<br><br>
+          <strong>Richness</strong> — Light (green), Moderate (yellow), Rich (red). Calorie density of the meal.
+        </div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num teal">Exercise-specific pills</div>
+        <div class="kp-title">Category(s) · Calories</div>
+        <div class="kp-desc">
+          <strong>Category type</strong> — Flex (teal), Cardio (orange), Strength (red), Core (pink). One per session, so dual days show two.<br><br>
+          <strong>Calories</strong> — Combined total for the day. Uses green/amber/red colouring based on burn level. HealthKit actuals overwrite estimates after completion.
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       SHOPPING DATA MODEL
+       ═══════════════════════════════════ -->
+  <div class="spec">
+    <h2>Shopping Data Model</h2>
+    <div class="sub">DinnerRecipe gains metadata fields for cuisine, carb, effort, and richness. These power the hero pills and feed the AI briefing.</div>
+
+    <table class="dm">
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+
+      <tr class="dm-section"><td colspan="3">DinnerRecipe</td></tr>
+      <tr><td>name</td><td>String</td><td>"Tomato Soup", "Slow Lamb", "Thai Curry"</td></tr>
+      <tr><td>emoji</td><td>String</td><td>🍅, 🐑, 🍛</td></tr>
+      <tr><td>prepTimeMinutes</td><td>Int</td><td>Total prep + cook time. Shown on strip card and hero subtitle.</td></tr>
+      <tr><td>serves</td><td>Int</td><td>Default 4. Shown on hero subtitle.</td></tr>
+      <tr><td>ingredients</td><td>[Ingredient]</td><td>Name, quantity, aisle. Drives shopping list and "🛒 N to buy" tag.</td></tr>
+
+      <tr class="dm-section"><td colspan="3">DinnerRecipe — Metadata</td></tr>
+      <tr><td>cuisine</td><td>enum</td><td>.italian, .asian, .mexican, .greek, .bbq, .comfort, .other</td></tr>
+      <tr><td>carbType</td><td>enum</td><td>.rice, .pasta, .noodles, .bread, .wraps, .none</td></tr>
+      <tr><td>prepEffort</td><td>enum</td><td>.easy (≤30min), .medium (30-60min), .big (60min+ or AM prep)</td></tr>
+      <tr><td>calorieDensity</td><td>enum</td><td>.light, .moderate, .rich — rough feel, not exact calories</td></tr>
+
+      <tr class="dm-section"><td colspan="3">WeeklyDinnerPlan</td></tr>
+      <tr><td>monday–sunday</td><td>DinnerRecipe?</td><td>nil = no dinner assigned. Sunday typically nil ("fend night").</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       AI BRIEFING INTEGRATION
+       ═══════════════════════════════════ -->
+  <div class="spec">
+    <h2>What the AI Briefing Does</h2>
+    <div class="sub">With metadata on both tabs, the briefing makes cross-domain connections between food and exercise.</div>
+
+    <div class="kp-grid">
+      <div class="kp">
+        <div class="kp-num amber">Shopping patterns</div>
+        <div class="kp-title">Variety & balance</div>
+        <div class="kp-desc">
+          <strong>"Three Italian meals Mon-Wed — the Thai curry on Thursday breaks the pattern nicely."</strong><br><br>
+          <strong>"Two big cooks back to back (Wed slow lamb + Sat BBQ) — Thursday and Friday are quick ones to give you a break."</strong><br><br>
+          <strong>"Light meals Mon and Fri, rich on Wed and Sat — good balance."</strong>
+        </div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num teal">Exercise patterns</div>
+        <div class="kp-title">Load & recovery</div>
+        <div class="kp-desc">
+          <strong>"Peak day Thursday with the 10k — Friday's Yin Yoga + Core is a smart recovery."</strong><br><br>
+          <strong>"All cardio this week — Tuesday has room for a strength session."</strong><br><br>
+          <strong>"Three peak days Wed–Sat is a lot. Listen to your body Saturday."</strong>
+        </div>
+      </div>
+
+      <div class="kp full">
+        <div class="kp-num purple">Cross-domain intelligence</div>
+        <div class="kp-title">Food ↔ Exercise connections</div>
+        <div class="kp-desc">
+          <strong>"Heavy exercise Thursday (620 cal burn on the 10k) — good that Wednesday's slow lamb will fuel it."</strong> The AI reads the ⚡ effort/intensity across both tabs and makes connections. Peak exercise days pair with rich meals. Light exercise days pair with lighter food. Recovery days suggest easy cooking. This is the intelligence that makes the app more than three separate tabs.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

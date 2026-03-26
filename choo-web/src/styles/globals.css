@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --color-choo-purple: #8B5CF6;
+  --color-choo-purple-light: #a67df9;
+  --color-choo-amber: #fb923c;
+  --color-choo-teal: #4ecdc4;
+  --color-choo-rose: #C88EA7;
+  --color-choo-coral: #f97066;
+
+  --font-serif: Georgia, 'Times New Roman', serif;
+}
+
+/* Base styles */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: white;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Choo background gradient */
+.choo-bg {
+  background:
+    radial-gradient(ellipse at top right, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+    linear-gradient(to bottom right,
+      rgb(20, 15, 64),
+      rgb(36, 20, 77),
+      rgb(15, 26, 56)
+    );
+  min-height: 100%;
+}
+
+/* Glass card */
+.glass {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Glass field (input) */
+.glass-field {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: white;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+
+.glass-field::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.glass-field:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+/* Status pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Hero gradient backgrounds per tab */
+.hero-calendar {
+  background: linear-gradient(135deg, rgb(36, 20, 82), rgb(51, 31, 102), rgb(31, 26, 77));
+}
+.hero-shopping {
+  background: linear-gradient(135deg, rgb(82, 46, 15), rgb(102, 61, 20), rgb(71, 41, 10));
+}
+.hero-exercise {
+  background: linear-gradient(135deg, rgb(27, 67, 50), rgb(45, 106, 79), rgb(64, 145, 108));
+}
+.hero-house {
+  background: linear-gradient(135deg, rgb(77, 41, 56), rgb(92, 51, 71), rgb(66, 36, 61));
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+/* Transition utility */
+.transition-base {
+  transition: all 0.2s ease;
+}

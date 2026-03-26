@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Shopping</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:         #0F0A1F;
+  --card:       #1C1535;
+  --card2:      #251C45;
+  --elevated:   #2F2558;
+  --amber:      #F59E0B;
+  --amber-s:    rgba(245,158,11,0.14);
+  --amber-m:    rgba(245,158,11,0.28);
+  --purple:     #A78BFA;
+  --purple-s:   rgba(167,139,250,0.14);
+  --green:      #34D399;
+  --green-s:    rgba(52,211,153,0.14);
+  --coral:      #F87171;
+  --coral-s:    rgba(248,113,113,0.14);
+  --teal:       #2DD4BF;
+  --teal-s:     rgba(45,212,191,0.14);
+  --t1:         #FFFFFF;
+  --t2:         rgba(255,255,255,0.62);
+  --t3:         rgba(255,255,255,0.32);
+  --t4:         rgba(255,255,255,0.08);
+  --t5:         rgba(255,255,255,0.04);
+  --r:          16px;
+  --rl:         22px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+body {
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--t1);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+.screen {
+  max-width:393px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+}
+
+.scroll {
+  height:100vh;
+  overflow-y:auto;
+  padding-bottom:96px;
+  scroll-behavior:smooth;
+}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ───── HEADER ───── */
+.header {
+  padding:54px 20px 10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+}
+.header h1 {
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:-.5px;
+}
+.header-sub {
+  font-size:12px;
+  color:var(--t3);
+  font-weight:500;
+  margin-top:2px;
+}
+.hbtns {
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.hbtn {
+  width:38px;height:38px;
+  border-radius:50%;
+  border:1px solid var(--t4);
+  background:var(--card2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;cursor:pointer;
+  transition:background .15s;
+}
+.hbtn:active{background:var(--elevated)}
+.hbtn-amber {
+  background:var(--amber);
+  border-color:transparent;
+  box-shadow:0 4px 14px rgba(245,158,11,.38);
+  color:#000;font-weight:700;font-size:20px;
+}
+.hbtn-amber:active{transform:scale(.92)}
+
+/* ───── AI BRIEFING ───── */
+.briefing {
+  margin:6px 16px 0;
+  background:var(--card);
+  border:1px solid var(--t4);
+  border-radius:var(--rl);
+  padding:15px 17px;
+  position:relative;
+  overflow:hidden;
+}
+.briefing-tag {
+  font-size:10px;font-weight:700;
+  color:var(--amber);
+  letter-spacing:.3px;
+  display:inline-block;margin-bottom:10px;
+}
+.briefing-headline {
+  font-size:22px;font-weight:800;
+  line-height:1.2;letter-spacing:-.4px;
+  color:var(--t1);margin-bottom:8px;
+}
+.briefing-text {
+  font-size:13px;line-height:1.55;
+  color:var(--t2);
+}
+
+/* ───── HERO TONIGHT CARD ───── */
+.hero-card {
+  margin:10px 16px 0;
+  background:linear-gradient(145deg,#2A1A00,#1C1000);
+  border:1px solid rgba(245,158,11,.25);
+  border-radius:var(--rl);
+  padding:15px 17px;
+  cursor:pointer;
+  position:relative;overflow:hidden;
+}
+.hero-label {
+  font-size:10px;font-weight:800;
+  color:var(--amber);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:6px;
+}
+.hero-name {
+  font-size:26px;font-weight:800;
+  letter-spacing:-.5px;line-height:1.1;
+  margin-bottom:5px;
+}
+.hero-meta {
+  font-size:12px;color:var(--t2);margin-bottom:10px;
+}
+.hero-tags {
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.hero-tag {
+  font-size:10px;font-weight:700;
+  padding:4px 9px;border-radius:20px;
+  background:rgba(255,255,255,.08);
+  color:var(--t2);
+}
+.hero-tag.energy {
+  background:var(--amber-s);color:var(--amber);
+}
+.hero-emoji {
+  position:absolute;right:14px;top:14px;
+  font-size:52px;line-height:1;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));
+}
+
+/* ───── SECTION LABEL ───── */
+.sec {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 20px 10px;
+}
+.sec h2{font-size:16px;font-weight:700;letter-spacing:-.2px}
+.sec-action {
+  font-size:12px;font-weight:600;
+  color:var(--amber);cursor:pointer;
+}
+
+/* ───── MEAL STRIP ───── */
+.meal-strip {
+  display:flex;gap:10px;
+  padding:0 16px 4px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.meal-strip::-webkit-scrollbar{display:none}
+
+.meal-card {
+  flex-shrink:0;width:108px;
+  background:var(--card);
+  border:1px solid var(--t4);
+  border-radius:var(--r);
+  padding:11px 10px 10px;
+  cursor:pointer;
+  transition:transform .15s;
+  position:relative;overflow:hidden;
+}
+.meal-card:active{transform:scale(.95)}
+.meal-card.today {
+  background:linear-gradient(155deg,#2A1D00,#1A1200);
+  border-color:rgba(245,158,11,.32);
+}
+.meal-card.past{opacity:.38;pointer-events:none}
+.meal-card.empty{border-style:dashed}
+
+.mc-day {
+  font-size:10px;font-weight:700;
+  color:var(--t3);text-transform:uppercase;
+  letter-spacing:.4px;margin-bottom:4px;
+  display:flex;align-items:center;gap:5px;
+}
+.mc-tonight {
+  font-size:8px;font-weight:800;
+  color:var(--amber);background:var(--amber-s);
+  padding:1px 5px;border-radius:10px;
+  text-transform:uppercase;letter-spacing:.3px;
+}
+.mc-date {
+  font-size:11px;font-weight:700;color:var(--t3);
+  float:right;
+}
+.meal-card.today .mc-day{color:var(--amber)}
+.mc-emoji{font-size:26px;display:block;margin-bottom:5px;line-height:1}
+.mc-name{font-size:11px;font-weight:700;line-height:1.3;color:var(--t1)}
+.meal-card.empty .mc-name{color:var(--t3)}
+.mc-time {
+  font-size:10px;color:var(--t3);margin-top:5px;
+}
+.mc-badge {
+  margin-top:6px;
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:700;
+  color:var(--amber);background:var(--amber-s);
+  padding:2px 6px;border-radius:20px;
+}
+.mc-badge.ok{color:var(--amber);background:var(--amber-s)}
+.strip-caption {
+  text-align:center;
+  font-size:12px;color:var(--t3);font-weight:500;
+  padding:8px 0 2px;
+}
+
+/* ───── INGREDIENT PANEL ───── */
+.ing-panel {
+  margin:8px 16px 0;
+  background:var(--card);
+  border:1px solid var(--t4);
+  border-radius:14px;
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .32s cubic-bezier(.4,0,.2,1), opacity .2s;
+  opacity:0;
+  pointer-events:none;
+}
+.ing-panel.open{max-height:300px;opacity:1;pointer-events:all}
+
+.ing-header {
+  padding:12px 14px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--t4);
+}
+.ing-header-emoji{font-size:20px}
+.ing-header-info{flex:1}
+.ing-header-title{font-size:13px;font-weight:700}
+.ing-header-sub{font-size:11px;color:var(--t3);margin-top:1px}
+.ing-close {
+  width:26px;height:26px;background:var(--t4);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--t2);cursor:pointer;
+}
+
+.ing-chips {
+  padding:10px 12px 4px;
+  display:flex;flex-wrap:wrap;gap:6px;
+}
+.chip {
+  display:flex;align-items:center;gap:5px;
+  padding:6px 11px;border-radius:20px;
+  font-size:12px;font-weight:600;
+  background:var(--card2);border:1px solid var(--t4);
+  color:var(--t2);cursor:pointer;
+  transition:all .15s;
+}
+.chip:active{transform:scale(.95)}
+.chip.added{background:var(--amber-s);border-color:var(--amber-m);color:var(--amber)}
+.chip-plus{font-size:13px;font-weight:700}
+.chip.added .chip-plus::before{content:'✓'}
+.chip:not(.added) .chip-plus::before{content:'+'}
+
+.ing-addall {
+  margin:8px 12px 12px;
+  width:calc(100% - 24px);
+  padding:9px;border-radius:10px;
+  background:var(--amber);border:none;
+  color:#000;font-family:'DM Sans',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;transition:opacity .15s;
+}
+.ing-addall:active{opacity:.8}
+
+/* ───── THIS WEEK'S RUN ───── */
+.run-section{margin:20px 16px 0}
+
+/* Shared section-header — used by both Run and Pantry */
+.section-hdr {
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px;
+  background:var(--card);
+  border:1px solid var(--t4);
+  border-radius:var(--r);
+  cursor:pointer;
+  transition:background .15s, border-radius .0s;
+  user-select:none;
+}
+.section-hdr.open {
+  border-radius:var(--r) var(--r) 0 0;
+  border-bottom-color:var(--t4);
+}
+.section-hdr:active{background:var(--card2)}
+.section-hdr-left{display:flex;align-items:center;gap:10px;flex:1}
+.section-hdr-icon{font-size:20px}
+.section-hdr-title{font-size:15px;font-weight:700}
+.section-hdr-count{
+  font-size:11px;font-weight:700;
+  color:var(--amber);background:var(--amber-s);
+  padding:2px 9px;border-radius:20px;
+}
+.section-hdr-chevron{
+  font-size:16px;color:var(--t3);
+  transition:transform .25s;flex-shrink:0;
+}
+.section-hdr-chevron.open{transform:rotate(90deg)}
+
+.done-btn {
+  font-size:12px;font-weight:700;
+  color:#000;background:var(--amber);
+  padding:5px 12px;border-radius:20px;
+  border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  transition:opacity .15s;flex-shrink:0;
+}
+.done-btn:active{opacity:.7}
+
+/* Run body */
+.run-body{margin-top:0;display:none}
+.run-body.open{display:block}
+
+/* Run list */
+.run-list {
+  background:var(--card);
+  border:1px solid var(--t4);
+  border-top:none;
+  border-radius:0 0 var(--r) var(--r);
+  overflow:hidden;
+}
+
+.run-item {
+  display:flex;align-items:center;
+  padding:12px 14px;gap:10px;
+  border-bottom:1px solid var(--t4);
+  transition:background .12s;
+  position:relative;
+}
+.run-item:last-of-type{border-bottom:none}
+.run-item.ticked .ri-name{
+  text-decoration:line-through;
+  color:var(--t3);
+}
+.ri-tick {
+  width:22px;height:22px;flex-shrink:0;
+  border:2px solid var(--t3);border-radius:50%;
+  cursor:pointer;transition:all .18s;
+  display:flex;align-items:center;justify-content:center;
+}
+.ri-tick.done{background:var(--amber);border-color:var(--amber)}
+.ri-tick.done::after{content:'✓';font-size:11px;font-weight:800;color:#000}
+
+.ri-dot { display:none }
+.ri-remove { display:none }
+
+.ri-emoji{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+.ri-name{font-size:14px;font-weight:600;flex:1;transition:all .18s}
+.pitem-emoji{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+.pitem-name{font-size:14px;font-weight:600;flex:1;color:var(--t1)}
+.ri-tag {
+  font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:10px;
+  white-space:nowrap;flex-shrink:0;
+}
+.ri-tag.cadence{color:var(--amber);background:var(--amber-s)}
+.ri-tag.meal   {color:var(--amber);background:var(--amber-s)}
+
+
+/* Quick add row */
+.quick-add {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  border-top:1px solid var(--t4);
+}
+.qa-input {
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;font-size:13px;
+  color:var(--t2);font-weight:500;
+}
+.qa-input::placeholder{color:var(--t3)}
+.qa-go{font-size:18px;color:var(--amber);cursor:pointer}
+
+/* ───── PANTRY SECTION ───── */
+.pantry-section{margin:20px 16px 0}
+
+.ph-low{
+  font-size:11px;font-weight:700;
+  color:var(--coral);background:var(--coral-s);
+  padding:2px 8px;border-radius:20px;
+}
+
+/* Edit pills */
+.edit-pill {
+  font-size:12px;font-weight:700;
+  padding:7px 13px;border-radius:20px;
+  background:var(--card2);border:1.5px solid var(--t4);
+  color:var(--t2);cursor:pointer;transition:all .15s;
+}
+.edit-pill.selected{background:var(--amber-s);border-color:var(--amber);color:var(--amber)}
+.edit-pill:active{transform:scale(.95)}
+
+/* Pantry body */
+.pantry-body{margin-top:0;display:none}
+.pantry-body.open{display:block;border:1px solid var(--t4);border-top:none;border-radius:0 0 var(--r) var(--r);overflow:hidden;padding:8px;background:var(--card);}
+
+/* Scan mode label */
+.scan-label{
+  font-size:11px;font-weight:700;
+  color:var(--teal);
+  padding:8px 4px 4px;
+  letter-spacing:.3px;
+  text-transform:uppercase;
+}
+
+/* Category block — subordinate to section headers */
+.cat-block{
+  background:var(--card2);
+  border:1px solid var(--t4);
+  border-radius:12px;
+  overflow:hidden;
+  margin-bottom:6px;
+}
+
+.cat-header {
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:background .12s;
+  user-select:none;
+}
+.cat-header:active{background:var(--elevated)}
+.cat-chevron{font-size:12px;color:var(--t3);transition:transform .22s}
+.cat-chevron.open{transform:rotate(90deg)}
+.cat-emoji{font-size:16px}
+.cat-name{font-size:13px;font-weight:600;flex:1;color:var(--t2)}
+.cat-count{
+  font-size:10px;font-weight:700;
+  color:var(--t3);background:var(--t4);
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.cat-items{display:none}
+.cat-items.open{display:block}
+
+/* Pantry item */
+.pitem {
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  border-top:1px solid var(--t4);
+  transition:background .12s;
+}
+.pitem:active{background:var(--card2)}
+.pitem-contexts{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.pitem-meal{
+  font-size:9px;font-weight:700;
+  color:var(--amber);background:var(--amber-s);
+  padding:2px 6px;border-radius:10px;
+}
+.pitem-low{
+  font-size:9px;font-weight:700;
+  color:var(--coral);background:var(--coral-s);
+  padding:2px 6px;border-radius:10px;
+}
+.pitem-possibly{
+  font-size:9px;font-weight:700;
+  color:var(--amber);background:var(--amber-s);
+  padding:2px 6px;border-radius:10px;
+}
+.status-ok   {font-size:9px;font-weight:700;color:var(--amber);background:var(--amber-s);padding:2px 7px;border-radius:10px}
+.status-due  {font-size:9px;font-weight:700;color:var(--amber);background:var(--amber-s);padding:2px 7px;border-radius:10px}
+.status-low  {font-size:9px;font-weight:700;color:var(--coral);background:var(--coral-s);padding:2px 7px;border-radius:10px}
+.cadence-pill{font-size:9px;font-weight:600;color:var(--t3);background:var(--t4);padding:2px 7px;border-radius:10px}
+
+.padd-btn {
+  width:28px;height:28px;border-radius:50%;
+  background:var(--amber);border:none;
+  color:#000;font-size:18px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  font-family:'DM Sans',sans-serif;
+  transition:all .15s;
+}
+.padd-btn:active{transform:scale(.88)}
+/* Added state: amber outline, no fill */
+.padd-btn.added{
+  background:transparent;
+  border:2px solid var(--amber);
+  color:var(--amber);
+  font-size:13px;
+}
+.padd-btn.added::before{content:'✓'}
+.padd-btn:not(.added)::before{content:'+'}
+
+/* ───── DONE CONFIRM SHEET ───── */
+.overlay {
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(5px);
+  z-index:100;
+  opacity:0;pointer-events:none;
+  transition:opacity .28s;
+}
+.overlay.show{opacity:1;pointer-events:all}
+
+.sheet {
+  position:fixed;bottom:0;left:50%;
+  transform:translateX(-50%) translateY(110%);
+  max-width:393px;width:100%;
+  background:#1C1535;
+  border-radius:26px 26px 0 0;
+  z-index:101;padding:20px 20px 44px;
+  transition:transform .32s cubic-bezier(.32,.72,0,1);
+  text-align:center;
+}
+.sheet.show{transform:translateX(-50%) translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--t4);border-radius:2px;margin:0 auto 20px}
+.sheet-icon{font-size:42px;margin-bottom:12px}
+.sheet h3{font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-.3px}
+.sheet p{font-size:13px;color:var(--t2);margin-bottom:24px;line-height:1.6}
+.sheet-confirm {
+  width:100%;padding:14px;
+  background:var(--amber);border:none;border-radius:14px;
+  color:#000;font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:700;
+  cursor:pointer;margin-bottom:10px;
+  transition:opacity .15s;
+}
+.sheet-confirm:active{opacity:.8}
+.sheet-cancel {
+  width:100%;padding:13px;
+  background:var(--t4);border:none;border-radius:14px;
+  color:var(--t1);font-family:'DM Sans',sans-serif;
+  font-size:14px;font-weight:600;cursor:pointer;
+}
+
+/* ───── TOAST ───── */
+.toast {
+  position:fixed;top:58px;left:50%;
+  transform:translateX(-50%) translateY(-16px);
+  background:var(--card2);
+  border:1px solid var(--amber-m);
+  border-radius:20px;padding:7px 16px;
+  font-size:13px;font-weight:600;color:var(--amber);
+  white-space:nowrap;z-index:200;
+  opacity:0;pointer-events:none;
+  transition:all .22s;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ───── MEAL PICKER SHEET ───── */
+.meal-picker-sheet {
+  text-align:left;
+  padding:0;
+}
+.meal-picker-topbar {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:4px 4px 16px;
+}
+.mp-cancel {
+  font-size:14px;font-weight:600;color:var(--amber);
+  background:var(--amber-s);border:none;border-radius:20px;
+  padding:7px 14px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:opacity .15s;
+}
+.mp-cancel:active{opacity:.7}
+.mp-title {
+  font-size:15px;font-weight:700;
+}
+.mp-edit {
+  font-size:14px;font-weight:600;color:var(--amber);
+  background:var(--amber-s);border:none;border-radius:20px;
+  padding:7px 14px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:opacity .15s;
+}
+.mp-edit:active{opacity:.7}
+
+.meal-grid {
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;
+  max-height:380px;overflow-y:auto;
+  scrollbar-width:none;
+  margin-bottom:14px;
+}
+.meal-grid::-webkit-scrollbar{display:none}
+
+.mg-tile {
+  background:var(--card2);
+  border:1.5px solid var(--t4);
+  border-radius:16px;
+  padding:16px 12px 13px;
+  cursor:pointer;
+  transition:all .15s;
+  position:relative;
+  text-align:center;
+}
+.mg-tile:active{transform:scale(.96)}
+.mg-tile.selected {
+  background:var(--amber-s);
+  border-color:var(--amber);
+}
+.mg-badge {
+  position:absolute;top:8px;left:8px;
+  font-size:9px;font-weight:700;
+  color:var(--t3);background:var(--t4);
+  padding:2px 6px;border-radius:10px;
+  letter-spacing:.2px;
+}
+.mg-tile.selected .mg-badge{color:var(--amber);background:var(--amber-s)}
+.mg-emoji{font-size:38px;display:block;margin-bottom:8px;line-height:1}
+.mg-name{font-size:13px;font-weight:700;margin-bottom:3px}
+.mg-meta{font-size:10px;color:var(--t3);font-weight:500}
+.mg-tile.selected .mg-meta{color:var(--amber);opacity:.8}
+
+.mp-search {
+  display:flex;align-items:center;gap:8px;
+  background:var(--card2);border:1px solid var(--t4);
+  border-radius:12px;padding:10px 14px;
+  margin-bottom:4px;
+}
+.mp-search-icon{font-size:14px;color:var(--t3)}
+.mp-search input {
+  flex:1;background:none;border:none;outline:none;
+  font-family:'DM Sans',sans-serif;font-size:13px;
+  color:var(--t1);font-weight:500;
+}
+.mp-search input::placeholder{color:var(--t3)}
+
+/* Ingredient review sheet */
+.ing-review-header {
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:12px;text-align:left;
+}
+.ing-review-title{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.ing-review-sub{font-size:12px;color:var(--t3);margin-top:2px}
+
+.tabbar {
+  position:fixed;bottom:0;left:50%;
+  transform:translateX(-50%);
+  max-width:393px;width:100%;
+  background:rgba(15,10,31,.93);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--t4);
+  display:flex;padding:10px 0 28px;
+  z-index:50;
+}
+.tab {
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;gap:3px;cursor:pointer;
+  opacity:.35;transition:opacity .15s;
+}
+.tab.active{opacity:1}
+.tab-icon{font-size:22px}
+.tab-label{font-size:10px;font-weight:700;color:var(--t2)}
+.tab.active .tab-label{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="screen">
+<div class="scroll" id="scroll">
+
+  <!-- AI BRIEFING -->
+  <div class="briefing">
+    <div class="briefing-tag">✦ Dinners this week · 9–15 Mar</div>
+    <div class="briefing-headline">A week of bold flavours</div>
+    <div class="briefing-text">Stir Fry and Butter Chicken anchor the midweek, while Lamb Tagine makes Saturday something to look forward to.</div>
+  </div>
+
+  <!-- HERO TONIGHT CARD -->
+  <div class="hero-card" onclick="openMealPicker('wed')">
+    <div class="hero-label">Tonight · Wed 10</div>
+    <div class="hero-name">Stir Fry</div>
+    <div class="hero-meta">20 min · Serves 4</div>
+    <div class="hero-tags">
+      <span class="hero-tag">Asian</span>
+      <span class="hero-tag">Wok</span>
+      <span class="hero-tag energy">⚡ Quick</span>
+      <span class="hero-tag">Light</span>
+    </div>
+    <span class="hero-emoji">🥘</span>
+  </div>
+
+  <!-- DINNER STRIP -->
+  <div class="meal-strip" style="margin-top:10px">
+    <div class="meal-card past">
+      <div class="mc-day">Mon</div>
+      <span class="mc-emoji">🥗</span>
+      <div class="mc-name">Caesar Salad</div>
+      <div class="mc-time">⏱ 15 min</div>
+    </div>
+    <div class="meal-card past">
+      <div class="mc-day">Tue</div>
+      <span class="mc-emoji">🍝</span>
+      <div class="mc-name">Spag Bol</div>
+      <div class="mc-time">⏱ 45 min</div>
+    </div>
+    <div class="meal-card today" id="card-wed" onclick="openMealPicker('wed')">
+      <div class="mc-day">Wed <span class="mc-tonight">Tonight</span></div>
+      <span class="mc-emoji">🥘</span>
+      <div class="mc-name">Stir Fry</div>
+      <div class="mc-time">⏱ 20 min</div>
+    </div>
+    <div class="meal-card" id="card-thu" onclick="openMealPicker('thu')">
+      <div class="mc-day">Thu <span class="mc-date">11</span></div>
+      <span class="mc-emoji">🍛</span>
+      <div class="mc-name">Butter Chicken</div>
+      <div class="mc-time">⏱ 1 hr</div>
+    </div>
+    <div class="meal-card" id="card-fri" onclick="openMealPicker('fri')">
+      <div class="mc-day">Fri <span class="mc-date">12</span></div>
+      <span class="mc-emoji">🍕</span>
+      <div class="mc-name">Homemade Pizza</div>
+      <div class="mc-time">⏱ 30 min</div>
+    </div>
+    <div class="meal-card" id="card-sat" onclick="openMealPicker('sat')">
+      <div class="mc-day">Sat <span class="mc-date">13</span></div>
+      <span class="mc-emoji">🫕</span>
+      <div class="mc-name">Lamb Tagine</div>
+      <div class="mc-time">⏱ 2 hr</div>
+    </div>
+    <div class="meal-card empty" id="card-sun" onclick="openMealPicker('sun')">
+      <div class="mc-day">Sun <span class="mc-date">14</span></div>
+      <span class="mc-emoji" style="opacity:.25;font-size:22px">+</span>
+      <div class="mc-name">Add meal</div>
+    </div>
+  </div>
+  <div class="strip-caption">5 of 7 nights planned</div>
+
+  <!-- INGREDIENT PANEL (badge tap) -->
+  <div class="ing-panel" id="ingPanel">
+    <div class="ing-header">
+      <span class="ing-header-emoji" id="ingEmoji">🥘</span>
+      <div class="ing-header-info">
+        <div class="ing-header-title" id="ingTitle">Stir Fry</div>
+        <div class="ing-header-sub">Tap items to add to your run</div>
+      </div>
+      <div class="ing-close" onclick="closeIngPanel()">✕</div>
+    </div>
+    <div class="ing-chips" id="ingChips"></div>
+    <button class="ing-addall" onclick="addAllChips()">Add all to run</button>
+  </div>
+
+  <!-- MEAL PICKER SHEET -->
+  <div class="overlay" id="mealOverlay" onclick="closeMealPicker()"></div>
+  <div class="sheet meal-picker-sheet" id="mealSheet">
+    <div class="sheet-handle"></div>
+    <div class="meal-picker-topbar">
+      <button class="mp-cancel" onclick="closeMealPicker()">Cancel</button>
+      <span class="mp-title" id="mealPickerDay">Wednesday</span>
+      <button class="mp-edit">Edit</button>
+    </div>
+    <div class="meal-grid" id="mealLibrary"></div>
+    <div class="mp-search">
+      <span class="mp-search-icon">🔍</span>
+      <input placeholder="Search recipes" id="mpSearch" oninput="filterMeals(this.value)">
+    </div>
+  </div>
+
+  <!-- THIS WEEK'S RUN -->
+  <div class="run-section">
+    <div class="section-hdr" onclick="toggleRun()">
+      <div class="section-hdr-left">
+        <span class="section-hdr-icon">🛍️</span>
+        <span class="section-hdr-title">This Week's Run</span>
+        <span class="section-hdr-count" id="runCount">9</span>
+      </div>
+      <button class="done-btn" onclick="event.stopPropagation();showDone()">Done ✓</button>
+      <span class="section-hdr-chevron open" id="runChevron">›</span>
+    </div>
+
+    <div class="run-body open" id="runBody">
+    <div class="run-list" id="runList">
+      <!-- Aisle 1 – Fruit & Veg -->
+      <div class="run-item" data-aisle="1">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🍌</span>
+        <span class="ri-name">Bananas</span>
+        <span class="ri-tag cadence">Weekly</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <div class="run-item" data-aisle="1">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot manual"></div>
+        <span class="ri-emoji">🥑</span>
+        <span class="ri-name">Avocado</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Aisle 2 – Dairy -->
+      <div class="run-item" data-aisle="2">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🧀</span>
+        <span class="ri-name">Cottage cheese</span>
+        <span class="ri-tag cadence">Fortnightly</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Aisle 3 – Meat -->
+      <div class="run-item" data-aisle="3">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🍗</span>
+        <span class="ri-name">Chicken thighs</span>
+        <span class="ri-tag cadence">Weekly</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Aisle 5 – Pantry -->
+      <div class="run-item" data-aisle="5">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🍝</span>
+        <span class="ri-name">Pasta 500g</span>
+        <span class="ri-tag cadence">Due</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <div class="run-item" data-aisle="5">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🫒</span>
+        <span class="ri-name">Olive oil</span>
+        <span class="ri-tag cadence">Due</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <div class="run-item" data-aisle="5">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🍅</span>
+        <span class="ri-name">Tomato sauce</span>
+        <span class="ri-tag cadence">Overdue</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Aisle 6 – Bread -->
+      <div class="run-item" data-aisle="6">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🍞</span>
+        <span class="ri-name">Sourdough loaf</span>
+        <span class="ri-tag cadence">Weekly</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Aisle 7 – Cleaning -->
+      <div class="run-item" data-aisle="7">
+        <div class="ri-tick" onclick="tickItem(this)"></div>
+        <div class="ri-dot cadence"></div>
+        <span class="ri-emoji">🧼</span>
+        <span class="ri-name">Dishwasher tablets</span>
+        <span class="ri-tag cadence">Due</span>
+        <span class="ri-remove" onclick="removeRunItem(this)">×</span>
+      </div>
+      <!-- Quick add -->
+      <div class="quick-add">
+        <input class="qa-input" id="qaInput" placeholder="Quick add item…" onkeydown="qaKey(event)">
+        <span class="qa-go" onclick="qaAdd()">⊕</span>
+      </div>
+    </div><!-- run-list -->
+    </div><!-- run-body -->
+  </div><!-- run-section -->
+
+  <!-- SUPPLIES SECTION -->
+  <div class="pantry-section">
+    <div class="section-hdr" id="pantryHeader" onclick="togglePantry()">
+      <div class="section-hdr-left">
+        <span class="section-hdr-icon">🧺</span>
+        <span class="section-hdr-title">Supplies</span>
+        <span class="section-hdr-count" style="background:var(--t4);color:var(--t2)">32 items</span>
+        <span class="ph-low">3 low</span>
+      </div>
+      <span class="section-hdr-chevron open" id="pantryChevron">›</span>
+    </div>
+
+    <div class="pantry-body" id="pantryBody">
+
+      <!-- Normal groups -->
+      <div id="normalGroups">
+
+        <!-- Cold Goods -->
+        <div class="cat-block">
+          <div class="cat-header" onclick="toggleCat(this)">
+            <span class="cat-chevron open">›</span>
+            <span class="cat-emoji">🧊</span>
+            <span class="cat-name">Cold Goods</span>
+            <span class="cat-count">7</span>
+          </div>
+          <div class="cat-items open">
+            <div class="pitem" data-aisle="2">
+              <span class="pitem-name">Cottage cheese</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Fortnightly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Cottage cheese','cadence','',2)"></button>
+            </div>
+            <div class="pitem" data-aisle="2">
+              <span class="pitem-name">Yoghurt</span>
+              <div class="pitem-contexts"><span class="pitem-low">Running low</span></div>
+              <span class="cadence-pill">Fortnightly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Yoghurt','manual','',2)"></button>
+            </div>
+            <div class="pitem" data-aisle="2">
+              <span class="pitem-name">Mozzarella</span>
+              <div class="pitem-contexts"><span class="pitem-low">Running low</span></div>
+              <span class="cadence-pill">Weekly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Mozzarella','manual','',2)"></button>
+            </div>
+            <div class="pitem" data-aisle="2">
+              <span class="pitem-name">Cream</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Cream','manual','',2)"></button>
+            </div>
+            <div class="pitem" data-aisle="2">
+              <span class="pitem-name">Butter</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Butter','manual','',2)"></button>
+            </div>
+            <div class="pitem" data-aisle="1">
+              <span class="pitem-name">Capsicum</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Weekly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Capsicum','manual','',1)"></button>
+            </div>
+            <div class="pitem" data-aisle="3">
+              <span class="pitem-name">Chicken thighs</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Weekly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Chicken thighs','cadence','',3)"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Breakfast -->
+        <div class="cat-block">
+          <div class="cat-header" onclick="toggleCat(this)">
+            <span class="cat-chevron open">›</span>
+            <span class="cat-emoji">🥣</span>
+            <span class="cat-name">Breakfast</span>
+            <span class="cat-count">4</span>
+          </div>
+          <div class="cat-items open">
+            <div class="pitem" data-aisle="1">
+              <span class="pitem-name">Bananas</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Weekly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Bananas','cadence','',1)"></button>
+            </div>
+            <div class="pitem" data-aisle="6">
+              <span class="pitem-name">Rolled oats</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Rolled oats','manual','',6)"></button>
+            </div>
+            <div class="pitem" data-aisle="6">
+              <span class="pitem-name">Honey</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Honey','manual','',6)"></button>
+            </div>
+            <div class="pitem" data-aisle="6">
+              <span class="pitem-name">Sourdough loaf</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Weekly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Sourdough loaf','cadence','',6)"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pantry -->
+        <div class="cat-block">
+          <div class="cat-header" onclick="toggleCat(this)">
+            <span class="cat-chevron">›</span>
+            <span class="cat-emoji">🥫</span>
+            <span class="cat-name">Pantry</span>
+            <span class="cat-count">7</span>
+          </div>
+          <div class="cat-items">
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Olive oil</span>
+              <div class="pitem-contexts"><span class="status-low">Running low</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Olive oil','cadence','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Pasta 500g</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Pasta 500g','cadence','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Tomato sauce</span>
+              <div class="pitem-contexts"><span class="status-low">Running low</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Tomato sauce','cadence','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Soy sauce</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Soy sauce','manual','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Garam masala</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Quarterly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Garam masala','manual','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Pepper</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Quarterly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Pepper','manual','',5)"></button>
+            </div>
+            <div class="pitem" data-aisle="5">
+              <span class="pitem-name">Passata</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Passata','manual','',5)"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cleaning -->
+        <div class="cat-block">
+          <div class="cat-header" onclick="toggleCat(this)">
+            <span class="cat-chevron">›</span>
+            <span class="cat-emoji">🧹</span>
+            <span class="cat-name">Cleaning</span>
+            <span class="cat-count">3</span>
+          </div>
+          <div class="cat-items">
+            <div class="pitem" data-aisle="7">
+              <span class="pitem-name">Dishwasher tablets</span>
+              <div class="pitem-contexts"><span class="status-due">Due</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn added" onclick="pantryAdd(this,'Dishwasher tablets','cadence','',7)"></button>
+            </div>
+            <div class="pitem" data-aisle="7">
+              <span class="pitem-name">Washing powder</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Monthly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Washing powder','cadence','',7)"></button>
+            </div>
+            <div class="pitem" data-aisle="7">
+              <span class="pitem-name">Dog food</span>
+              <div class="pitem-contexts"><span class="status-ok">OK</span></div>
+              <span class="cadence-pill">Fortnightly</span>
+              <button class="padd-btn" onclick="pantryAdd(this,'Dog food','cadence','',7)"></button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end normalGroups -->
+    </div><!-- end pantryBody -->
+  </div><!-- end suppliesSection -->
+
+</div><!-- scroll -->
+</div><!-- screen -->
+
+<!-- INGREDIENT REVIEW SHEET -->
+<div class="sheet" id="ingReviewSheet" style="z-index:103;text-align:left">
+  <div class="sheet-handle"></div>
+  <div class="ing-review-header">
+    <span id="irEmoji" style="font-size:32px">🍛</span>
+    <div>
+      <div class="ing-review-title" id="irTitle">Butter Chicken</div>
+      <div class="ing-review-sub">What do you need for this week's run?</div>
+    </div>
+  </div>
+  <div class="ing-chips" id="irChips" style="padding:4px 0 4px"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="ing-addall" style="flex:1;margin:0" onclick="irAddAll()">Add all</button>
+    <button class="sheet-cancel" style="flex:1" onclick="closeIngReview()">Done</button>
+  </div>
+</div>
+
+<!-- ITEM EDIT SHEET -->
+<div class="overlay" id="editOverlay" onclick="closeEditSheet()"></div>
+<div class="sheet" id="editSheet" style="z-index:103;text-align:left">
+  <div class="sheet-handle"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div style="font-size:18px;font-weight:800;letter-spacing:-.3px" id="editItemName">Olive oil</div>
+    <button onclick="deleteItem()" style="font-size:12px;font-weight:700;color:var(--coral);background:var(--coral-s);border:none;border-radius:20px;padding:6px 12px;cursor:pointer;font-family:'DM Sans',sans-serif">Delete</button>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Name</div>
+  <input id="editNameInput" style="width:100%;background:var(--card2);border:1px solid var(--t4);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--t1);outline:none;margin-bottom:16px">
+  <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Cadence</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap" id="cadencePicker">
+    <div class="edit-pill" data-val="Weekly" onclick="pickCadence(this)">Weekly</div>
+    <div class="edit-pill" data-val="Fortnightly" onclick="pickCadence(this)">Fortnightly</div>
+    <div class="edit-pill" data-val="Monthly" onclick="pickCadence(this)">Monthly</div>
+    <div class="edit-pill" data-val="Quarterly" onclick="pickCadence(this)">Quarterly</div>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Category</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px" id="catPicker">
+    <div class="edit-pill" data-val="Cold Goods" onclick="pickCat(this)">🧊 Cold Goods</div>
+    <div class="edit-pill" data-val="Breakfast" onclick="pickCat(this)">🥣 Breakfast</div>
+    <div class="edit-pill" data-val="Pantry" onclick="pickCat(this)">🥫 Pantry</div>
+    <div class="edit-pill" data-val="Cleaning" onclick="pickCat(this)">🧹 Cleaning</div>
+  </div>
+  <div style="font-size:11px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px">Run aisle</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px" id="aislePicker">
+    <div class="edit-pill" data-val="1" onclick="pickAisle(this)">1 · Fruit & Veg</div>
+    <div class="edit-pill" data-val="2" onclick="pickAisle(this)">2 · Dairy</div>
+    <div class="edit-pill" data-val="3" onclick="pickAisle(this)">3 · Meat</div>
+    <div class="edit-pill" data-val="4" onclick="pickAisle(this)">4 · Deli & Bakery</div>
+    <div class="edit-pill" data-val="5" onclick="pickAisle(this)">5 · Pantry</div>
+    <div class="edit-pill" data-val="6" onclick="pickAisle(this)">6 · Breakfast & Bread</div>
+    <div class="edit-pill" data-val="7" onclick="pickAisle(this)">7 · Cleaning</div>
+  </div>
+  <button onclick="saveEditItem()" style="width:100%;padding:14px;background:var(--amber);border:none;border-radius:14px;color:#000;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px">Save</button>
+  <button onclick="closeEditSheet()" class="sheet-cancel">Cancel</button>
+</div>
+
+<!-- DONE CONFIRM SHEET -->
+<div class="overlay" id="overlay" onclick="hideSheet()"></div>
+<div class="sheet" id="doneSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-icon">✅</div>
+  <h3>Done shopping?</h3>
+  <p id="doneMsg">This will remove <strong>0 ticked items</strong> and reset their cadence clocks.<br><strong>0 unticked items</strong> will stay in your run.</p>
+  <button class="sheet-confirm" onclick="confirmDone()">Remove ticked items</button>
+  <button class="sheet-cancel" onclick="hideSheet()">Cancel</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <div class="tab"><span class="tab-icon">📅</span><span class="tab-label">Calendar</span></div>
+  <div class="tab active"><span class="tab-icon">🛒</span><span class="tab-label">Shopping</span></div>
+  <div class="tab"><span class="tab-icon">💪</span><span class="tab-label">Exercise</span></div>
+  <div class="tab"><span class="tab-icon">🧹</span><span class="tab-label">Chores</span></div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────
+let runCount = 9;
+let activeIngCard = null;
+let pantryOpen = true;
+
+// ── Run count ──────────────────────────────────────────────
+function updateRunCount() {
+  document.getElementById('runCount').textContent = runCount;
+}
+
+// ── Tick items ─────────────────────────────────────────────
+function tickItem(tick) {
+  tick.classList.toggle('done');
+  tick.closest('.run-item').classList.toggle('ticked');
+}
+
+// ── Remove from run ────────────────────────────────────────
+function removeRunItem(x) {
+  const item = x.closest('.run-item');
+  item.style.opacity = '0';
+  item.style.transform = 'translateX(20px)';
+  item.style.transition = 'all .2s';
+  setTimeout(() => { item.remove(); runCount--; updateRunCount(); }, 200);
+}
+
+// ── Quick add ──────────────────────────────────────────────
+function focusAdd() { document.getElementById('qaInput').focus(); }
+function qaKey(e)   { if (e.key === 'Enter') qaAdd(); }
+function qaAdd() {
+  const input = document.getElementById('qaInput');
+  const val = input.value.trim();
+  if (!val) return;
+  addToRun(val, 'manual', '');
+  input.value = '';
+  toast(val + ' added to run');
+}
+
+// Emoji lookup for common ingredients & items
+const itemEmoji = {
+  'Capsicum':'🫑','Soy sauce':'🥢','Sesame oil':'🛢️','Spring onion':'🌱',
+  'Yoghurt':'🥛','Cream':'🥛','Garam masala':'🌶️','Tomato paste':'🍅',
+  'Mozzarella':'🧀','Passata':'🍅','Prosciutto':'🥓','Rocket':'🥬',
+  'Lamb shoulder':'🥩','Chickpeas':'🫘','Preserved lemon':'🍋','Coriander':'🌿',
+  'Cos lettuce':'🥬','Parmesan':'🧀','Croutons':'🍞','Bacon':'🥓',
+  'White fish':'🐟','Corn tortillas':'🌮','Avocado':'🥑','Lime':'🍋',
+  'Arborio rice':'🍚','Mushrooms':'🍄','White wine':'🍷',
+  'Chicken breast':'🍗','Breadcrumbs':'🍞','Eggs':'🥚','Lemon':'🍋',
+  'Beef mince':'🥩','Pasta 500g':'🍝','Tomato sauce':'🍅',
+};
+
+function addToRun(name, source, tag, aisle = 9) {
+  const list = document.getElementById('runList');
+  const qaRow = list.querySelector('.quick-add');
+  const el = document.createElement('div');
+  el.className = 'run-item';
+  el.dataset.aisle = aisle;
+  el.style.opacity = '0';
+  const emoji = itemEmoji[name] || '🛒';
+  el.innerHTML = `
+    <div class="ri-tick" onclick="tickItem(this)"></div>
+    <div class="ri-dot ${source}"></div>
+    <span class="ri-emoji">${emoji}</span>
+    <span class="ri-name">${name}</span>
+    ${tag ? `<span class="ri-tag ${source}">${tag}</span>` : ''}
+    <span class="ri-remove" onclick="removeRunItem(this)">×</span>`;
+  list.insertBefore(el, qaRow);
+  requestAnimationFrame(() => { el.style.transition='opacity .2s'; el.style.opacity='1'; });
+  runCount++; updateRunCount();
+}
+
+// ── Meal library data ──────────────────────────────────────
+const mealLibrary = [
+  { id:'stir-fry',    emoji:'🥘', name:'Stir Fry',        meta:'Quick · 20 min', lastWeek:false, ingredients:['Capsicum','Soy sauce','Sesame oil','Spring onion'] },
+  { id:'spag-bol',    emoji:'🍝', name:'Spag Bol',         meta:'Family fave · 45 min', lastWeek:true, ingredients:['Beef mince','Pasta 500g','Tomato sauce','Parmesan'] },
+  { id:'butter-chk',  emoji:'🍛', name:'Butter Chicken',   meta:'Slow cook · 1 hr', lastWeek:false, ingredients:['Yoghurt','Cream','Garam masala','Tomato paste'] },
+  { id:'pizza',       emoji:'🍕', name:'Homemade Pizza',   meta:'Fun night · 30 min', lastWeek:true, ingredients:['Mozzarella','Passata','Prosciutto','Rocket'] },
+  { id:'tagine',      emoji:'🫕', name:'Lamb Tagine',      meta:'Weekend · 2 hr', lastWeek:false, ingredients:['Lamb shoulder','Chickpeas','Preserved lemon','Coriander'] },
+  { id:'caesar',      emoji:'🥗', name:'Caesar Salad',     meta:'Light · 15 min', lastWeek:false, ingredients:['Cos lettuce','Parmesan','Croutons','Bacon'] },
+  { id:'tacos',       emoji:'🌮', name:'Fish Tacos',       meta:'Summer · 25 min', lastWeek:false, ingredients:['White fish','Corn tortillas','Avocado','Lime'] },
+  { id:'risotto',     emoji:'🍚', name:'Mushroom Risotto', meta:'Cosy · 40 min', lastWeek:false, ingredients:['Arborio rice','Mushrooms','Parmesan','White wine'] },
+  { id:'schnitzel',   emoji:'🍗', name:'Chicken Schnitzel',meta:'Classic · 30 min', lastWeek:false, ingredients:['Chicken breast','Breadcrumbs','Eggs','Lemon'] },
+];
+
+// Day state — what meal is assigned to each day
+const dayState = {
+  wed: { meal: 'stir-fry',   emoji:'🥘', name:'Stir Fry',       ingredients:['Capsicum','Soy sauce','Sesame oil','Spring onion'] },
+  thu: { meal: 'butter-chk', emoji:'🍛', name:'Butter Chicken',  ingredients:['Yoghurt','Cream','Garam masala','Tomato paste'] },
+  fri: { meal: 'pizza',      emoji:'🍕', name:'Homemade Pizza',  ingredients:['Mozzarella','Passata','Prosciutto','Rocket'] },
+  sat: { meal: 'tagine',     emoji:'🫕', name:'Lamb Tagine',     ingredients:['Lamb shoulder','Chickpeas','Preserved lemon','Coriander'] },
+  sun: { meal: null }
+};
+
+const dayLabels = { wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday', sun:'Sunday' };
+
+let activeMealDay = null;
+
+// ── Meal picker ────────────────────────────────────────────
+function renderMealGrid(filter = '') {
+  const current = dayState[activeMealDay]?.meal;
+  const q = filter.toLowerCase();
+  const filtered = mealLibrary.filter(m => m.name.toLowerCase().includes(q));
+  const grid = document.getElementById('mealLibrary');
+  grid.innerHTML = filtered.map(m => `
+    <div class="mg-tile ${current === m.id ? 'selected' : ''}" onclick="selectMeal('${activeMealDay}','${m.id}')">
+      <span class="mg-badge">${m.lastWeek ? 'Last wk' : m.meta.split('·')[1]?.trim() || ''}</span>
+      <span class="mg-emoji">${m.emoji}</span>
+      <div class="mg-name">${m.name}</div>
+      <div class="mg-meta">${m.ingredients.length} items</div>
+    </div>`).join('');
+}
+
+function openMealPicker(day) {
+  activeMealDay = day;
+  document.getElementById('mealPickerDay').textContent = dayLabels[day] || day;
+  document.getElementById('mpSearch').value = '';
+  renderMealGrid();
+  document.getElementById('mealOverlay').classList.add('show');
+  document.getElementById('mealSheet').classList.add('show');
+}
+
+function filterMeals(val) {
+  renderMealGrid(val);
+}
+
+function closeMealPicker() {
+  document.getElementById('mealOverlay').classList.remove('show');
+  document.getElementById('mealSheet').classList.remove('show');
+  activeMealDay = null;
+}
+
+function selectMeal(day, mealId) {
+  const prev = dayState[day]?.meal;
+  const meal = mealLibrary.find(m => m.id === mealId);
+  const isSame = prev === mealId;
+
+  // Update state
+  dayState[day] = { meal: mealId, emoji: meal.emoji, name: meal.name, ingredients: meal.ingredients };
+
+  // Update card UI
+  const card = document.getElementById('card-' + day);
+  const isToday = day === 'wed';
+  card.className = 'meal-card' + (isToday ? ' today' : '');
+  card.innerHTML = `
+    <div class="mc-day">${isToday ? 'Wed · Today' : dayLabels[day].slice(0,3)}</div>
+    <span class="mc-emoji">${meal.emoji}</span>
+    <div class="mc-name">${meal.name}</div>
+    <div class="mc-badge" onclick="event.stopPropagation();openIngPanel('${day}','${meal.emoji}','${meal.name}',${JSON.stringify(meal.ingredients)})">● ${meal.ingredients.length} items</div>`;
+  card.setAttribute('onclick', `openMealPicker('${day}')`);
+
+  closeMealPicker();
+
+  // New meal: flag supplies + open ingredient review
+  if (!isSame) {
+    flagSuppliesIngredients(meal);
+    setTimeout(() => openIngReview(meal), 220);
+  }
+}
+
+// ── Ingredient review sheet (post meal selection) ──────────
+function openIngReview(meal) {
+  document.getElementById('irEmoji').textContent = meal.emoji;
+  document.getElementById('irTitle').textContent = meal.name;
+  const chips = document.getElementById('irChips');
+  chips.innerHTML = meal.ingredients.map(ing => `
+    <div class="chip" onclick="toggleChip(this,'${ing}','${meal.name}')">
+      <span class="chip-plus"></span>${ing}
+    </div>`).join('');
+  document.getElementById('mealOverlay').classList.add('show');
+  document.getElementById('ingReviewSheet').classList.add('show');
+}
+
+function closeIngReview() {
+  document.getElementById('mealOverlay').classList.remove('show');
+  document.getElementById('ingReviewSheet').classList.remove('show');
+}
+
+function irAddAll() {
+  document.querySelectorAll('#irChips .chip:not(.added)').forEach(c => c.click());
+}
+
+// Flag supplies items that match meal ingredients with a "for [Meal]" badge
+function flagSuppliesIngredients(meal) {
+  document.querySelectorAll('.pitem').forEach(pitem => {
+    const name = pitem.querySelector('.pitem-name')?.textContent;
+    if (meal.ingredients.includes(name)) {
+      const ctx = pitem.querySelector('.pitem-contexts');
+      // Only add if not already flagged for this meal
+      if (ctx && !ctx.querySelector(`[data-meal="${meal.name}"]`)) {
+        const badge = document.createElement('span');
+        badge.className = 'pitem-meal';
+        badge.dataset.meal = meal.name;
+        badge.textContent = `for ${meal.name}`;
+        ctx.prepend(badge);
+      }
+    }
+  });
+}
+
+// ── Ingredient panel (badge tap — inline below strip) ──────
+function openIngPanel(id, emoji, name, ingredients) {
+  const panel = document.getElementById('ingPanel');
+  if (activeIngCard === id && panel.classList.contains('open')) {
+    closeIngPanel(); return;
+  }
+  activeIngCard = id;
+  document.getElementById('ingEmoji').textContent = emoji;
+  document.getElementById('ingTitle').textContent = name + ' — ingredients';
+  const chips = document.getElementById('ingChips');
+  chips.innerHTML = ingredients.map(ing => `
+    <div class="chip" onclick="toggleChip(this,'${ing}','${name}')">
+      <span class="chip-plus"></span>${ing}
+    </div>`).join('');
+  panel.classList.add('open');
+  setTimeout(() => panel.scrollIntoView({ behavior:'smooth', block:'nearest' }), 60);
+}
+
+function closeIngPanel() {
+  document.getElementById('ingPanel').classList.remove('open');
+  activeIngCard = null;
+}
+
+function toggleChip(chip, name, meal) {
+  chip.classList.toggle('added');
+  if (chip.classList.contains('added')) {
+    addToRun(name, 'meal', meal, 9);
+    toast(name + ' added');
+  } else {
+    document.querySelectorAll('.run-item .ri-name').forEach(n => {
+      if (n.textContent === name) removeRunItem(n.closest('.run-item').querySelector('.ri-remove'));
+    });
+  }
+}
+
+function addAllChips() {
+  document.querySelectorAll('#ingChips .chip:not(.added)').forEach(c => c.click());
+}
+
+// ── Run toggle ─────────────────────────────────────────────
+let runOpen = true;
+function toggleRun() {
+  runOpen = !runOpen;
+  document.getElementById('runBody').classList.toggle('open', runOpen);
+  document.getElementById('runChevron').classList.toggle('open', runOpen);
+  document.querySelector('.run-section .section-hdr').classList.toggle('open', runOpen);
+}
+
+// ── Pantry toggle ──────────────────────────────────────────
+function togglePantry() {
+  pantryOpen = !pantryOpen;
+  document.getElementById('pantryBody').classList.toggle('open', pantryOpen);
+  document.getElementById('pantryChevron').classList.toggle('open', pantryOpen);
+  document.getElementById('pantryHeader').classList.toggle('open', pantryOpen);
+}
+
+// Initialise section states
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('runBody').classList.toggle('open', runOpen);
+  document.getElementById('runChevron').classList.toggle('open', runOpen);
+  document.querySelector('.run-section .section-hdr').classList.toggle('open', runOpen);
+  document.getElementById('pantryBody').classList.toggle('open', pantryOpen);
+  document.getElementById('pantryChevron').classList.toggle('open', pantryOpen);
+  document.getElementById('pantryHeader').classList.toggle('open', pantryOpen);
+
+  // Inject emojis into supplies items
+  const suppliesEmoji = {
+    ...itemEmoji,
+    'Cottage cheese':'🧀','Yoghurt':'🥛','Mozzarella':'🧀','Cream':'🥛',
+    'Butter':'🧈','Capsicum':'🫑','Chicken thighs':'🍗',
+    'Bananas':'🍌','Rolled oats':'🌾','Honey':'🍯','Sourdough loaf':'🍞',
+    'Olive oil':'🫒','Pasta 500g':'🍝','Tomato sauce':'🍅',
+    'Soy sauce':'🫙','Garam masala':'🌶️','Pepper':'🧂','Passata':'🍅',
+    'Dishwasher tablets':'🧼','Washing powder':'🧺','Dog food':'🐾',
+  };
+  document.querySelectorAll('.pitem').forEach(pitem => {
+    const nameEl = pitem.querySelector('.pitem-name');
+    if (!nameEl || pitem.querySelector('.pitem-emoji')) return;
+    const emoji = suppliesEmoji[nameEl.textContent] || '🛒';
+    const span = document.createElement('span');
+    span.className = 'pitem-emoji';
+    span.textContent = emoji;
+    pitem.insertBefore(span, nameEl);
+  });
+});
+
+// ── Category toggle ────────────────────────────────────────
+function toggleCat(header) {
+  const chev = header.querySelector('.cat-chevron');
+  const items = header.nextElementSibling;
+  chev.classList.toggle('open');
+  items.classList.toggle('open');
+}
+
+// ── Scan mode removed ──────────────────────────────────────
+
+// ── Tap-to-edit pantry items (event delegation) ────────────
+let editingPitem = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('pantryBody').addEventListener('click', e => {
+    // Ignore taps on the + button
+    if (e.target.closest('.padd-btn')) return;
+    // Ignore taps on cat-header (collapse)
+    if (e.target.closest('.cat-header')) return;
+    const pitem = e.target.closest('.pitem');
+    if (pitem) openEditSheet(pitem);
+  });
+});
+
+function openEditSheet(pitem) {
+  editingPitem = pitem;
+  const name = pitem.querySelector('.pitem-name').textContent;
+  const cadence = pitem.querySelector('.cadence-pill')?.textContent || 'Monthly';
+  const catBlock = pitem.closest('.cat-block');
+  const cat = catBlock?.querySelector('.cat-name')?.textContent || '';
+  const aisle = pitem.dataset.aisle || '5';
+
+  document.getElementById('editItemName').textContent = name;
+  document.getElementById('editNameInput').value = name;
+
+  document.querySelectorAll('#cadencePicker .edit-pill').forEach(p =>
+    p.classList.toggle('selected', p.dataset.val === cadence));
+  document.querySelectorAll('#catPicker .edit-pill').forEach(p =>
+    p.classList.toggle('selected', p.dataset.val === cat));
+  document.querySelectorAll('#aislePicker .edit-pill').forEach(p =>
+    p.classList.toggle('selected', p.dataset.val === aisle));
+
+  document.getElementById('editOverlay').classList.add('show');
+  document.getElementById('editSheet').classList.add('show');
+}
+
+function closeEditSheet() {
+  document.getElementById('editOverlay').classList.remove('show');
+  document.getElementById('editSheet').classList.remove('show');
+  editingPitem = null;
+}
+
+function pickCadence(pill) {
+  document.querySelectorAll('#cadencePicker .edit-pill').forEach(p => p.classList.remove('selected'));
+  pill.classList.add('selected');
+}
+
+function pickCat(pill) {
+  document.querySelectorAll('#catPicker .edit-pill').forEach(p => p.classList.remove('selected'));
+  pill.classList.add('selected');
+}
+
+function pickAisle(pill) {
+  document.querySelectorAll('#aislePicker .edit-pill').forEach(p => p.classList.remove('selected'));
+  pill.classList.add('selected');
+}
+
+function saveEditItem() {
+  if (!editingPitem) return;
+  const newName = document.getElementById('editNameInput').value.trim();
+  const newCadence = document.querySelector('#cadencePicker .edit-pill.selected')?.dataset.val || 'Monthly';
+  const newAisle = document.querySelector('#aislePicker .edit-pill.selected')?.dataset.val || '5';
+  if (newName) {
+    editingPitem.querySelector('.pitem-name').textContent = newName;
+    const cp = editingPitem.querySelector('.cadence-pill');
+    if (cp) cp.textContent = newCadence;
+    editingPitem.dataset.aisle = newAisle;
+  }
+  toast('Saved');
+  closeEditSheet();
+}
+
+function deleteItem() {
+  if (!editingPitem) return;
+  editingPitem.style.opacity = '0';
+  editingPitem.style.transition = 'opacity .2s';
+  setTimeout(() => { editingPitem.remove(); }, 200);
+  closeEditSheet();
+  toast('Item removed');
+}
+
+// ── Pantry add/remove toggle ───────────────────────────────
+function pantryAdd(btn, name, source, meal, aisle) {
+  if (btn.classList.contains('added')) {
+    // Remove from run
+    btn.classList.remove('added');
+    document.querySelectorAll('#runList .ri-name').forEach(n => {
+      if (n.textContent === name) removeRunItem(n.closest('.run-item').querySelector('.ri-remove'));
+    });
+    toast(name + ' removed from run');
+  } else {
+    btn.classList.add('added');
+    addToRun(name, source === 'meal' ? 'meal' : source, meal || '', aisle);
+    toast(name + ' → run');
+  }
+}
+
+// ── Done flow ──────────────────────────────────────────────
+function showDone() {
+  const ticked   = document.querySelectorAll('.run-item .ri-tick.done').length;
+  const unticked = document.querySelectorAll('.run-item:not(.ticked) .ri-name').length;
+  document.getElementById('doneMsg').innerHTML =
+    `This will remove <strong>${ticked} ticked item${ticked!==1?'s':''}</strong> and reset their cadence clocks.<br><strong>${unticked} unticked item${unticked!==1?'s':''}</strong> will stay in your run.`;
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('doneSheet').classList.add('show');
+}
+
+function hideSheet() {
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('doneSheet').classList.remove('show');
+}
+
+function confirmDone() {
+  document.querySelectorAll('.run-item.ticked').forEach(item => {
+    item.style.opacity = '0';
+    item.style.transition = 'opacity .2s';
+    setTimeout(() => { item.remove(); }, 200);
+  });
+  runCount = document.querySelectorAll('.run-item').length - 1; // -1 for quick-add row
+  setTimeout(() => { updateRunCount(); hideSheet(); toast('Done! Cadence clocks reset ✓'); }, 220);
+}
+
+// ── Toast ──────────────────────────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+</script>
+</body>
+</html>

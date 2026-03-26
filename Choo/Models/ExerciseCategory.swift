@@ -122,5 +122,21 @@ struct ExerciseCategory: Codable, Identifiable {
                 SessionType(id: UUID().uuidString, name: "Reformer", description: "Machine-based", durationMinutes: 50, estimatedCalories: 200, intensity: "moderate"),
             ]
         ),
+        ExerciseCategory(
+            name: "Cardio", emoji: "❤️‍🔥", colorHex: "#e74c3c", sortOrder: 5, isDefault: true,
+            sessionTypes: [
+                SessionType(id: UUID().uuidString, name: "VO2 Max", description: "High intensity intervals · Peak effort", durationMinutes: 30, estimatedCalories: 400, intensity: "peak"),
+                SessionType(id: UUID().uuidString, name: "HIIT", description: "Circuits · Full body", durationMinutes: 30, estimatedCalories: 350, intensity: "high"),
+                SessionType(id: UUID().uuidString, name: "Skipping", description: "Jump rope · Cardio", durationMinutes: 20, estimatedCalories: 250, intensity: "high"),
+            ]
+        ),
+        ExerciseCategory(
+            name: "Cycling", emoji: "🚴", colorHex: "#27ae60", sortOrder: 6, isDefault: true,
+            sessionTypes: [
+                SessionType(id: UUID().uuidString, name: "Easy Ride", description: "Recovery pace · Zone 2", durationMinutes: 60, estimatedCalories: 350, intensity: "light"),
+                SessionType(id: UUID().uuidString, name: "Tempo Ride", description: "Steady effort · Zone 3", durationMinutes: 45, estimatedCalories: 400, intensity: "moderate"),
+                SessionType(id: UUID().uuidString, name: "Hill Intervals", description: "Climbs · High intensity", durationMinutes: 45, estimatedCalories: 500, intensity: "high"),
+            ]
+        ),
     ]
 }

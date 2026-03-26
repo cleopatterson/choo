@@ -22,6 +22,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSCalendarsFullAccessUsageDescription</key>
 	<string>Choo can show events from your device calendars alongside your family events.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Choo uses your health data to show steps, calories burned, and completed workouts in your exercise tab.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>

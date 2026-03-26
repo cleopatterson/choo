@@ -13,8 +13,11 @@ extension Color {
     // Teal accent — Exercise tab
     static let chooTeal = Color(hex: "#4ecdc4")
 
-    // Coral accent — Chores tab
+    // Coral accent — legacy
     static let chooCoral = Color(hex: "#f97066")
+
+    // Rose accent — House tab
+    static let chooRose = Color(hex: "#C88EA7")
 
     // Hex initializer
     init(hex: String) {

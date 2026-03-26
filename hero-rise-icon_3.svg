@@ -1,0 +1,32 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="40%" y1="100%" x2="60%" y2="0%">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="45%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="200" height="200" rx="44" fill="url(#bg)"/>
+  
+  <!-- Glow source -->
+  <ellipse cx="105" cy="215" rx="35" ry="18" fill="rgba(196,181,253,0.15)"/>
+  
+  <!-- Hero bubble (Alex / "Bubble") -->
+  <circle cx="80" cy="54" r="44" fill="rgba(255,255,255,0.96)" filter="url(#shadow)"/>
+  <ellipse cx="64" cy="38" rx="14" ry="8" fill="rgba(255,255,255,0.5)" transform="rotate(-28 64 38)"/>
+  
+  <!-- Dad bubble -->
+  <circle cx="148" cy="92" r="30" fill="rgba(255,255,255,0.94)" filter="url(#shadow)"/>
+  <ellipse cx="138" cy="80" rx="9" ry="5.5" fill="rgba(255,255,255,0.45)" transform="rotate(-28 138 80)"/>
+  
+  <!-- Kid 1 -->
+  <circle cx="120" cy="148" r="22" fill="rgba(255,255,255,0.90)" filter="url(#shadow)"/>
+  <ellipse cx="113" cy="140" rx="7" ry="4" fill="rgba(255,255,255,0.38)" transform="rotate(-28 113 140)"/>
+  
+  <!-- Kid 2 — just emerging -->
+  <circle cx="68" cy="168" r="16" fill="rgba(255,255,255,0.87)" filter="url(#shadow)"/>
+  <ellipse cx="63" cy="162" rx="5" ry="3" fill="rgba(255,255,255,0.33)" transform="rotate(-28 63 162)"/>
+</svg>

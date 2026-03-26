@@ -51,13 +51,23 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate, UNUserNot
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        if let timestamp = userInfo["eventDate"] as? TimeInterval {
+
+        // Local notifications store eventDate as TimeInterval directly;
+        // push notifications from FCM send it as a String in the data payload.
+        let timestamp: TimeInterval?
+        if let t = userInfo["eventDate"] as? TimeInterval {
+            timestamp = t
+        } else if let s = userInfo["eventDate"] as? String, let t = Double(s) {
+            timestamp = t
+        } else {
+            timestamp = nil
+        }
+
+        if let timestamp {
             let date = Date(timeIntervalSince1970: timestamp)
-            NotificationCenter.default.post(
-                name: .chooNavigateToDate,
-                object: nil,
-                userInfo: ["date": date]
-            )
+            Task { @MainActor in
+                NavigationRouter.shared.navigateToEvent(date: date)
+            }
         }
         completionHandler()
     }

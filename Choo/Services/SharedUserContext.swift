@@ -1,6 +1,7 @@
 import Foundation
 
 enum SharedUserContext {
+    // Matches App Group in Choo.entitlements — kept as "wallboard" for backward compatibility
     private static let suiteName = "group.com.tonywall.wallboard"
 
     private enum Key {

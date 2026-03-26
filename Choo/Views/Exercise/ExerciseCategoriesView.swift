@@ -2,14 +2,17 @@ import SwiftUI
 
 struct ExerciseCategoriesView: View {
     @Bindable var viewModel: ExerciseViewModel
+    var scrollProxy: ScrollViewProxy?
 
     @State private var addingTypeTo: ExerciseCategory?
     @State private var editingType: (category: ExerciseCategory, sessionType: SessionType)?
+    @State private var deletingType: (category: ExerciseCategory, sessionType: SessionType)?
+    @State private var showingManageCategories = false
 
     var body: some View {
         VStack(spacing: 0) {
             // Section header
-            Text("YOUR CATEGORIES")
+            Text("SESSIONS")
                 .font(.caption.bold())
                 .foregroundStyle(.white.opacity(0.4))
                 .tracking(1.5)
@@ -21,6 +24,7 @@ struct ExerciseCategoriesView: View {
             VStack(spacing: 8) {
                 ForEach(viewModel.categories) { category in
                     categoryCard(category)
+                        .id("exercise_\(category.id ?? category.name)")
                 }
             }
         }
@@ -57,6 +61,25 @@ struct ExerciseCategoriesView: View {
                 editingType = nil
             }
         }
+        .confirmationDialog(
+            "Delete \"\(deletingType?.sessionType.name ?? "")\"?",
+            isPresented: Binding(
+                get: { deletingType != nil },
+                set: { if !$0 { deletingType = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let dt = deletingType {
+                    Task { await viewModel.deleteSessionType(from: dt.category, typeId: dt.sessionType.id) }
+                    deletingType = nil
+                }
+            }
+        }
+        .sheet(isPresented: $showingManageCategories) {
+            ExerciseManageSheet(viewModel: viewModel, initialMode: .manageCategories)
+                .presentationDetents([.medium, .large])
+        }
     }
 
     // MARK: - Category Card
@@ -64,48 +87,44 @@ struct ExerciseCategoriesView: View {
     @ViewBuilder
     private func categoryCard(_ category: ExerciseCategory) -> some View {
         let isExpanded = viewModel.expandedCategoryId == category.id
-        let scheduledCount = viewModel.scheduledCount(for: category)
 
         VStack(spacing: 0) {
             // Header
-            Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
-                    viewModel.expandedCategoryId = isExpanded ? nil : category.id
-                }
-            } label: {
-                HStack(spacing: 10) {
-                    Text(category.emoji)
-                        .font(.title3)
-                        .frame(width: 36, height: 36)
-                        .background(Color(hex: category.colorHex).opacity(0.2), in: RoundedRectangle(cornerRadius: 8))
+            HStack(spacing: 10) {
+                Text(category.emoji)
+                    .font(.title3)
+                    .frame(width: 36, height: 36)
+                    .background(Color(hex: category.colorHex).opacity(0.2), in: RoundedRectangle(cornerRadius: 8))
 
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(category.name)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.primary)
-                        Text("\(category.sessionTypes.count) type\(category.sessionTypes.count == 1 ? "" : "s")")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
+                Text(category.name)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(.primary)
 
-                    Spacer()
+                Spacer()
 
-                    if scheduledCount > 0 {
-                        Text("\(scheduledCount)× this week")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(Color(hex: "#4ecdc4"))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color(hex: "#4ecdc4").opacity(0.1), in: Capsule())
-                    }
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.secondary)
-                        .rotationEffect(.degrees(isExpanded ? 90 : 0))
-                }
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.secondary)
+                    .rotationEffect(.degrees(isExpanded ? 90 : 0))
+                    .animation(.easeInOut(duration: 0.22), value: isExpanded)
             }
             .padding(12)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                viewModel.expandedCategoryId = isExpanded ? nil : category.id
+                if !isExpanded {
+                    let catId = category.id ?? category.name
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                        withAnimation(.easeOut(duration: 0.3)) {
+                            scrollProxy?.scrollTo("exercise_\(catId)", anchor: .top)
+                        }
+                    }
+                }
+            }
+            .onLongPressGesture {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                showingManageCategories = true
+            }
 
             // Expanded content
             if isExpanded {
@@ -122,11 +141,9 @@ struct ExerciseCategoriesView: View {
                                 .onTapGesture {
                                     editingType = (category: category, sessionType: sessionType)
                                 }
-                                .swipeActions(edge: .trailing) {
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                     Button(role: .destructive) {
-                                        Task {
-                                            await viewModel.deleteSessionType(from: category, typeId: sessionType.id)
-                                        }
+                                        deletingType = (category: category, sessionType: sessionType)
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
@@ -173,35 +190,14 @@ struct ExerciseCategoriesView: View {
                 .fill(Color(hex: category.colorHex))
                 .frame(width: 8, height: 8)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(sessionType.name)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
-
-                HStack(spacing: 6) {
-                    if let dur = sessionType.durationDisplay {
-                        Text(dur)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    if let cal = sessionType.estimatedCalories, cal > 0 {
-                        Text("~\(cal) cal")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                    if let intensity = sessionType.intensityEnum {
-                        Text("⚡ \(intensity.displayName)")
-                            .font(.caption2.weight(.medium))
-                            .foregroundStyle(intensityColor(intensity))
-                    }
-                }
-            }
+            Text(sessionType.name)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
 
             Spacer()
 
-            let count = viewModel.scheduledCount(for: sessionType)
-            if count > 0 {
-                Text("\(count)×")
+            if let dur = sessionType.durationDisplay {
+                Text(dur)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -210,16 +206,6 @@ struct ExerciseCategoriesView: View {
         .padding(.vertical, 8)
     }
 
-    // MARK: - Helpers
-
-    private func intensityColor(_ intensity: ExerciseIntensity) -> Color {
-        switch intensity {
-        case .light: Color(red: 0.0, green: 0.72, blue: 0.58)
-        case .moderate: Color(red: 0.99, green: 0.80, blue: 0.43)
-        case .high: Color(red: 0.95, green: 0.57, blue: 0.24)
-        case .peak: Color(red: 1.0, green: 0.42, blue: 0.42)
-        }
-    }
 }
 
 // MARK: - Identifiable wrappers for sheets

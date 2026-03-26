@@ -38,3 +38,11 @@ Secrets.swift
 # Cloud Functions
 functions/lib/
 functions/node_modules/
+
+# Firebase cache
+.firebase/
+
+# Web app
+choo-web/node_modules/
+choo-web/dist/
+choo-web/.env

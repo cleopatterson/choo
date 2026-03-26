@@ -330,28 +330,20 @@ struct CalendarTabView: View {
 
     // MARK: - Month Banner
 
+    @State private var scrollToTodayTask: Task<Void, Never>?
+
     private func scrollToToday(proxy: ScrollViewProxy, reason: String) {
         let today = Calendar.current.startOfDay(for: Date())
-        let days = viewModel.visibleDays
-        let briefingInsertIndex = days.firstIndex(where: { $0 >= briefingViewModel.weekStart }) ?? 0
-        let preDays = Array(days.prefix(briefingInsertIndex))
-        let postDays = Array(days.suffix(from: briefingInsertIndex).filter { !briefingViewModel.weekDays.contains($0) })
 
-        print("[Calendar] scrollToToday (\(reason))")
-        print("[Calendar]   visibleDays.count=\(days.count), briefingInsertIndex=\(briefingInsertIndex)")
-        print("[Calendar]   preDays.count=\(preDays.count), postDays.count=\(postDays.count)")
-        print("[Calendar]   weekStart=\(briefingViewModel.weekStart), weekDays=\(briefingViewModel.weekDays.count)")
-        print("[Calendar]   today=\(today), todayInWeek=\(briefingViewModel.weekDays.contains(today))")
-        print("[Calendar]   headline='\(briefingViewModel.headline)'")
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        scrollToTodayTask?.cancel()
+        scrollToTodayTask = Task {
+            try? await Task.sleep(for: .milliseconds(500))
+            guard !Task.isCancelled else { return }
             if briefingViewModel.weekDays.contains(today) {
-                print("[Calendar]   -> scrollTo('today-anchor', .top)")
                 withAnimation {
                     proxy.scrollTo("today-anchor", anchor: .top)
                 }
             } else {
-                print("[Calendar]   -> scrollTo(date: \(today), .top)")
                 withAnimation {
                     proxy.scrollTo(today, anchor: .top)
                 }

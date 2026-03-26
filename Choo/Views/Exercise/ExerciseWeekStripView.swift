@@ -20,6 +20,10 @@ struct ExerciseWeekStripView: View {
                                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
                                     viewModel.selectedDayIndex = day.index
                                 }
+                                .onLongPressGesture {
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                    viewModel.selectedDayIndex = day.index
+                                }
                         }
                     }
                     .padding(.horizontal, 4)

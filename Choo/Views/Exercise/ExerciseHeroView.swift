@@ -37,10 +37,15 @@ struct ExerciseHeroView: View {
 
     // MARK: - Filled Hero (sessions today)
 
+    private static let heroDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "d MMM"
+        return f
+    }()
+
     @ViewBuilder
     private var filledHero: some View {
         let sessions = todaySessions
-        let nextSession = viewModel.todayNextSession
 
         // Combined title: "Yin Yoga & Easy Run"
         let combinedTitle: String = {
@@ -54,23 +59,18 @@ struct ExerciseHeroView: View {
             return names.dropLast().joined(separator: ", ") + " & " + (names.last ?? "")
         }()
 
-        // Combined subtitle: "Morning + Lunch · 1hr 30min"
+        // Subtitle: total duration
+        let totalMinutes = sessions.compactMap(\.assignment.durationMinutes).reduce(0, +)
         let combinedSubtitle: String = {
-            let slots = sessions.map(\.timeSlot.label)
-            let slotText = slots.joined(separator: " + ")
-            let totalMinutes = sessions.compactMap(\.assignment.durationMinutes).reduce(0, +)
             if totalMinutes > 0 {
-                let durText: String
                 if totalMinutes >= 60 {
                     let hrs = totalMinutes / 60
                     let mins = totalMinutes % 60
-                    durText = mins > 0 ? "\(hrs)hr \(mins)min" : "\(hrs)hr"
-                } else {
-                    durText = "\(totalMinutes)min"
+                    return mins > 0 ? "\(hrs)hr \(mins)min" : "\(hrs)hr"
                 }
-                return "\(slotText) · \(durText)"
+                return "\(totalMinutes) min"
             }
-            return slotText
+            return ""
         }()
 
         // Combined emoji: single or pair
@@ -82,13 +82,7 @@ struct ExerciseHeroView: View {
 
         let emojiSize: CGFloat = combinedEmoji.count > 1 ? 30 : 42
 
-        // Label
-        let label: String = {
-            if let next = nextSession {
-                return "UP NEXT · THIS \(next.timeSlot.label.uppercased())"
-            }
-            return "TODAY"
-        }()
+        let label = "TODAY · \(Self.heroDateFormatter.string(from: Date()).uppercased())"
 
         HeroCardView(
             label: label,
@@ -106,21 +100,6 @@ struct ExerciseHeroView: View {
 
     @ViewBuilder
     private func exercisePills(for sessions: [(timeSlot: TimeSlot, assignment: ExerciseSlotAssignment)]) -> some View {
-        // Category pills (one per unique category, colored)
-        let uniqueCategories = sessions.map(\.assignment)
-            .reduce(into: [(name: String, color: String)]()) { result, assignment in
-                if !result.contains(where: { $0.name == assignment.categoryName }) {
-                    result.append((name: assignment.categoryName, color: assignment.categoryColorHex))
-                }
-            }
-
-        ForEach(uniqueCategories, id: \.name) { cat in
-            HeroCardView<EmptyView>.coloredPill(
-                text: cat.name,
-                color: Color(hex: cat.color)
-            )
-        }
-
         // Calories pill (combined total)
         let totalCalories = sessions.compactMap(\.assignment.estimatedCalories).reduce(0, +)
         if totalCalories > 0 {
@@ -130,12 +109,13 @@ struct ExerciseHeroView: View {
             )
         }
 
-        // ⚡ Day load pill
-        if totalCalories > 0 {
-            let load = DayLoad.from(totalCalories: totalCalories)
+        // Intensity pill (highest across sessions)
+        let allCases = ExerciseIntensity.allCases
+        let intensities = sessions.compactMap(\.assignment.intensityEnum)
+        if let highest = intensities.max(by: { (allCases.firstIndex(of: $0) ?? 0) < (allCases.firstIndex(of: $1) ?? 0) }) {
             HeroCardView<EmptyView>.coloredPill(
-                text: "⚡ \(load.displayName)",
-                color: dayLoadColor(load)
+                text: highest.displayName,
+                color: intensityColor(highest)
             )
         }
     }
@@ -150,8 +130,8 @@ struct ExerciseHeroView: View {
         }
     }
 
-    private func dayLoadColor(_ load: DayLoad) -> Color {
-        switch load {
+    private func intensityColor(_ intensity: ExerciseIntensity) -> Color {
+        switch intensity {
         case .light: Color(red: 0.0, green: 0.72, blue: 0.58)      // green
         case .moderate: Color(red: 0.99, green: 0.80, blue: 0.43)  // yellow
         case .high: Color(red: 0.95, green: 0.57, blue: 0.24)      // orange

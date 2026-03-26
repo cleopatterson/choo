@@ -195,6 +195,112 @@
 - [x] **Edit preserves paid status** — editing a paid bill carries `isPaid` through to the updated event
 - [x] **Non-bill events unaffected** — swipe action and paid UI only appear when `isBill == true`
 
+### Phase I — House Tab (Mar 6, uncommitted)
+
+#### Chores → House Tab Overhaul
+- [x] **Tab renamed** — "Chores" → "House", icon `checklist`, accent `chooRose` (#C88EA7)
+- [x] **ChoreFrequency enum** — weekly/monthly/quarterly/biannual/yearly with days, emoji, colorHex, sortOrder
+- [x] **ChoreCompletion model** — records choreTypeId, completedBy, completedDate in Firestore
+- [x] **Frequency field on ChoreType** — optional `frequency: ChoreFrequency?` with `.weekly` default for backward compat
+- [x] **Due system** — chore is due when never completed or daysSince >= frequency.days; overdue = due + 3 days grace
+- [x] **HouseViewModel** — replaces ChoresViewModel with due system, frequency grouping, completion/assignment/day-planning methods, AI briefing
+- [x] **HouseTabView** — layout: BriefingView → HeroView → WeekStripView → StatsBar → ChoreListView → CategoriesView
+- [x] **HouseChoreListView** — accordion grouped by frequency (like Exercise tab), heading "JOBS", expandable cards with due/overdue badges
+- [x] **HouseWeekStripView** — horizontal Mon-Sun strip for day-planning chores
+- [x] **HouseDayPlanSheet** — shows planned chores for a day with add/remove
+- [x] **HouseChoreActionSheet** — chore info, frequency picker, complete button, day picker, assignee picker
+- [x] **Editable frequency per chore** — horizontal frequency picker in action sheet, `updateChoreFrequency` method on ViewModel
+- [x] **HouseHeroView, HouseStatsBar, HouseCategoriesView, HouseManageSheet, HouseChoreTypeFormSheet** — all new House-prefixed views
+- [x] **Seed merge** — `seedDefaultChoreCategories` merges missing default chore types into existing categories by name match
+- [x] **Expanded default chores** — comprehensive examples across all frequency tiers (outdoor, cleaning, kitchen, pool)
+- [x] **Exercise tab heading** — "YOUR CATEGORIES" → "SESSIONS"
+- [x] **House categories heading** — "MANAGE CATEGORIES"
+- [x] **FirestoreService updates** — completions listener, assignments listener, saveChoreCompletion, saveChoreAssignments
+- [x] **Old files deleted** — ChoresViewModel.swift, entire Views/Chores/ directory
+- [x] **pbxproj updated** — all Chores references replaced with House equivalents
+
+### Phase J — UX Consistency & Exercise Improvements (Mar 10, uncommitted)
+
+#### UX Consistency (all tabs)
+- [x] **Confirmation on Shopping run swipe-delete** — `allowsFullSwipe: false` + confirmation dialog before deleting run items
+- [x] **Confirmation on Exercise session type swipe-delete** — confirmation dialog before deleting session types
+- [x] **Confirmation on dinner long-press clear** — long-press now shows "Clear this dinner?" dialog instead of instant delete
+- [x] **Confirmation on Notes swipe-delete** — confirmation dialog before deleting notes
+- [x] **House chore swipe-to-delete** — chore list now uses embedded List with swipe actions + confirmation dialog
+- [x] **House action sheet: "Close" → "Cancel"** — standardised dismiss button text
+- [x] **House action sheet: Delete button** — added destructive "Delete Chore" button with confirmation dialog
+- [x] **Exercise category headers: Button → onTapGesture** — prevents List re-layout jumping, matches design system
+
+#### Exercise Tab Overhaul
+- [x] **Day Plan Sheet** — new `ExerciseDayPlanSheet.swift` replaces `ExerciseAddSheet`; tap a day card to see all 3 slots (Morning/Lunch/Arvo) at a glance; filled slots show exercise + clear button, empty slots show "+ Add session"; drill into category → session picker within same sheet
+- [x] **Long-press on day cards** — opens same Day Plan Sheet (same as tap)
+- [x] **Category count badge removed** — removed "X× this week" pill and type count subtitle from category headers; expanded section already shows items
+- [x] **Weekly minutes tracking** — stats bar shows combined minutes (actual HealthKit + planned future), avg steps/day, cal burned; minutes turn green when hitting 150 min WHO target
+- [x] **Briefing references minutes** — AI prompt includes combined minutes total for natural references ("You're at 95 of 150 min this week")
+- [x] **`weekPlannedMinutes` computed property** — ExerciseViewModel calculates planned minutes for today + future days
+
+#### Design System
+- [x] **`docs/DESIGN_SYSTEM.md` created** — comprehensive reference covering colours, typography, card patterns, interaction conventions, form/sheet templates, haptics, embedded list pattern, day plan sheet pattern
+
+### Phase L — AI Weekly Auto-Planner (Mar 16, uncommitted)
+
+#### Auto-Plan Infrastructure
+- [x] **WeekPlanManager** — new singleton service with per-tab once-per-week UserDefaults stamps (dinner/exercise/chores), empty-plan checks, one-shot versioned reset mechanism
+- [x] **ClaudeAPIService upgrades** — added `system` prompt parameter, `model` parameter with Haiku/Sonnet constants, generic `callClaudeJSON<T: Decodable>()` method, timeout bumped 15s→30s
+- [x] **MainTabView auto-plan trigger** — `.task` loads all 3 VMs, polls for data readiness, dispatches per-tab auto-plan concurrently
+
+#### Dinner Auto-Planner
+- [x] **DinnerPlannerViewModel.autoPlanWeek()** — sends recipe catalogue, per-day calendar events, evening free minutes, last-week recipes to Claude Haiku
+- [x] **All 7 nights planned** — system prompt requires every day gets a recipe_id
+- [x] **Bitsa night** — "fend-for-yourself" recipe included exactly once per week
+- [x] **Calendar-aware** — "Dinner with..." events detected → Bitsa assigned (family eating out)
+- [x] **Fish night** — at least one fish recipe per week
+- [x] **Variety rules** — no same-cuisine consecutive nights, avoid last week's recipes, balance effort/richness
+
+#### Exercise Auto-Planner
+- [x] **ExercisePersona enum** — routine/guided/coaching modes stored in UserDefaults
+- [x] **ExerciseOnboardingView** — one-time glassmorphism persona picker shown before Exercise tab content
+- [x] **RoutineTemplate** — fixed weekly schedule (5× yoga mornings, Mon/Wed/Fri weights, Tue run, Thu VO2 max, Sat run, Sun easy ride)
+- [x] **Routine mode auto-plan** — fixed schedule from template, AI varies flexible sessions (yoga types)
+- [x] **New exercise categories** — Cardio (VO2 Max, HIIT, Skipping) and Cycling (Easy Ride, Tempo Ride, Hill Intervals) seeded with Firestore migration
+
+#### House Auto-Planner
+- [x] **HouseViewModel.autoPlanWeek()** — urgency scoring, seasonal adjustment (Southern Hemisphere), sends chore catalogue to Claude Haiku
+
+#### Bug Fixes
+- [x] **Firestore merge bug** — `saveMealPlan` was using `setData(merge: true)` which prevented clearing dinners; changed to `setData` (overwrite)
+- [x] **DinnerStripView clear dialog** — fixed SwiftUI race condition with confirmation dialog binding; converted to ClearDay Identifiable wrapper with proper get/set binding
+- [x] **Per-tab auto-plan stamps** — replaced single global stamp with per-tab stamps so each tab plans independently
+- [x] **Exercise auto-plan timing** — don't stamp exercise if no persona set; post-onboarding trigger fires auto-plan
+
+### Phase K — UI Simplification & Consistency (Mar 11, uncommitted)
+
+#### Shopping Tab
+- [x] **Tonight hero card pills stripped back** — removed carb type, effort, and serves count; kept only cuisine + richness pills; subtitle shows just prep time
+- [x] **Ingredient review sheet redesigned** — replaced chip grid with checkable list items; standard form sheet with Cancel/Add toolbar; all start unticked; Add works with zero selection
+- [x] **Run & Supplies headers taller** — vertical padding increased by ~1/3 for easier tap targets
+- [x] **Supply sub-category headers taller** — matched to previous main header height
+- [x] **Supply item rows simplified** — removed emoji, "OK" badge, and frequency pill; kept only "Running low"/"Due" badges; replaced loud orange add-to-run button with subtle circle/checkmark toggle
+
+#### Scroll-to-open (all tabs)
+- [x] **Shopping tab** — ScrollViewReader added; Run card, Supplies section, and supply sub-categories scroll into view on expand
+- [x] **Exercise tab** — ScrollViewReader added; category cards scroll into view on expand
+- [x] **House tab** — ScrollViewReader added; job category cards scroll into view on expand
+
+#### Exercise Tab
+- [x] **Hero card simplified** — label changed to "TODAY · 11 MAR" (no more stale "UP NEXT · THIS MORNING"); subtitle shows total duration only; pills stripped to just calories + intensity
+- [x] **`intensityEnum` added to ExerciseSlotAssignment** — computed property for intensity lookup
+- [x] **Session type rows simplified** — removed calories, intensity, scheduled count; kept name + duration only
+- [x] **Day plan sheet simplified** — removed time slot emoji from headers; filled slots show just session name + duration (no category name or intensity); fixed X clear button not working (was swallowed by parent onTapGesture)
+
+#### House Tab
+- [x] **Jobs grouped by category** — replaced frequency grouping (Weekly/Monthly/etc.) with category grouping (Outdoor/Cleaning/Kitchen/Pool); added `itemsByCategory` computed property to HouseViewModel
+- [x] **Chore rows simplified** — removed category emoji, category name, duration, last completed, assignee avatar; shows status dot + name + Due/Overdue pill only
+- [x] **Chore action sheet split into two** — tap opens lightweight assign sheet (day picker, assignee, mark done); long-press opens edit sheet (name, frequency, delete)
+- [x] **Assign sheet** — standard form with info row + day/assignee pickers in one section; Cancel/Done toolbar; Mark as Done in separate section
+- [x] **Edit sheet** — standard form with name field + frequency picker; Cancel/Save toolbar; delete button with confirmation
+- [x] **Family member assignees show initials** — replaced generic 👤 with first letter (e.g. "T" for Tony, "A" for Alex)
+
 ---
 
 ## In Progress — Shopping List UX (Feb 12)

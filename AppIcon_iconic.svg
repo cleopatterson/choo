@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <rect width="1024" height="1024" rx="224" ry="224" fill="#8B5CF6"/>
+
+  <g fill="white">
+    <!-- Boiler - rounded cylinder shape -->
+    <rect x="150" y="480" width="530" height="230" rx="115"/>
+
+    <!-- Cab -->
+    <rect x="570" y="340" width="260" height="370" rx="48"/>
+
+    <!-- Cab window cutout -->
+    <rect x="618" y="390" width="156" height="96" rx="22" fill="#8B5CF6"/>
+
+    <!-- Smokestack - chunky -->
+    <rect x="250" y="330" width="104" height="150" rx="26"/>
+
+    <!-- Steam puffs - cascading -->
+    <circle cx="302" cy="250" r="72"/>
+    <circle cx="216" cy="178" r="50"/>
+    <circle cx="160" cy="122" r="34"/>
+  </g>
+</svg>

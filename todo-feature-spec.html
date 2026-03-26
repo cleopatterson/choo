@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To-Dos — Feature Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+  :root {
+    --bg: #0F0A1F;
+    --bg-card: #1A1230;
+    --bg-surface: #1e1238;
+    --text: #f0e6ff;
+    --text-mid: rgba(240, 230, 255, 0.72);
+    --text-dim: rgba(240, 230, 255, 0.42);
+    --border: rgba(255,255,255,0.06);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --purple: #b794f6;
+    --purple-soft: rgba(139,92,246,0.15);
+    --teal: #4ecdc4;
+    --teal-soft: rgba(78,205,196,0.15);
+    --amber: #fb923c;
+    --amber-soft: rgba(251,146,60,0.15);
+    --green: #00b894;
+    --green-soft: rgba(0,184,148,0.15);
+    --red: #ff6b6b;
+    --red-soft: rgba(255,107,107,0.15);
+    --yellow: #fdcb6e;
+    --yellow-soft: rgba(253,203,110,0.15);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: #080510;
+    color: var(--text);
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 1000px; margin: 0 auto; }
+
+  .page-title { text-align: center; margin-bottom: 40px; }
+  .page-title h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-title p { font-size: 14px; color: var(--text-dim); max-width: 550px; margin: 0 auto; line-height: 1.5; }
+
+  /* ── Section structure ── */
+  .spec-section {
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 30px;
+    margin-bottom: 20px;
+  }
+  .spec-section h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .spec-section .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* ── Comparison table ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr 1fr;
+    gap: 2px;
+  }
+  .cg-header {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .cg-header.purple { color: var(--purple); }
+  .cg-header.amber { color: var(--amber); }
+  .cg-header.teal { color: var(--teal); }
+
+  .cg-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+  }
+  .cg-cell {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-mid);
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+  }
+  .cg-cell strong { color: var(--text); font-weight: 600; }
+  .cg-cell.highlight {
+    background: var(--teal-soft);
+    border-color: rgba(78,205,196,0.15);
+  }
+
+  /* ── Phone mock ── */
+  .phone-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .phone {
+    background: var(--bg);
+    border-radius: 28px;
+    border: 2px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .phone-status {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+  }
+  .phone-header {
+    text-align: center;
+    padding: 4px 20px 12px;
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .phone-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── To-do items in agenda ── */
+  .agenda-section {
+    padding: 0 14px 14px;
+  }
+  .agenda-day-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+  .agenda-day-header span { color: var(--purple); }
+
+  .agenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .agenda-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+  }
+  .agenda-item.event::before { background: var(--purple); }
+  .agenda-item.bill::before { background: var(--amber); }
+  .agenda-item.todo::before { background: var(--teal); }
+  .agenda-item.todo-overdue::before { background: var(--red); }
+
+  .ai-icon {
+    font-size: 20px;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  .ai-icon.event-bg { background: var(--purple-soft); }
+  .ai-icon.bill-bg { background: var(--amber-soft); }
+  .ai-icon.todo-bg { background: var(--teal-soft); }
+  .ai-icon.overdue-bg { background: var(--red-soft); }
+
+  .ai-info { flex: 1; min-width: 0; }
+  .ai-name { font-size: 13px; font-weight: 600; }
+  .ai-meta { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+
+  .ai-action {
+    flex-shrink: 0;
+  }
+  .ai-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: transparent;
+  }
+  .ai-check:hover { border-color: var(--teal); }
+  .ai-check.checked {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .ai-amount {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  /* Urgency badges */
+  .urgency-badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    display: inline-flex;
+    margin-left: 6px;
+  }
+  .urgency-badge.overdue { background: var(--red-soft); color: var(--red); }
+  .urgency-badge.due-soon { background: var(--yellow-soft); color: var(--yellow); }
+  .urgency-badge.new { background: var(--teal-soft); color: var(--teal); }
+  .urgency-badge.flexible { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+
+  /* ── Add sheet mock ── */
+  .add-sheet {
+    margin: 0 14px 14px;
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 16px;
+  }
+  .add-sheet-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .type-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .type-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .type-btn.active {
+    border-color: var(--teal);
+    background: var(--teal-soft);
+  }
+  .type-btn-emoji { font-size: 20px; margin-bottom: 4px; }
+  .type-btn-label { font-size: 11px; font-weight: 600; }
+  .type-btn.active .type-btn-label { color: var(--teal); }
+
+  .form-field {
+    margin-bottom: 12px;
+  }
+  .form-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+  .form-input::placeholder { color: var(--text-dim); }
+  .form-input:focus { border-color: var(--teal); }
+
+  .form-row {
+    display: flex;
+    gap: 8px;
+  }
+  .form-row .form-field { flex: 1; }
+
+  .form-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    margin-bottom: 12px;
+  }
+  .form-toggle-label { font-size: 13px; font-weight: 500; }
+  .toggle-track {
+    width: 40px; height: 22px;
+    border-radius: 11px;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    cursor: pointer;
+  }
+  .toggle-track.on { background: var(--teal); }
+  .toggle-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 2px; left: 2px;
+    transition: left 0.2s;
+  }
+  .toggle-track.on .toggle-thumb { left: 20px; }
+
+  .form-submit {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--teal);
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  /* ── Lifecycle diagram ── */
+  .lifecycle {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+  }
+  .lc-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .lc-icon {
+    font-size: 28px;
+    margin-bottom: 6px;
+  }
+  .lc-label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .lc-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+  .lc-arrow {
+    font-size: 20px;
+    color: var(--text-dim);
+    padding: 0 4px;
+  }
+
+  /* ── Briefing example ── */
+  .briefing-example {
+    padding: 16px;
+    border-radius: var(--radius);
+    background: linear-gradient(165deg, #1e1540 0%, #261a50 60%, #1e1040 100%);
+    border: 1px solid var(--border);
+    margin: 0 14px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .briefing-example::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -30px;
+    width: 140px; height: 140px;
+    background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .be-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--purple);
+    opacity: 0.65;
+    margin-bottom: 10px;
+  }
+  .be-headline {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  .be-headline em { font-style: italic; color: var(--purple); font-weight: 600; }
+  .be-summary {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-mid);
+  }
+  .be-summary strong { color: var(--text); font-weight: 600; }
+
+  /* ── Key points ── */
+  .kp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .kp-card {
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+  }
+  .kp-card.full { grid-column: 1 / -1; }
+  .kp-num {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--teal);
+    margin-bottom: 6px;
+  }
+  .kp-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .kp-desc {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-mid);
+  }
+  .kp-desc strong { color: var(--text); font-weight: 600; }
+
+  @media (max-width: 800px) {
+    .phone-row { grid-template-columns: 1fr; max-width: 380px; margin-left: auto; margin-right: auto; }
+    .compare-grid { grid-template-columns: 100px 1fr; }
+    .cg-header:nth-child(3), .cg-header:nth-child(4),
+    .cg-cell:nth-child(4n+3), .cg-cell:nth-child(4n+4) { display: none; }
+    .kp-grid { grid-template-columns: 1fr; }
+    .kp-card.full { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="page-title">
+    <h1>To-Dos — The Third Event Type</h1>
+    <p>How to-dos differ from events and bills, how they're created, how they behave over time, and how the AI briefing picks them up.</p>
+  </div>
+
+  <!-- ═══ 1. THREE TYPES COMPARED ═══ -->
+  <div class="spec-section">
+    <h2>Three Types of Calendar Item</h2>
+    <div class="subtitle">Events are fixed in time. Bills have a price and a due date. To-dos have a window and they persist until done.</div>
+
+    <div class="compare-grid">
+      <div class="cg-header"></div>
+      <div class="cg-header purple">📅 Event</div>
+      <div class="cg-header amber">💰 Bill</div>
+      <div class="cg-header teal">✅ To-Do</div>
+
+      <div class="cg-label">Time model</div>
+      <div class="cg-cell"><strong>Fixed point.</strong> Starts at 9:30am, ends at 10:30am. Gone once it passes.</div>
+      <div class="cg-cell"><strong>Due date.</strong> Must be paid by a specific day. Gone once paid.</div>
+      <div class="cg-cell highlight"><strong>Window.</strong> Has an optional start date + optional due date. Hangs around until marked done.</div>
+
+      <div class="cg-label">Persistence</div>
+      <div class="cg-cell">Disappears after the time passes (fades to past).</div>
+      <div class="cg-cell">Disappears once marked as paid.</div>
+      <div class="cg-cell highlight"><strong>Sticky.</strong> Carries forward day after day until completed. Escalates visually if overdue.</div>
+
+      <div class="cg-label">Completion</div>
+      <div class="cg-cell">Automatic — time passes, it's done.</div>
+      <div class="cg-cell">Manual — tap to mark "paid".</div>
+      <div class="cg-cell highlight">Manual — tap checkbox to mark done. <strong>No partial states in v1.</strong></div>
+
+      <div class="cg-label">Visual accent</div>
+      <div class="cg-cell">Purple left border + purple icon bg.</div>
+      <div class="cg-cell">Amber left border + amber icon bg + dollar amount.</div>
+      <div class="cg-cell highlight">Teal left border + teal icon bg + checkbox. Red if overdue.</div>
+
+      <div class="cg-label">Urgency</div>
+      <div class="cg-cell">Implied by proximity — it's happening now or soon.</div>
+      <div class="cg-cell">Implied by due date — days remaining shown.</div>
+      <div class="cg-cell highlight"><strong>Escalates.</strong> New → upcoming → due soon (amber) → overdue (red). Badge changes over time.</div>
+
+      <div class="cg-label">AI briefing</div>
+      <div class="cg-cell">Mentioned by name and time.</div>
+      <div class="cg-cell">Mentioned with amount and due date.</div>
+      <div class="cg-cell highlight">Mentioned if due soon or overdue. <strong>AI nags naturally</strong> — "car service is two days overdue."</div>
+
+      <div class="cg-label">Created via</div>
+      <div class="cg-cell">+ button → "Event" type.</div>
+      <div class="cg-cell">+ button → "Bill" type.</div>
+      <div class="cg-cell highlight">+ button → <strong>"To-Do" type</strong> (new third option).</div>
+    </div>
+  </div>
+
+  <!-- ═══ 2. LIFECYCLE ═══ -->
+  <div class="spec-section">
+    <h2>To-Do Lifecycle</h2>
+    <div class="subtitle">A to-do moves through urgency states over time. The visual treatment escalates to draw attention.</div>
+
+    <div class="lifecycle">
+      <div class="lc-step">
+        <div class="lc-icon">🆕</div>
+        <div class="lc-label">Created</div>
+        <div class="lc-desc">Before start date (if set). Teal badge: "New". Appears in upcoming section.</div>
+      </div>
+      <div class="lc-arrow">→</div>
+      <div class="lc-step">
+        <div class="lc-icon">📋</div>
+        <div class="lc-label">Active</div>
+        <div class="lc-desc">Start date has passed. Shows in daily agenda. Teal left border. Checkbox visible.</div>
+      </div>
+      <div class="lc-arrow">→</div>
+      <div class="lc-step">
+        <div class="lc-icon">⚠️</div>
+        <div class="lc-label">Due soon</div>
+        <div class="lc-desc">Within 2 days of due date. Amber badge: "Due soon". AI mentions it.</div>
+      </div>
+      <div class="lc-arrow">→</div>
+      <div class="lc-step">
+        <div class="lc-icon">🔴</div>
+        <div class="lc-label">Overdue</div>
+        <div class="lc-desc">Past due date, not done. Red left border. Red badge: "Overdue". AI nags.</div>
+      </div>
+      <div class="lc-arrow">→</div>
+      <div class="lc-step">
+        <div class="lc-icon">✅</div>
+        <div class="lc-label">Done</div>
+        <div class="lc-desc">Checkbox tapped. Fades with strikethrough. Cleared from agenda next day.</div>
+      </div>
+    </div>
+
+    <div class="kp-grid" style="margin-top: 16px;">
+      <div class="kp-card">
+        <div class="kp-num">No due date</div>
+        <div class="kp-title">Flexible to-dos</div>
+        <div class="kp-desc">If no due date is set, the to-do stays in "Active" state indefinitely. No urgency badges. It sits in the agenda every day from its start date until completed. <strong>Badge: "Flexible"</strong> in grey.</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-num">No start date</div>
+        <div class="kp-title">Immediate to-dos</div>
+        <div class="kp-desc">If no start date is set, the to-do becomes active immediately from the day it's created. <strong>"Call the plumber"</strong> — you add it, it shows up today.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 3. VISUAL MOCKS ═══ -->
+  <div class="spec-section">
+    <h2>Where To-Dos Appear</h2>
+    <div class="subtitle">To-dos show up in three places: the daily agenda (alongside events and bills), the AI briefing (when relevant), and the existing Bills & To-dos grid section.</div>
+
+    <div class="phone-row">
+
+      <!-- Daily agenda view -->
+      <div>
+        <div class="phone-label">Daily agenda — mixed item types</div>
+        <div class="phone">
+          <div class="phone-status"><span>12:05</span><span>🔋</span></div>
+          <div class="phone-header">Calendar</div>
+
+          <div class="agenda-section">
+            <div class="agenda-day-header"><span>Monday 2</span> · Today</div>
+
+            <!-- Event -->
+            <div class="agenda-item event">
+              <div class="ai-icon event-bg">🦷</div>
+              <div class="ai-info">
+                <div class="ai-name">Tony at the dentist</div>
+                <div class="ai-meta">9:30am · Balgowlah Dental</div>
+              </div>
+            </div>
+
+            <!-- Event -->
+            <div class="agenda-item event">
+              <div class="ai-icon event-bg">🎭</div>
+              <div class="ai-info">
+                <div class="ai-name">Harriet drama rehearsal</div>
+                <div class="ai-meta">3:30pm · School hall</div>
+              </div>
+            </div>
+
+            <!-- Bill -->
+            <div class="agenda-item bill">
+              <div class="ai-icon bill-bg">⚡</div>
+              <div class="ai-info">
+                <div class="ai-name">Electricity bill</div>
+                <div class="ai-meta">Due today</div>
+              </div>
+              <div class="ai-action">
+                <div class="ai-amount">$284</div>
+              </div>
+            </div>
+
+            <!-- To-do — active -->
+            <div class="agenda-item todo">
+              <div class="ai-icon todo-bg">🚗</div>
+              <div class="ai-info">
+                <div class="ai-name">Book car service <span class="urgency-badge due-soon">Due soon</span></div>
+                <div class="ai-meta">Due by Wed 4 · Started last week</div>
+              </div>
+              <div class="ai-action">
+                <div class="ai-check" onclick="this.classList.toggle('checked')">✓</div>
+              </div>
+            </div>
+
+            <!-- To-do — overdue -->
+            <div class="agenda-item todo-overdue">
+              <div class="ai-icon overdue-bg">📦</div>
+              <div class="ai-info">
+                <div class="ai-name">Return Amazon parcel <span class="urgency-badge overdue">Overdue</span></div>
+                <div class="ai-meta">Was due Sat 28 Feb · 2 days overdue</div>
+              </div>
+              <div class="ai-action">
+                <div class="ai-check" onclick="this.classList.toggle('checked')">✓</div>
+              </div>
+            </div>
+
+            <!-- To-do — flexible -->
+            <div class="agenda-item todo">
+              <div class="ai-icon todo-bg">🌐</div>
+              <div class="ai-info">
+                <div class="ai-name">Research internet providers <span class="urgency-badge flexible">Flexible</span></div>
+                <div class="ai-meta">No due date · Added 3 days ago</div>
+              </div>
+              <div class="ai-action">
+                <div class="ai-check" onclick="this.classList.toggle('checked')">✓</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Add flow -->
+      <div>
+        <div class="phone-label">+ Button → Create to-do</div>
+        <div class="phone">
+          <div class="phone-status"><span>12:05</span><span>🔋</span></div>
+          <div class="phone-header">New Item</div>
+
+          <div class="add-sheet">
+            <div class="type-selector">
+              <div class="type-btn">
+                <div class="type-btn-emoji">📅</div>
+                <div class="type-btn-label">Event</div>
+              </div>
+              <div class="type-btn">
+                <div class="type-btn-emoji">💰</div>
+                <div class="type-btn-label">Bill</div>
+              </div>
+              <div class="type-btn active">
+                <div class="type-btn-emoji">✅</div>
+                <div class="type-btn-label">To-Do</div>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <div class="form-label">What needs doing?</div>
+              <div class="form-input" style="color:var(--text)">Book car service</div>
+            </div>
+
+            <div class="form-field">
+              <div class="form-label">Emoji</div>
+              <div class="form-input">🚗</div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <div class="form-label">Start date</div>
+                <div class="form-input" style="color:var(--text)">Today</div>
+              </div>
+              <div class="form-field">
+                <div class="form-label">Due date</div>
+                <div class="form-input" style="color:var(--text)">Wed 4 Mar</div>
+              </div>
+            </div>
+
+            <div class="form-toggle">
+              <div class="form-toggle-label">Show in daily agenda</div>
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+            </div>
+
+            <div class="form-toggle">
+              <div class="form-toggle-label">Remind me when due</div>
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+            </div>
+
+            <button class="form-submit">Add To-Do</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ 4. AI BRIEFING INTEGRATION ═══ -->
+  <div class="spec-section">
+    <h2>How the AI Briefing Handles To-Dos</h2>
+    <div class="subtitle">The briefing mentions to-dos naturally alongside events and bills — not as a separate list, but woven into the prose. It escalates language for overdue items.</div>
+
+    <div class="phone-row" style="grid-template-columns: 1fr;">
+      <div>
+        <div class="phone-label">Briefing with to-do context</div>
+        <div class="phone" style="max-width: 400px; margin: 0 auto;">
+          <div class="phone-status"><span>12:05</span><span>🔋</span></div>
+          <div class="phone-header">Calendar</div>
+          <div class="briefing-example">
+            <div class="be-badge">✦ This week · 2–8 Mar</div>
+            <div class="be-headline">Packed Monday — <em>don't forget the car</em></div>
+            <div class="be-summary">Dentist, drama rehearsal, and the electricity bill all land today. <strong>That Amazon return is two days overdue</strong> — the post office on Condamine is open till 5. Car service needs booking before Wednesday. Thursday brekkie with Krish, then a quieter finish to the week.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kp-grid" style="margin-top: 20px;">
+      <div class="kp-card">
+        <div class="kp-num">AI prompt rule</div>
+        <div class="kp-title">How to mention to-dos</div>
+        <div class="kp-desc">Mention to-dos in the briefing when they're <strong>due soon</strong> (within 2 days) or <strong>overdue</strong>. Use natural language: "that Amazon return is overdue" not "To-do item: Amazon return (overdue)". For overdue items, be specific about how many days. For flexible to-dos with no due date, only mention them if the agenda is light and there's an opportunity: "quiet Wednesday — good chance to look into those internet providers."</div>
+      </div>
+      <div class="kp-card">
+        <div class="kp-num">Headline picks up urgency</div>
+        <div class="kp-title">To-dos can drive the headline</div>
+        <div class="kp-desc">If the most notable thing this week is an overdue to-do or an important upcoming one, the headline can reference it: <strong>"Packed Monday — don't forget the car"</strong>. The AI should weigh overdue to-dos as high-priority items alongside bills and big events when choosing what to highlight.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 5. DATA MODEL ═══ -->
+  <div class="spec-section">
+    <h2>Data Model</h2>
+    <div class="subtitle">To-do fields and how they map to the urgency states.</div>
+
+    <div class="kp-grid">
+      <div class="kp-card full">
+        <div class="kp-num">TodoItem</div>
+        <div class="kp-desc" style="font-family: monospace; font-size: 13px; line-height: 1.8; color: var(--teal);">
+          id: UUID<br>
+          title: String &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// "Book car service"</span><br>
+          emoji: String &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// "🚗"</span><br>
+          startDate: Date? &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// nil = starts immediately</span><br>
+          dueDate: Date? &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// nil = no deadline (flexible)</span><br>
+          isCompleted: Bool &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// toggles on checkbox tap</span><br>
+          completedDate: Date? &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// when it was marked done</span><br>
+          createdDate: Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// for "added N days ago"</span><br>
+          showInAgenda: Bool &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// toggle in creation form</span><br>
+          remindWhenDue: Bool &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--text-dim)">// local notification on due date</span>
+        </div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">Computed: urgencyState</div>
+        <div class="kp-desc">
+          <strong>notStarted</strong> → startDate is in the future<br>
+          <strong>active</strong> → startDate passed, due date > 2 days away (or no due date)<br>
+          <strong>dueSoon</strong> → due date within 2 days<br>
+          <strong>overdue</strong> → due date has passed, not completed<br>
+          <strong>done</strong> → isCompleted = true
+        </div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">Sorting in agenda</div>
+        <div class="kp-desc">
+          To-dos sort <strong>after</strong> timed events and bills within a day. Among to-dos: <strong>overdue first</strong> (oldest overdue at top), then due-soon, then active, then flexible. This ensures the most urgent items bubble up without displacing time-specific events.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ 6. DESIGN DECISIONS ═══ -->
+  <div class="spec-section">
+    <h2>Key Design Decisions</h2>
+
+    <div class="kp-grid">
+      <div class="kp-card">
+        <div class="kp-num">01</div>
+        <div class="kp-title">No partial completion in v1</div>
+        <div class="kp-desc">It's tempting to add "in progress" states for multi-day tasks like "organise the garage". But that adds complexity with low payoff. <strong>Binary done/not-done is enough.</strong> If a task has sub-steps, the user can create multiple to-dos.</div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">02</div>
+        <div class="kp-title">Carry forward, don't duplicate</div>
+        <div class="kp-desc">An undone to-do doesn't create copies on each new day — it's <strong>one item that persists</strong> in the agenda until completed. The "days overdue" counter is computed from the due date, not from copies.</div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">03</div>
+        <div class="kp-title">Teal accent, red for overdue</div>
+        <div class="kp-desc">To-dos use teal (the exercise accent) which works here because it's distinct from event purple and bill amber. When overdue, the accent flips to red — the only time red appears in the system. This makes overdue items impossible to miss.</div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">04</div>
+        <div class="kp-title">Same + button, third type</div>
+        <div class="kp-desc">The existing + button opens with a type selector at the top: Event / Bill / <strong>To-Do</strong>. The form below adapts: events show time fields, bills show amount, to-dos show start date + due date + toggles. <strong>Same entry point, different forms.</strong></div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">05</div>
+        <div class="kp-title">Flexible to-dos don't nag</div>
+        <div class="kp-desc">A to-do with no due date shouldn't feel urgent. It sits quietly in the agenda with a grey "Flexible" badge. The AI only mentions it when the day is light: <strong>"Quiet afternoon — good chance to research those internet providers."</strong></div>
+      </div>
+
+      <div class="kp-card">
+        <div class="kp-num">06</div>
+        <div class="kp-title">Done items fade, then clear</div>
+        <div class="kp-desc">When you tap the checkbox, the to-do gets a strikethrough + reduced opacity (same treatment as past events). It stays visible for the rest of the day as a "done" item, then <strong>clears from the agenda the next morning.</strong> Never deleted from history.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

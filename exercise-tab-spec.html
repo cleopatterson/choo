@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercise Tab — Complete Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap');
+
+  :root {
+    --bg: #0F0A1F;
+    --bg-card: #1A1230;
+    --bg-surface: #1e1238;
+    --text: #f0e6ff;
+    --text-mid: rgba(240, 230, 255, 0.72);
+    --text-dim: rgba(240, 230, 255, 0.42);
+    --border: rgba(255,255,255,0.06);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --teal: #4ecdc4;
+    --teal-soft: rgba(78,205,196,0.15);
+    --orange: #f39c12;
+    --orange-soft: rgba(243,156,18,0.12);
+    --blue: #74b9ff;
+    --blue-soft: rgba(116,185,255,0.12);
+    --red: #ff6b6b;
+    --red-soft: rgba(255,107,107,0.15);
+    --pink: #e84393;
+    --pink-soft: rgba(232,67,147,0.12);
+    --green: #00b894;
+    --green-soft: rgba(0,184,148,0.12);
+    --amber: #fb923c;
+    --amber-soft: rgba(251,146,60,0.15);
+    --yellow: #fdcb6e;
+    --yellow-soft: rgba(253,203,110,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: #080510;
+    color: var(--text);
+    padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1000px; margin: 0 auto; }
+
+  .page-title { text-align: center; margin-bottom: 40px; }
+  .page-title h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .page-title p { font-size: 14px; color: var(--text-dim); max-width: 620px; margin: 0 auto; line-height: 1.5; }
+
+  .section-label {
+    text-align: center; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim);
+    padding: 28px 0 14px;
+  }
+
+  /* ── Strip ── */
+  .strip-scroll {
+    display: flex; gap: 8px; overflow-x: auto;
+    padding: 0 0 8px; scroll-snap-type: x proximity;
+  }
+  .strip-scroll::-webkit-scrollbar { display: none; }
+
+  .card {
+    flex: 0 0 120px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    min-height: 140px;
+  }
+  .card.today {
+    border-color: rgba(78,205,196,0.3);
+    background: linear-gradient(180deg, rgba(78,205,196,0.05) 0%, var(--bg-card) 50%);
+  }
+  .c-head {
+    padding: 10px 10px 0;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .c-day { font-size: 11px; font-weight: 600; color: var(--text-dim); }
+  .card.today .c-day { color: var(--text); }
+  .c-date { font-size: 10px; color: var(--text-dim); font-weight: 500; }
+  .c-today-tag {
+    font-size: 8px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.8px; padding: 2px 5px; border-radius: 4px;
+    background: var(--teal-soft); color: var(--teal);
+  }
+  .eb-body {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; text-align: center; padding: 6px 8px 10px;
+  }
+  .eb-emoji-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; margin: 4px 0 6px; height: 38px;
+  }
+  .eb-emoji { font-size: 28px; }
+  .eb-emoji-single { font-size: 30px; }
+  .eb-titles {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 1px; margin-bottom: auto;
+  }
+  .eb-title {
+    font-size: 11px; font-weight: 600; line-height: 1.3;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;
+  }
+  .eb-title-sep {
+    font-size: 8px; color: var(--text-dim); font-weight: 700; letter-spacing: 1px;
+  }
+  .card-rest {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; opacity: 0.45; padding: 10px;
+  }
+  .card-rest-emoji { font-size: 26px; margin-bottom: 4px; }
+  .card-rest-text { font-size: 10px; color: var(--text-dim); }
+
+  /* ═══════════════════════════════════
+     HERO — COMPACT (OPTION A)
+     Emoji pair + combined title
+     ═══════════════════════════════════ */
+  .hero-area { max-width: 400px; margin: 0 auto; }
+  .hero-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px; max-width: 820px; margin: 0 auto;
+  }
+  .col-label {
+    text-align: center; font-size: 10px; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 8px;
+  }
+
+  .hero {
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .h-bar {
+    padding: 14px 18px 0;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--teal); opacity: 0.75;
+  }
+
+  .ha-body { padding: 14px 18px 18px; }
+  .ha-top {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
+  }
+  .ha-emojis {
+    display: flex; align-items: center; gap: 2px;
+    font-size: 38px; flex-shrink: 0;
+  }
+  .ha-info { flex: 1; }
+  .ha-title { font-size: 19px; font-weight: 700; line-height: 1.25; }
+  .ha-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+  .ha-divider { height: 1px; background: var(--border); margin: 12px 0; }
+
+  .h-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .hm {
+    font-size: 11px; font-weight: 500;
+    padding: 5px 10px; border-radius: 16px;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .hm.surface { background: rgba(255,255,255,0.06); color: var(--text-mid); }
+  .hm.teal { background: var(--teal-soft); color: var(--teal); }
+  .hm.orange { background: var(--orange-soft); color: var(--orange); }
+  .hm.red { background: var(--red-soft); color: var(--red); }
+  .hm.blue { background: var(--blue-soft); color: var(--blue); }
+  .hm.pink { background: var(--pink-soft); color: var(--pink); }
+  .hm.green { background: var(--green-soft); color: var(--green); }
+  .hm.amber { background: var(--amber-soft); color: var(--amber); }
+
+  .ib-wrap { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .ib-label {
+    font-size: 10px; font-weight: 600; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.8px; white-space: nowrap;
+  }
+  .ib-track { flex: 1; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .ib-fill { height: 100%; border-radius: 3px; }
+  .ib-fill.low { width: 25%; background: var(--green); }
+  .ib-fill.mod { width: 50%; background: var(--yellow); }
+  .ib-fill.high { width: 75%; background: var(--orange); }
+  .ib-fill.peak { width: 95%; background: var(--red); }
+  .ib-val { font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .ib-val.low { color: var(--green); }
+  .ib-val.mod { color: var(--yellow); }
+  .ib-val.high { color: var(--orange); }
+  .ib-val.peak { color: var(--red); }
+
+  /* ═══════════════════════════════════
+     SPEC SECTIONS
+     ═══════════════════════════════════ */
+  .spec {
+    background: var(--bg); border-radius: var(--radius);
+    border: 1px solid var(--border); padding: 30px; margin-bottom: 16px;
+  }
+  .spec h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .spec .sub { font-size: 13px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5; }
+  .kp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .kp { padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+  .kp.full { grid-column: 1 / -1; }
+  .kp-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin-bottom: 6px; }
+  .kp-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+  .kp-desc { font-size: 12px; line-height: 1.6; color: var(--text-mid); }
+  .kp-desc strong { color: var(--text); font-weight: 600; }
+
+  /* Session type bank */
+  .bank-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px; margin-top: 12px;
+  }
+  .bank-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px; border-radius: 10px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .bank-item::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px;
+  }
+  .bank-item.cat-yoga::before { background: var(--teal); }
+  .bank-item.cat-run::before { background: var(--orange); }
+  .bank-item.cat-swim::before { background: var(--blue); }
+  .bank-item.cat-weights::before { background: var(--red); }
+  .bank-item.cat-core::before { background: var(--pink); }
+  .bank-emoji { font-size: 22px; flex-shrink: 0; }
+  .bank-info { flex: 1; min-width: 0; }
+  .bank-name { font-size: 13px; font-weight: 600; }
+  .bank-meta { font-size: 10px; color: var(--text-dim); margin-top: 3px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .bt {
+    font-size: 9px; font-weight: 600; padding: 2px 5px;
+    border-radius: 4px; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .bt.cal { background: rgba(255,255,255,0.06); color: var(--text-dim); }
+  .bt.i-low { background: var(--green-soft); color: var(--green); }
+  .bt.i-mod { background: var(--yellow-soft); color: var(--yellow); }
+  .bt.i-high { background: var(--orange-soft); color: var(--orange); }
+  .bt.i-peak { background: var(--red-soft); color: var(--red); }
+  .bt.type { background: rgba(255,255,255,0.04); color: var(--text-dim); }
+
+  /* Data model */
+  .dm {
+    width: 100%; border-collapse: collapse; margin-top: 12px;
+  }
+  .dm th {
+    text-align: left; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-dim); padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dm td {
+    font-size: 12px; padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-mid); vertical-align: top;
+  }
+  .dm td:first-child {
+    font-weight: 600; color: var(--teal);
+    font-family: 'DM Sans', monospace; font-size: 11px; white-space: nowrap;
+  }
+  .dm-section td {
+    font-weight: 700 !important; color: var(--amber) !important;
+    padding-top: 16px; border-bottom: none;
+  }
+
+  /* Formula box */
+  .formula {
+    padding: 20px; border-radius: 12px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    margin-top: 12px; font-family: 'DM Sans', monospace;
+    font-size: 13px; line-height: 2; color: var(--teal);
+  }
+  .formula .c { color: var(--text-dim); font-size: 11px; }
+  .formula .k { color: var(--amber); font-weight: 600; }
+  .formula .v { color: var(--text); }
+
+  @media (max-width: 700px) {
+    .hero-row { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+    .kp-grid { grid-template-columns: 1fr; }
+    .kp.full { grid-column: auto; }
+    .bank-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="page-title">
+    <h1>Exercise Tab — Complete Spec</h1>
+    <p>Strip cards (side-by-side emoji) + compact hero (emoji pair) + session type bank with calories, intensity, and the day load formula.</p>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       WEEK STRIP
+       ═══════════════════════════════════ -->
+  <div class="section-label">Week Strip — Side-by-side emoji</div>
+
+  <div class="strip-scroll">
+    <div class="card today">
+      <div class="c-head"><span class="c-day">Mon</span><span class="c-today-tag">Today</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji">🧘</span><span class="eb-emoji">🏃</span></div>
+        <div class="eb-titles">
+          <span class="eb-title">Yin Yoga</span>
+          <span class="eb-title-sep">&</span>
+          <span class="eb-title">Manly loop</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Tue</span><span class="c-date">3</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji-single">🏋️</span></div>
+        <div class="eb-titles"><span class="eb-title">Upper body</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Wed</span><span class="c-date">4</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji">🧘</span><span class="eb-emoji">🏊</span></div>
+        <div class="eb-titles">
+          <span class="eb-title">Power Yoga</span>
+          <span class="eb-title-sep">&</span>
+          <span class="eb-title">Ocean swim</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Thu</span><span class="c-date">5</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji-single">🏃</span></div>
+        <div class="eb-titles"><span class="eb-title">Harbour 10k</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Fri</span><span class="c-date">6</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji">🧘</span><span class="eb-emoji">🤸</span></div>
+        <div class="eb-titles">
+          <span class="eb-title">Yin Yoga</span>
+          <span class="eb-title-sep">&</span>
+          <span class="eb-title">Core work</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Sat</span><span class="c-date">7</span></div>
+      <div class="eb-body">
+        <div class="eb-emoji-row"><span class="eb-emoji">🏃</span><span class="eb-emoji">🏊</span></div>
+        <div class="eb-titles">
+          <span class="eb-title">Run w/ bro</span>
+          <span class="eb-title-sep">&</span>
+          <span class="eb-title">Fairy Bower</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="c-head"><span class="c-day">Sun</span><span class="c-date">8</span></div>
+      <div class="card-rest">
+        <div class="card-rest-emoji">😴</div>
+        <div class="card-rest-text">Rest day</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       HERO — COMPACT (OPTION A)
+       ═══════════════════════════════════ -->
+  <div class="section-label">Hero — Compact emoji pair</div>
+
+  <div class="hero-row">
+    <div>
+      <div class="col-label">Two sessions (Monday)</div>
+      <div class="hero">
+        <div class="h-bar">Today · Monday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-emojis">🧘🏃</div>
+            <div class="ha-info">
+              <div class="ha-title">Yin Yoga & Manly Loop</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 30min · ~380 cal</div>
+            </div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm surface">☀️ AM</span>
+            <span class="hm surface">🌤️ Lunch</span>
+            <span class="hm teal">Flex</span>
+            <span class="hm orange">Cardio</span>
+          </div>
+          <div class="ib-wrap">
+            <span class="ib-label">Day load</span>
+            <div class="ib-track"><div class="ib-fill high"></div></div>
+            <span class="ib-val high">High</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Single session (Thursday)</div>
+      <div class="hero">
+        <div class="h-bar">Today · Thursday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-emojis">🏃</div>
+            <div class="ha-info">
+              <div class="ha-title">Harbour Bridge 10k</div>
+              <div class="ha-sub">Morning · Target 48min · ~620 cal</div>
+            </div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm surface">☀️ AM</span>
+            <span class="hm orange">Cardio</span>
+          </div>
+          <div class="ib-wrap">
+            <span class="ib-label">Day load</span>
+            <div class="ib-track"><div class="ib-fill peak"></div></div>
+            <span class="ib-val peak">Peak</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- More hero examples -->
+  <div class="section-label">More hero states</div>
+
+  <div class="hero-row">
+    <div>
+      <div class="col-label">Heavy dual day (Wednesday)</div>
+      <div class="hero">
+        <div class="h-bar">Today · Wednesday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-emojis">🧘🏊</div>
+            <div class="ha-info">
+              <div class="ha-title">Power Yoga & Ocean Swim</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 45min · ~600 cal</div>
+            </div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm surface">☀️ AM</span>
+            <span class="hm surface">🌤️ Lunch</span>
+            <span class="hm teal">Flex</span>
+            <span class="hm blue">Cardio</span>
+          </div>
+          <div class="ib-wrap">
+            <span class="ib-label">Day load</span>
+            <div class="ib-track"><div class="ib-fill peak"></div></div>
+            <span class="ib-val peak">Peak</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="col-label">Light recovery day (Friday)</div>
+      <div class="hero">
+        <div class="h-bar">Today · Friday</div>
+        <div class="ha-body">
+          <div class="ha-top">
+            <div class="ha-emojis">🧘🤸</div>
+            <div class="ha-info">
+              <div class="ha-title">Yin Yoga & Core Work</div>
+              <div class="ha-sub">Morning + Lunch · 1hr 15min · ~220 cal</div>
+            </div>
+          </div>
+          <div class="ha-divider"></div>
+          <div class="h-meta">
+            <span class="hm surface">☀️ AM</span>
+            <span class="hm surface">🌤️ Lunch</span>
+            <span class="hm teal">Flex</span>
+            <span class="hm pink">Core</span>
+          </div>
+          <div class="ib-wrap">
+            <span class="ib-label">Day load</span>
+            <div class="ib-track"><div class="ib-fill mod"></div></div>
+            <span class="ib-val mod">Moderate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       SESSION TYPE BANK
+       ═══════════════════════════════════ -->
+  <div class="spec" style="margin-top: 36px;">
+    <h2>Session Type Bank</h2>
+    <div class="sub">Each session type you create has a name, category, estimated calories, and intensity. These are the building blocks — you schedule instances of them onto days of the week. Same emoji can have very different intensity (Yin vs Power Yoga).</div>
+
+    <div class="bank-grid">
+      <div class="bank-item cat-yoga">
+        <div class="bank-emoji">🧘</div>
+        <div class="bank-info">
+          <div class="bank-name">Yin Yoga</div>
+          <div class="bank-meta">
+            <span class="bt cal">~100 cal</span>
+            <span class="bt i-low">Low · 0.15</span>
+            <span class="bt type">Flex</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-yoga">
+        <div class="bank-emoji">🧘</div>
+        <div class="bank-info">
+          <div class="bank-name">Power Yoga</div>
+          <div class="bank-meta">
+            <span class="bt cal">~280 cal</span>
+            <span class="bt i-high">High · 0.5</span>
+            <span class="bt type">Flex</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-run">
+        <div class="bank-emoji">🏃</div>
+        <div class="bank-info">
+          <div class="bank-name">Manly Loop (5km)</div>
+          <div class="bank-meta">
+            <span class="bt cal">~280 cal</span>
+            <span class="bt i-mod">Mod · 0.4</span>
+            <span class="bt type">Cardio</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-run">
+        <div class="bank-emoji">🏃</div>
+        <div class="bank-info">
+          <div class="bank-name">Harbour Bridge 10k</div>
+          <div class="bank-meta">
+            <span class="bt cal">~620 cal</span>
+            <span class="bt i-peak">Peak · 0.8</span>
+            <span class="bt type">Cardio</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-run">
+        <div class="bank-emoji">🏃</div>
+        <div class="bank-info">
+          <div class="bank-name">Run with brother</div>
+          <div class="bank-meta">
+            <span class="bt cal">~350 cal</span>
+            <span class="bt i-mod">Mod · 0.4</span>
+            <span class="bt type">Cardio</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-swim">
+        <div class="bank-emoji">🏊</div>
+        <div class="bank-info">
+          <div class="bank-name">Fairy Bower swim</div>
+          <div class="bank-meta">
+            <span class="bt cal">~200 cal</span>
+            <span class="bt i-mod">Mod · 0.4</span>
+            <span class="bt type">Cardio</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-swim">
+        <div class="bank-emoji">🏊</div>
+        <div class="bank-info">
+          <div class="bank-name">Ocean swim (1km)</div>
+          <div class="bank-meta">
+            <span class="bt cal">~320 cal</span>
+            <span class="bt i-high">High · 0.55</span>
+            <span class="bt type">Cardio</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-weights">
+        <div class="bank-emoji">🏋️</div>
+        <div class="bank-info">
+          <div class="bank-name">Upper body</div>
+          <div class="bank-meta">
+            <span class="bt cal">~250 cal</span>
+            <span class="bt i-mod">Mod · 0.4</span>
+            <span class="bt type">Strength</span>
+          </div>
+        </div>
+      </div>
+      <div class="bank-item cat-core">
+        <div class="bank-emoji">🤸</div>
+        <div class="bank-info">
+          <div class="bank-name">Core work</div>
+          <div class="bank-meta">
+            <span class="bt cal">~120 cal</span>
+            <span class="bt i-low">Low · 0.15</span>
+            <span class="bt type">Core</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       DAY LOAD FORMULA
+       ═══════════════════════════════════ -->
+  <div class="spec">
+    <h2>Day Load Formula</h2>
+    <div class="sub">Each session type has an intensity value from 0.0–1.0. Day load sums all sessions for the day, caps at 1.0, and maps to four labels on the green→red ramp.</div>
+
+    <div class="kp-grid">
+      <div class="kp full">
+        <div class="kp-num">The formula</div>
+        <div class="formula">
+          <span class="c">// Each SessionType has intensity: Float (0.0–1.0)</span><br>
+          <span class="c">// User picks from 4 presets when creating a session type:</span><br>
+          <span class="c">//   Low = 0.15, Moderate = 0.4, High = 0.55, Peak = 0.8</span><br><br>
+          <span class="k">let</span> <span class="v">dayLoad</span> = <span class="k">min</span>(1.0, sessions.<span class="k">reduce</span>(0) { $0 + $1.sessionType.intensity })<br><br>
+          <span class="k">switch</span> dayLoad {<br>
+          &nbsp;&nbsp;<span class="k">case</span> 0.0..<span class="v">&lt;0.3</span>:&nbsp; <span class="v">"Light"</span> &nbsp;&nbsp;&nbsp;<span class="c">// green, 25% bar fill</span><br>
+          &nbsp;&nbsp;<span class="k">case</span> 0.3..<span class="v">&lt;0.55</span>: <span class="v">"Moderate"</span> <span class="c">// yellow, 50% bar fill</span><br>
+          &nbsp;&nbsp;<span class="k">case</span> 0.55..<span class="v">&lt;0.75</span>: <span class="v">"High"</span> &nbsp;&nbsp;&nbsp;<span class="c">// orange, 75% bar fill</span><br>
+          &nbsp;&nbsp;<span class="k">default</span>: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="v">"Peak"</span> &nbsp;&nbsp;&nbsp;<span class="c">// red, 95% bar fill</span><br>
+          }<br><br>
+          <span class="c">// Calories sum directly — no cap</span><br>
+          <span class="k">let</span> <span class="v">totalCal</span> = sessions.<span class="k">reduce</span>(0) { $0 + $1.effectiveCalories }<br><br>
+          <span class="c">// effectiveCalories = actualCalories ?? estimatedCalories</span><br>
+          <span class="c">// HealthKit overwrites estimated after session completion</span>
+        </div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num">Intensity presets</div>
+        <div class="kp-title">User picks one of four when creating a session type</div>
+        <div class="kp-desc">
+          <strong>Low (0.15)</strong> — gentle recovery: Yin Yoga, easy walk, light core<br><br>
+          <strong>Moderate (0.4)</strong> — solid effort: 5k run, weights session, leisure swim<br><br>
+          <strong>High (0.55)</strong> — hard work: Power Yoga, ocean swim, hill intervals<br><br>
+          <strong>Peak (0.8)</strong> — max output: 10k race, long run, competition swim<br><br>
+          These are the only values the user chooses from — no free-form slider. Simple, opinionated, hard to get wrong.
+        </div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num">Day load examples</div>
+        <div class="kp-title">How it adds up across the week</div>
+        <div class="kp-desc">
+          <strong>Mon:</strong> Yin (0.15) + Manly 5k (0.4) = 0.55 → <strong style="color:var(--orange)">High</strong><br>
+          <strong>Tue:</strong> Upper body (0.4) = 0.4 → <strong style="color:var(--yellow)">Moderate</strong><br>
+          <strong>Wed:</strong> Power Yoga (0.5) + Ocean swim (0.55) = 1.0 → <strong style="color:var(--red)">Peak</strong><br>
+          <strong>Thu:</strong> Harbour 10k (0.8) = 0.8 → <strong style="color:var(--red)">Peak</strong><br>
+          <strong>Fri:</strong> Yin (0.15) + Core (0.15) = 0.3 → <strong style="color:var(--yellow)">Moderate</strong><br>
+          <strong>Sat:</strong> Run w/ bro (0.4) + Fairy Bower (0.4) = 0.8 → <strong style="color:var(--red)">Peak</strong><br>
+          <strong>Sun:</strong> Rest = 0.0 → <strong style="color:var(--green)">Light</strong><br><br>
+          The AI reads these patterns: "Three peak days Wed–Sat is a lot — Friday's recovery day is well placed."
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       DATA MODEL
+       ═══════════════════════════════════ -->
+  <div class="spec">
+    <h2>Data Model</h2>
+    <div class="sub">Three layers: Categories → Session Types → Scheduled Instances. Calories and intensity live on the session type.</div>
+
+    <table class="dm">
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+
+      <tr class="dm-section"><td colspan="3">ExerciseCategory</td></tr>
+      <tr><td>name</td><td>String</td><td>"Yoga", "Run", "Swim", "Weights", "Core", "Pilates"</td></tr>
+      <tr><td>emoji</td><td>String</td><td>🧘, 🏃, 🏊, 🏋️, 🤸, 🧎</td></tr>
+      <tr><td>color</td><td>Color</td><td>Teal, Orange, Blue, Red, Pink, Green</td></tr>
+      <tr><td>categoryType</td><td>enum</td><td>.flex, .cardio, .strength, .core — shown as pills in hero</td></tr>
+
+      <tr class="dm-section"><td colspan="3">SessionType (the bank)</td></tr>
+      <tr><td>name</td><td>String</td><td>"Yin Yoga", "Power Yoga", "Harbour Bridge 10k"</td></tr>
+      <tr><td>category</td><td>ExerciseCategory</td><td>Inherits emoji, colour, categoryType</td></tr>
+      <tr><td>estimatedCalories</td><td>Int</td><td>User-set. Shown in hero subtitle and metadata pills.</td></tr>
+      <tr><td>intensity</td><td>Float</td><td>One of 4 presets: 0.15 (Low), 0.4 (Mod), 0.55 (High), 0.8 (Peak). Summed for day load.</td></tr>
+      <tr><td>defaultDuration</td><td>Int</td><td>Minutes. Shown as "45min" in hero subtitle.</td></tr>
+
+      <tr class="dm-section"><td colspan="3">ScheduledSession (on the calendar)</td></tr>
+      <tr><td>sessionType</td><td>SessionType</td><td>Reference to bank item — pulls name, emoji, cal, intensity</td></tr>
+      <tr><td>dayOfWeek</td><td>enum</td><td>.monday–.sunday</td></tr>
+      <tr><td>timeSlot</td><td>enum</td><td>.morning, .lunch, .arvo — shows ☀️ 🌤️ 🌅 in hero</td></tr>
+      <tr><td>isCompleted</td><td>Bool</td><td>Manually toggled or auto-completed by HealthKit match</td></tr>
+      <tr><td>actualCalories</td><td>Int?</td><td>HealthKit data after completion. Overwrites estimated.</td></tr>
+      <tr><td>actualDuration</td><td>Int?</td><td>HealthKit data. Overwrites default in display.</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ═══════════════════════════════════
+       HOW IT ALL CONNECTS
+       ═══════════════════════════════════ -->
+  <div class="spec">
+    <h2>How It All Connects</h2>
+
+    <div class="kp-grid">
+      <div class="kp">
+        <div class="kp-num">Strip cards</div>
+        <div class="kp-title">Emoji + title only</div>
+        <div class="kp-desc">Strip cards show <strong>day + side-by-side emoji + session names</strong>. No metadata, no calories, no intensity. The strip is for scanning the week shape at a glance. All detail lives on the hero.</div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num">Hero card</div>
+        <div class="kp-title">Compact: emoji pair + combined title + all metadata</div>
+        <div class="kp-desc">Emoji pair at 38px, combined title ("Yin Yoga & Manly Loop"), subtitle with <strong>time slots + total duration + total calories</strong>. Below the divider: time-of-day pills, category type pills, day load bar. <strong>Same layout for 1 or 2 sessions</strong> — just drops to one emoji and one title.</div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num">Setting calories & intensity</div>
+        <div class="kp-title">Done once per session type</div>
+        <div class="kp-desc">When you create "Manly Loop 5k", you set <strong>estimated calories (~280)</strong> and pick an <strong>intensity preset (Moderate)</strong>. These are set-and-forget — they flow into every scheduled instance. HealthKit actuals overwrite the estimate when a session completes.</div>
+      </div>
+
+      <div class="kp">
+        <div class="kp-num">AI briefing reads it all</div>
+        <div class="kp-title">Cross-day intelligence</div>
+        <div class="kp-desc">The AI has access to every day's load, calories, and category mix. It spots patterns: <strong>"Three peak days in a row Wed–Sat — Friday's recovery day is well placed"</strong> or <strong>"All cardio this week — Tuesday has room for a strength session."</strong> Combined with shopping metadata, it can connect energy expenditure to meal planning.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

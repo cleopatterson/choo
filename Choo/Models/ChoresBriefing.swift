@@ -1,7 +1,7 @@
 import Foundation
 
-struct ChoresBriefing: Codable {
-    var weekStart: Date
+struct HouseBriefing: Codable {
+    var date: Date
     var headline: String
     var summary: String
 }

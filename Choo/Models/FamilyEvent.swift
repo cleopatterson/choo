@@ -49,6 +49,7 @@ struct FamilyEvent: Codable, Identifiable, Hashable {
     var paidOccurrences: [String]?
     var note: String?
     var lastModifiedByUID: String?
+    var googleCalendarEventId: String?
     // To-do fields
     var isTodo: Bool?
     var isCompleted: Bool?
@@ -234,15 +235,20 @@ struct FamilyEvent: Codable, Identifiable, Hashable {
             let mod = daysDiff % 14
             return mod <= spanDays
         case .monthly:
-            let anchorComps = cal.dateComponents([.day], from: startDate)
-            let dayComps = cal.dateComponents([.day], from: day)
-            if spanDays == 0 {
-                return anchorComps.day == dayComps.day
-            }
-            // Multi-day span: check if day falls in [anchorDay..anchorDay+span] for any month
-            for offset in 0...spanDays {
-                let targetDay = (anchorComps.day ?? 1) + offset
-                if dayComps.day == targetDay { return true }
+            // Use Calendar.date(byAdding:) to handle month-end clamping (e.g. 31st → 28th in Feb)
+            let monthsDiff = cal.dateComponents([.month], from: anchorDay, to: dayStart).month ?? 0
+            for m in max(0, monthsDiff - 1)...(monthsDiff + 1) {
+                guard let occurrence = cal.date(byAdding: .month, value: m, to: anchorDay) else { continue }
+                let occStart = cal.startOfDay(for: occurrence)
+                if spanDays == 0 {
+                    if dayStart == occStart { return true }
+                } else {
+                    for offset in 0...spanDays {
+                        if let d = cal.date(byAdding: .day, value: offset, to: occStart), cal.startOfDay(for: d) == dayStart {
+                            return true
+                        }
+                    }
+                }
             }
             return false
         case .yearly:

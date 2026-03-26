@@ -1,6 +1,7 @@
 import Foundation
 import EventKit
 
+@MainActor
 @Observable
 final class WeeklyBriefingViewModel {
     let firestoreService: FirestoreService
@@ -26,7 +27,11 @@ final class WeeklyBriefingViewModel {
     @ObservationIgnored private var hasLoadedInitially = false
     @ObservationIgnored private let debounceDuration: UInt64 = 3_000_000_000 // 3 seconds
 
-    private let calendar = Calendar.current
+    private let calendar: Calendar = {
+        var cal = Calendar.current
+        cal.firstWeekday = 2 // Monday
+        return cal
+    }()
 
     init(firestoreService: FirestoreService, claudeService: ClaudeAPIService, weatherService: WeatherService, deviceCalendarService: DeviceCalendarService? = nil, familyId: String) {
         self.firestoreService = firestoreService
@@ -40,10 +45,8 @@ final class WeeklyBriefingViewModel {
     // MARK: - Week computation
 
     var weekStart: Date {
-        var cal = calendar
-        cal.firstWeekday = 2 // Monday
-        let comps = cal.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date())
-        return cal.date(from: comps) ?? calendar.startOfDay(for: Date())
+        let comps = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: Date())
+        return calendar.date(from: comps) ?? calendar.startOfDay(for: Date())
     }
 
     var weekEnd: Date {
@@ -214,7 +217,7 @@ final class WeeklyBriefingViewModel {
             return "• \(day): \(forecast.shortDescription), \(Int(round(forecast.maxTemp)))°"
         }.joined(separator: "\n")
 
-        let result = await claudeService.generateWeekSummary(events: inputs, weekStart: nextWeekStart, weatherSummary: weatherSummary)
+        let result = await claudeService.generateWeekSummary(events: inputs, weekStart: nextWeekStart, weatherSummary: weatherSummary, weekLabel: "next week")
         nextWeekHeadline = result.headline
         nextWeekSummary = result.summary
         nextWeekAiEventIcons = result.eventIcons

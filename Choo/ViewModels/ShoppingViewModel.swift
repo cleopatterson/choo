@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 @Observable
 final class ShoppingViewModel {
     let firestoreService: FirestoreService
@@ -138,7 +139,9 @@ final class ShoppingViewModel {
                             listId: listId,
                             items: reordered
                         )
-                    } catch {}
+                    } catch {
+                        errorMessage = error.localizedDescription
+                    }
                 }
             }
         } else {
@@ -249,6 +252,49 @@ final class ShoppingViewModel {
                 listId: listId,
                 items: result
             )
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // MARK: - Run Items (flat, no headings, sorted by aisle)
+
+    var runItems: [ShoppingItem] {
+        firestoreService.shoppingItems
+            .filter { !$0.heading }
+            .sorted { a, b in
+                let aisle1 = a.aisleOrder ?? Int.max
+                let aisle2 = b.aisleOrder ?? Int.max
+                if aisle1 != aisle2 { return aisle1 < aisle2 }
+                return (a.sortOrder ?? Int.max) < (b.sortOrder ?? Int.max)
+            }
+    }
+
+    // MARK: - Run Stats
+
+    var uncheckedCount: Int {
+        runItems.filter { !$0.isChecked }.count
+    }
+
+    var checkedCount: Int {
+        runItems.filter { $0.isChecked }.count
+    }
+
+    // MARK: - Done Flow
+
+    func completeDoneFlow() async {
+        guard let listId = defaultListId else { return }
+        errorMessage = nil
+
+        do {
+            let deleted = try await firestoreService.deleteCheckedShoppingItems(familyId: familyId, listId: listId)
+
+            // Reset cadence clocks for supply-linked items
+            for item in deleted {
+                if let supplyId = item.supplyItemId {
+                    try? await firestoreService.markSupplyPurchased(familyId: familyId, itemId: supplyId)
+                }
+            }
         } catch {
             errorMessage = error.localizedDescription
         }

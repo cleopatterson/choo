@@ -13,7 +13,6 @@ struct HeroCardView<Pills: View>: View {
     @ViewBuilder var pills: () -> Pills
 
     @State private var bobOffset: CGFloat = 0
-    @State private var isVisible = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -50,13 +49,11 @@ struct HeroCardView<Pills: View>: View {
                 .strokeBorder(accent.color.opacity(0.35), lineWidth: 1)
         )
         .onAppear {
-            isVisible = true
             withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
                 bobOffset = 6
             }
         }
         .onDisappear {
-            isVisible = false
             bobOffset = 0
         }
     }

@@ -47,7 +47,6 @@ struct BriefingPagerView: View {
     private var thisWeekCard: some View {
         WeeklyBriefingCardView(
             viewModel: briefingViewModel,
-            calendarViewModel: calendarViewModel,
             onEventTap: { eventId in
                 if let event = calendarViewModel.firestoreService.events.first(where: { $0.id == eventId }) {
                     calendarViewModel.selectedEvent = event

@@ -2,7 +2,6 @@ import SwiftUI
 
 struct WeeklyBriefingCardView: View {
     @Bindable var viewModel: WeeklyBriefingViewModel
-    var calendarViewModel: CalendarViewModel?
     var onEventTap: ((String) -> Void)?
 
     @State private var highlightScrollDate: Date?
@@ -10,12 +9,6 @@ struct WeeklyBriefingCardView: View {
     private static let weekRangeFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "d MMM"
-        return f
-    }()
-
-    private static let shortTimeFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.timeStyle = .short
         return f
     }()
 
@@ -35,12 +28,7 @@ struct WeeklyBriefingCardView: View {
                 isLoading: viewModel.isLoadingBriefing
             )
 
-            // Layer 2: Hero card — next event today (this-week page only)
-            if let calendarVM = calendarViewModel, let event = calendarVM.todayNextEvent {
-                calendarHeroCard(event: event, calendarVM: calendarVM)
-            }
-
-            // Layer 3: Week timeline + highlights + weather
+            // Layer 2: Week timeline + highlights + weather
             VStack(spacing: 0) {
                 WeekTimelineView(
                     weekDays: viewModel.weekDays,
@@ -84,43 +72,6 @@ struct WeeklyBriefingCardView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .strokeBorder(.white.opacity(0.08), lineWidth: 1)
             )
-        }
-    }
-
-    // MARK: - Calendar Hero Card
-
-    @ViewBuilder
-    private func calendarHeroCard(event: FamilyEvent, calendarVM: CalendarViewModel) -> some View {
-        let icon = viewModel.iconForEvent(event)
-        let subtitle: String = {
-            if let loc = event.location, !loc.isEmpty {
-                return loc
-            }
-            if event.isAllDay == true {
-                return "All day"
-            }
-            return Self.shortTimeFormatter.string(from: event.startDate)
-        }()
-
-        HeroCardView(
-            label: calendarVM.todayNextEventLabel,
-            title: event.title,
-            subtitle: subtitle,
-            emoji: icon,
-            accent: .calendar
-        ) {
-            if event.isAllDay != true {
-                HeroCardView<EmptyView>.pillBadge(text: "🕐 \(Self.shortTimeFormatter.string(from: event.startDate))")
-            }
-            if let loc = event.location, !loc.isEmpty {
-                HeroCardView<EmptyView>.pillBadge(text: "📍 \(loc)")
-            }
-            if calendarVM.todayEventCount > 1 {
-                HeroCardView<EmptyView>.pillBadge(text: "+\(calendarVM.todayEventCount - 1) more today")
-            }
-        }
-        .onTapGesture {
-            calendarVM.selectedEvent = event
         }
     }
 }

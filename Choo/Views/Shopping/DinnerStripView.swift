@@ -2,6 +2,12 @@ import SwiftUI
 
 struct DinnerStripView: View {
     @Bindable var viewModel: DinnerPlannerViewModel
+    var onRecipeAssigned: ((Recipe) -> Void)?
+    @State private var dayToClear: ClearDay?
+
+    private struct ClearDay: Identifiable {
+        let id: Int
+    }
 
     private var todayIndex: Int? { viewModel.todayIndex }
 
@@ -41,7 +47,7 @@ struct DinnerStripView: View {
                                     let key = String(day.index)
                                     if viewModel.assignments[key] != nil {
                                         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                        Task { await viewModel.clearDay(day.index) }
+                                        dayToClear = ClearDay(id: day.index)
                                     }
                                 }
                         }
@@ -67,6 +73,27 @@ struct DinnerStripView: View {
                     .frame(maxWidth: .infinity)
             }
         }
+        .onChange(of: viewModel.lastAssignedRecipe?.id) {
+            if let recipe = viewModel.lastAssignedRecipe {
+                viewModel.lastAssignedRecipe = nil
+                onRecipeAssigned?(recipe)
+            }
+        }
+        .confirmationDialog("Clear this dinner?", isPresented: Binding(
+            get: { dayToClear != nil },
+            set: { if !$0 { dayToClear = nil } }
+        ), titleVisibility: .visible) {
+            Button("Clear Dinner", role: .destructive) {
+                if let day = dayToClear {
+                    let idx = day.id
+                    dayToClear = nil
+                    Task { await viewModel.clearDay(idx) }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                dayToClear = nil
+            }
+        }
     }
 
     // MARK: - Tonight Hero Card
@@ -79,15 +106,7 @@ struct DinnerStripView: View {
 
             Group {
                 if let meal = assignment {
-                    let heroSubtitle: String = {
-                        var parts: [String] = []
-                        if let recipe, let prep = recipe.prepTimeDisplay {
-                            parts.append(prep)
-                        }
-                        let serves = recipe?.servings ?? 4
-                        parts.append("Serves \(serves)")
-                        return parts.joined(separator: " · ")
-                    }()
+                    let heroSubtitle: String = recipe?.prepTimeDisplay ?? ""
 
                     HeroCardView(
                         label: viewModel.todayDayLabel,
@@ -118,7 +137,7 @@ struct DinnerStripView: View {
                 let key = String(todayIdx)
                 if viewModel.assignments[key] != nil {
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    Task { await viewModel.clearDay(todayIdx) }
+                    dayToClear = ClearDay(id: todayIdx)
                 }
             }
         }
@@ -134,19 +153,6 @@ struct DinnerStripView: View {
                 HeroCardView<EmptyView>.coloredPill(
                     text: cuisine.displayName,
                     color: cuisineColor(cuisine)
-                )
-            }
-
-            // Carb pill (neutral surface)
-            if let carb = recipe.carbTypeEnum, carb != .none {
-                HeroCardView<EmptyView>.surfacePill(text: carb.displayName)
-            }
-
-            // ⚡ Effort pill (green→red ramp)
-            if let effort = recipe.prepEffortEnum {
-                HeroCardView<EmptyView>.coloredPill(
-                    text: "⚡ \(effort.displayName)",
-                    color: effortColor(effort)
                 )
             }
 
@@ -260,15 +266,7 @@ struct DinnerStripView: View {
         }
     }
 
-    private func effortColor(_ effort: PrepEffort) -> Color {
-        switch effort {
-        case .easy: Color(red: 0.0, green: 0.72, blue: 0.58)      // green
-        case .medium: Color(red: 0.99, green: 0.80, blue: 0.43)   // yellow
-        case .big: Color(red: 1.0, green: 0.42, blue: 0.42)       // red
-        }
-    }
-
-    private func richnessColor(_ richness: CalorieDensity) -> Color {
+private func richnessColor(_ richness: CalorieDensity) -> Color {
         switch richness {
         case .light: Color(red: 0.0, green: 0.72, blue: 0.58)     // green
         case .moderate: Color(red: 0.99, green: 0.80, blue: 0.43) // yellow
