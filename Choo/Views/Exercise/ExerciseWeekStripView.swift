@@ -96,6 +96,17 @@ struct ExerciseWeekStripView: View {
                 // Sessions — centered emoji(s) + title(s)
                 Spacer(minLength: 2)
                 sessionContent(sessions: sessions, isPast: isPast)
+
+                // "Last wk" badge if any session was done last week
+                if sessions.contains(where: { viewModel.lastWeekSessionTypeIds.contains($0.assignment.sessionTypeId) }) {
+                    Text("Last wk")
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(.white.opacity(0.1), in: Capsule())
+                }
+
                 Spacer(minLength: 2)
             }
         }
