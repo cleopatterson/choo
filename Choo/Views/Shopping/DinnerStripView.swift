@@ -241,7 +241,7 @@ struct DinnerStripView: View {
         .frame(minHeight: 120)
         .padding(.vertical, 8)
         .padding(.horizontal, 6)
-        .opacity(isFeatured ? 0.4 : (isPast ? 0.6 : 1.0))
+        .opacity(isPast ? 0.6 : 1.0)
         .background(
             RoundedRectangle(cornerRadius: 10)
                 .fill(.ultraThinMaterial)
