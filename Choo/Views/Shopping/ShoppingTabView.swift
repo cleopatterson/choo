@@ -238,6 +238,7 @@ struct ShoppingTabView: View {
                                 }
                         }
                     }
+                    .fixedSize(horizontal: false, vertical: true)
                 }
 
                 // Quick add
