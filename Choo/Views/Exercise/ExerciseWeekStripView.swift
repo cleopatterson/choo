@@ -71,8 +71,8 @@ struct ExerciseWeekStripView: View {
                 }
             }
 
-            if isRest {
-                // Rest day — centered emoji + label
+            if isRest || sessions.isEmpty {
+                // Rest day (explicit or no sessions) — centered emoji + label
                 Spacer(minLength: 4)
                 Text("😴")
                     .font(.system(size: 28))
@@ -80,17 +80,6 @@ struct ExerciseWeekStripView: View {
                 Text("Rest")
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.3))
-                Spacer(minLength: 4)
-            } else if sessions.isEmpty {
-                // Empty day — add button
-                Spacer(minLength: 4)
-                Image(systemName: "plus")
-                    .font(.body)
-                    .foregroundStyle(isPast ? .white.opacity(0.08) : .white.opacity(0.15))
-                    .frame(height: 34)
-                Text("Add")
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(isPast ? 0.15 : 0.3))
                 Spacer(minLength: 4)
             } else {
                 // Sessions — centered emoji(s) + title(s)
