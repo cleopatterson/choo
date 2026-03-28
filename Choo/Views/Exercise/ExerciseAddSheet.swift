@@ -297,6 +297,7 @@ struct ExerciseAddSheet: View {
                     .strokeBorder(.white.opacity(0.08), lineWidth: 1)
             )
         }
+        .buttonStyle(.plain)
     }
 
     private func metaBadge(text: String) -> some View {
