@@ -18,6 +18,7 @@ final class FirestoreService {
     private var recipesListener: ListenerRegistration?
     private var exerciseCategoriesListener: ListenerRegistration?
     private var exercisePlanListener: ListenerRegistration?
+    private var lastWeekExercisePlanListener: ListenerRegistration?
     private var choreCategoriesListener: ListenerRegistration?
     private var choreCompletionsListener: ListenerRegistration?
     private var choreAssignmentsListener: ListenerRegistration?
@@ -39,6 +40,7 @@ final class FirestoreService {
     var recipes: [Recipe] = []
     var exerciseCategories: [ExerciseCategory] = []
     var currentExercisePlan: ExercisePlan?
+    var lastWeekExercisePlan: ExercisePlan?
     var choreCategories: [ChoreCategory] = []
     var choreCompletions: [ChoreCompletion] = []
     var choreAssignments: [String: String] = [:]
@@ -165,6 +167,7 @@ final class FirestoreService {
         recipesListener?.remove()
         exerciseCategoriesListener?.remove()
         exercisePlanListener?.remove()
+        lastWeekExercisePlanListener?.remove()
         choreCategoriesListener?.remove()
         choreCompletionsListener?.remove()
         choreAssignmentsListener?.remove()
@@ -184,6 +187,7 @@ final class FirestoreService {
         recipesListener = nil
         exerciseCategoriesListener = nil
         exercisePlanListener = nil
+        lastWeekExercisePlanListener = nil
         choreCategoriesListener = nil
         choreCompletionsListener = nil
         choreAssignmentsListener = nil
@@ -203,6 +207,7 @@ final class FirestoreService {
         recipes = []
         exerciseCategories = []
         currentExercisePlan = nil
+        lastWeekExercisePlan = nil
         choreCategories = []
         choreCompletions = []
         choreAssignments = [:]
@@ -1003,6 +1008,21 @@ final class FirestoreService {
         exercisePlanListener = nil
         exerciseCategories = []
         currentExercisePlan = nil
+        lastWeekExercisePlanListener?.remove()
+        lastWeekExercisePlanListener = nil
+        lastWeekExercisePlan = nil
+    }
+
+    func listenToLastWeekExercisePlan(familyId: String, userId: String, weekStart: Date) {
+        lastWeekExercisePlanListener?.remove()
+        let docId = ExercisePlan.docId(for: weekStart)
+        lastWeekExercisePlanListener = db.collection("families").document(familyId)
+            .collection("exerciseData").document(userId)
+            .collection("weekPlans").document(docId)
+            .addSnapshotListener { [weak self] snapshot, error in
+                guard let snapshot, error == nil else { return }
+                self?.lastWeekExercisePlan = try? snapshot.data(as: ExercisePlan.self)
+            }
     }
 
     // MARK: - Chore Categories

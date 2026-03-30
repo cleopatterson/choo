@@ -10,7 +10,7 @@ jobs:
   auto-fix:
     if: github.event_name == 'issues' && github.event.label.name == 'bug-report'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
@@ -29,7 +29,7 @@ jobs:
           label_trigger: "bug-report"
           base_branch: main
           branch_prefix: fix/
-          claude_args: "--max-turns 10 --model claude-sonnet-4-6"
+          claude_args: "--max-turns 25 --model claude-sonnet-4-6"
           show_full_output: true
           prompt: |
             Fix the bug described in this issue. Read the issue title and body for details.
@@ -39,7 +39,7 @@ jobs:
   comment-fix:
     if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     permissions:
       contents: write
       pull-requests: write
@@ -55,6 +55,6 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: "--max-turns 10 --model claude-sonnet-4-6"
+          claude_args: "--max-turns 25 --model claude-sonnet-4-6"
           show_full_output: true
           trigger_phrase: "@claude"

@@ -151,6 +151,18 @@ final class ExerciseViewModel {
         (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: weekStart) }
     }
 
+    var lastWeekStart: Date {
+        calendar.date(byAdding: .day, value: -7, to: weekStart) ?? weekStart
+    }
+
+    var lastWeekSlots: [String: ExerciseSlotAssignment] {
+        firestoreService.lastWeekExercisePlan?.slots ?? [:]
+    }
+
+    var lastWeekSessionTypeIds: Set<String> {
+        Set(lastWeekSlots.values.map(\.sessionTypeId))
+    }
+
     var todayIndex: Int? {
         weekDays.firstIndex(where: { calendar.isDateInToday($0) })
     }
@@ -261,6 +273,7 @@ final class ExerciseViewModel {
         guard !hasLoadedInitially else { return }
         firestoreService.listenToExerciseCategories(familyId: familyId, userId: userId)
         firestoreService.listenToExercisePlan(familyId: familyId, userId: userId, weekStart: weekStart)
+        firestoreService.listenToLastWeekExercisePlan(familyId: familyId, userId: userId, weekStart: lastWeekStart)
 
         do {
             try await firestoreService.seedDefaultExerciseCategories(familyId: familyId, userId: userId)
@@ -656,19 +669,23 @@ final class ExerciseViewModel {
     }
 
     private func buildLastWeekPlanDescription() -> String {
-        // Read last week's slots from current plan context (if we had last week's plan listener)
-        // For now, describe current plan as the "pattern" since routine mode replicates structure
+        let lastWeekPlan = firestoreService.lastWeekExercisePlan
+        let planSlots = lastWeekPlan?.slots ?? [:]
+        let planRestDays = lastWeekPlan?.restDays ?? []
         let dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         var lines: [String] = []
         for dayIndex in 0..<7 {
-            if restDays.contains(dayIndex) {
+            if planRestDays.contains(dayIndex) {
                 lines.append("\(dayNames[dayIndex]): Rest")
                 continue
             }
-            let sessions = sessionsForDay(dayIndex)
-            if sessions.isEmpty { continue }
-            let descs = sessions.map { "\($0.timeSlot.rawValue): \($0.assignment.sessionTypeName) (\($0.assignment.categoryName))" }
-            lines.append("\(dayNames[dayIndex]): \(descs.joined(separator: ", "))")
+            let daySessions = TimeSlot.allCases.compactMap { slot -> String? in
+                let key = "\(dayIndex)_\(slot.rawValue)"
+                guard let assignment = planSlots[key] else { return nil }
+                return "\(slot.rawValue): \(assignment.sessionTypeName) (\(assignment.categoryName))"
+            }
+            if daySessions.isEmpty { continue }
+            lines.append("\(dayNames[dayIndex]): \(daySessions.joined(separator: ", "))")
         }
         return lines.isEmpty ? "No previous plan" : lines.joined(separator: "; ")
     }

@@ -207,8 +207,8 @@ struct HouseChoreEditSheet: View {
                     Task {
                         guard let category = viewModel.categories.first(where: { $0.choreTypes.contains(where: { $0.id == item.id }) }) else { return }
                         await viewModel.deleteChoreType(from: category, typeId: item.id)
+                        dismiss()
                     }
-                    dismiss()
                 }
             }
         }
