@@ -3,7 +3,6 @@ import SwiftUI
 struct HouseChoreListView: View {
     @Bindable var viewModel: HouseViewModel
     var scrollProxy: ScrollViewProxy?
-    @State private var choreToDelete: HouseViewModel.HouseDueItem?
     @State private var showingManageCategories = false
 
     var body: some View {
@@ -22,22 +21,6 @@ struct HouseChoreListView: View {
                     ForEach(groups, id: \.name) { group in
                         categoryCard(group)
                             .id("house_\(group.name)")
-                    }
-                }
-            }
-            .confirmationDialog(
-                "Delete \"\(choreToDelete?.choreType.name ?? "")\"?",
-                isPresented: Binding(
-                    get: { choreToDelete != nil },
-                    set: { if !$0 { choreToDelete = nil } }
-                ),
-                titleVisibility: .visible
-            ) {
-                Button("Delete", role: .destructive) {
-                    if let item = choreToDelete,
-                       let category = viewModel.categories.first(where: { $0.choreTypes.contains(where: { $0.id == item.id }) }) {
-                        Task { await viewModel.deleteChoreType(from: category, typeId: item.id) }
-                        choreToDelete = nil
                     }
                 }
             }
@@ -131,7 +114,11 @@ struct HouseChoreListView: View {
                                 }
                                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                     Button(role: .destructive) {
-                                        choreToDelete = item
+                                        if let category = viewModel.categories.first(where: {
+                                            $0.choreTypes.contains(where: { $0.id == item.id })
+                                        }) {
+                                            Task { await viewModel.deleteChoreType(from: category, typeId: item.id) }
+                                        }
                                     } label: {
                                         Label("Delete", systemImage: "trash")
                                     }
