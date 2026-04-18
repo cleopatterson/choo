@@ -23,7 +23,11 @@ struct BriefingPagerView: View {
                     .padding(.horizontal, 4)
                     .tag(0)
 
-                NextWeekPreviewView(viewModel: briefingViewModel)
+                NextWeekPreviewView(viewModel: briefingViewModel, onEventTap: { eventId in
+                    if let event = calendarViewModel.firestoreService.events.first(where: { $0.id == eventId }) {
+                        calendarViewModel.selectedEvent = event
+                    }
+                })
                     .readHeight { nextWeekHeight = $0 }
                     .frame(maxHeight: .infinity, alignment: .top)
                     .padding(.horizontal, 4)
