@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NextWeekPreviewView: View {
     @Bindable var viewModel: WeeklyBriefingViewModel
+    var onEventTap: ((String) -> Void)? = nil
 
     private static let weekRangeFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -40,7 +41,8 @@ struct NextWeekPreviewView: View {
                     if !allEvents.isEmpty {
                         HighlightsCarouselView(
                             highlights: allEvents,
-                            heading: ""
+                            heading: "",
+                            onEventTap: onEventTap
                         )
                         .padding(.vertical, 12)
                     }
