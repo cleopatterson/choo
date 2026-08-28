@@ -6,7 +6,6 @@ struct MainTabView: View {
     @Bindable var calendarViewModel: CalendarViewModel
     @Bindable var notesViewModel: NotesViewModel
     @Bindable var bugReportsViewModel: BugReportsViewModel
-    @Bindable var briefingViewModel: WeeklyBriefingViewModel
     @Bindable var dinnerPlannerViewModel: DinnerPlannerViewModel
     @Bindable var exerciseViewModel: ExerciseViewModel
     @Bindable var houseViewModel: HouseViewModel
@@ -18,7 +17,7 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            CalendarTabView(viewModel: calendarViewModel, briefingViewModel: briefingViewModel, showingProfile: $showingProfile)
+            CalendarTabView(viewModel: calendarViewModel, showingProfile: $showingProfile)
                 .tag(0)
                 .tabItem {
                     Label("Calendar", systemImage: "calendar")

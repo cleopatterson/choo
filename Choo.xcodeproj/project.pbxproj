@@ -59,18 +59,7 @@
 		BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01BB02CC03DD04EE05FF06 /* Secrets.swift */; };
 		BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */; };
 		BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */; };
-		BB31CC32DD33EE34FF35AA36 /* WeeklyBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */; };
-		BB41CC42DD43EE44FF45AA46 /* WeeklyBriefingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */; };
-		BB51CC52DD53EE54FF55AA56 /* WeeklyBriefingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA51BB52CC53DD54EE55FF56 /* WeeklyBriefingCardView.swift */; };
-		BB61CC62DD63EE64FF65AA66 /* BriefingCoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA61BB62CC63DD64EE65FF66 /* BriefingCoverView.swift */; };
-		BB71CC72DD73EE74FF75AA76 /* WeekTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA71BB72CC73DD74EE75FF76 /* WeekTimelineView.swift */; };
-		BB81CC82DD83EE84FF85AA86 /* HighlightsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA81BB82CC83DD84EE85FF86 /* HighlightsCarouselView.swift */; };
-		BB91CC92DD93EE94FF95AA96 /* WeatherStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA91BB92CC93DD94EE95FF96 /* WeatherStripView.swift */; };
-		BBA1CCA2DDA3EEA4FFA5AAA6 /* BillsChoresGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA1BBA2CCA3DDA4EEA5FFA6 /* BillsChoresGridView.swift */; };
-		BBB1CCB2DDB3EEB4FFB5AAB6 /* DayAgendaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAB1BBB2CCB3DDB4EEB5FFB6 /* DayAgendaView.swift */; };
-		BBC1CCC2DDC3EEC4FFC5AAC6 /* AlsoThisWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BBC2CCC3DDC4EEC5FFC6 /* AlsoThisWeekView.swift */; };
-		BBD1CCD2DDD3EED4FFD5AAD6 /* NextWeekPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD1BBD2CCD3DDD4EED5FFD6 /* NextWeekPreviewView.swift */; };
-		BBE1CCE2DDE3EEE4FFE5AAE6 /* BriefingPagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE1BBE2CCE3DDE4EEE5FFE6 /* BriefingPagerView.swift */; };
+		BB31CC32DD33EE34FF35AA36 /* DayForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31BB32CC33DD34EE35FF36 /* DayForecast.swift */; };
 		BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */; };
 		C3D4E5F6A7B80920314253A4 /* CalendarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A4B5C6D7E8092031425364 /* CalendarViewModel.swift */; };
 		C5D2A1AFD43DC13ACB94932F /* AuthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B3E6DA15F871616F9194B3 /* AuthService.swift */; };
@@ -217,18 +206,7 @@
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
 		AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySetupView.swift; sourceTree = "<group>"; };
 		AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
-		AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefing.swift; sourceTree = "<group>"; };
-		AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefingViewModel.swift; sourceTree = "<group>"; };
-		AA51BB52CC53DD54EE55FF56 /* WeeklyBriefingCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyBriefingCardView.swift; sourceTree = "<group>"; };
-		AA61BB62CC63DD64EE65FF66 /* BriefingCoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingCoverView.swift; sourceTree = "<group>"; };
-		AA71BB72CC73DD74EE75FF76 /* WeekTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekTimelineView.swift; sourceTree = "<group>"; };
-		AA81BB82CC83DD84EE85FF86 /* HighlightsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightsCarouselView.swift; sourceTree = "<group>"; };
-		AA91BB92CC93DD94EE95FF96 /* WeatherStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherStripView.swift; sourceTree = "<group>"; };
-		AAA1BBA2CCA3DDA4EEA5FFA6 /* BillsChoresGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillsChoresGridView.swift; sourceTree = "<group>"; };
-		AAB1BBB2CCB3DDB4EEB5FFB6 /* DayAgendaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayAgendaView.swift; sourceTree = "<group>"; };
-		AAC1BBC2CCC3DDC4EEC5FFC6 /* AlsoThisWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlsoThisWeekView.swift; sourceTree = "<group>"; };
-		AAD1BBD2CCD3DDD4EED5FFD6 /* NextWeekPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NextWeekPreviewView.swift; sourceTree = "<group>"; };
-		AAE1BBE2CCE3DDE4EEE5FFE6 /* BriefingPagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BriefingPagerView.swift; sourceTree = "<group>"; };
+		AA31BB32CC33DD34EE35FF36 /* DayForecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayForecast.swift; sourceTree = "<group>"; };
 		ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BugReportsViewModel.swift; sourceTree = "<group>"; };
 		B1B2B3B4B5B6B7B8B9C0C1C2 /* PendingShareManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingShareManager.swift; sourceTree = "<group>"; };
 		B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingTabView.swift; sourceTree = "<group>"; };
@@ -398,7 +376,6 @@
 				A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */,
 				ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */,
 				D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */,
-				AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -492,7 +469,7 @@
 				SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */,
 				TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */,
 				5E76E645E1121618BE1729BF /* UserProfile.swift */,
-				AA31BB32CC33DD34EE35FF36 /* WeeklyBriefing.swift */,
+				AA31BB32CC33DD34EE35FF36 /* DayForecast.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -586,16 +563,6 @@
 		DD11EE12FF13AA14BB15CC16 /* Briefing */ = {
 			isa = PBXGroup;
 			children = (
-				AA61BB62CC63DD64EE65FF66 /* BriefingCoverView.swift */,
-				AA51BB52CC53DD54EE55FF56 /* WeeklyBriefingCardView.swift */,
-				AA71BB72CC73DD74EE75FF76 /* WeekTimelineView.swift */,
-				AA81BB82CC83DD84EE85FF86 /* HighlightsCarouselView.swift */,
-				AA91BB92CC93DD94EE95FF96 /* WeatherStripView.swift */,
-				AAA1BBA2CCA3DDA4EEA5FFA6 /* BillsChoresGridView.swift */,
-				AAB1BBB2CCB3DDB4EEB5FFB6 /* DayAgendaView.swift */,
-				AAC1BBC2CCC3DDC4EEC5FFC6 /* AlsoThisWeekView.swift */,
-				AAD1BBD2CCD3DDD4EED5FFD6 /* NextWeekPreviewView.swift */,
-				AAE1BBE2CCE3DDE4EEE5FFE6 /* BriefingPagerView.swift */,
 			);
 			path = Briefing;
 			sourceTree = "<group>";
@@ -914,18 +881,7 @@
 				BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */,
 				HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */,
 				BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */,
-				BB31CC32DD33EE34FF35AA36 /* WeeklyBriefing.swift in Sources */,
-				BB41CC42DD43EE44FF45AA46 /* WeeklyBriefingViewModel.swift in Sources */,
-				BB51CC52DD53EE54FF55AA56 /* WeeklyBriefingCardView.swift in Sources */,
-				BB61CC62DD63EE64FF65AA66 /* BriefingCoverView.swift in Sources */,
-				BB71CC72DD73EE74FF75AA76 /* WeekTimelineView.swift in Sources */,
-				BB81CC82DD83EE84FF85AA86 /* HighlightsCarouselView.swift in Sources */,
-				BB91CC92DD93EE94FF95AA96 /* WeatherStripView.swift in Sources */,
-				BBA1CCA2DDA3EEA4FFA5AAA6 /* BillsChoresGridView.swift in Sources */,
-				BBB1CCB2DDB3EEB4FFB5AAB6 /* DayAgendaView.swift in Sources */,
-				BBC1CCC2DDC3EEC4FFC5AAC6 /* AlsoThisWeekView.swift in Sources */,
-				BBD1CCD2DDD3EED4FFD5AAD6 /* NextWeekPreviewView.swift in Sources */,
-				BBE1CCE2DDE3EEE4FFE5AAE6 /* BriefingPagerView.swift in Sources */,
+				BB31CC32DD33EE34FF35AA36 /* DayForecast.swift in Sources */,
 				TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */,
 				BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */,
 				HC01BB01CC01DD01EE01FF01 /* HeroCardView.swift in Sources */,

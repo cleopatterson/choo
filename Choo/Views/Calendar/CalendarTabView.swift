@@ -8,7 +8,6 @@ private final class ScrollTracker {
 
 struct CalendarTabView: View {
     @Bindable var viewModel: CalendarViewModel
-    @Bindable var briefingViewModel: WeeklyBriefingViewModel
     @Binding var showingProfile: Bool
     @State private var scrollToTodayTrigger = false
     @State private var scrollTracker = ScrollTracker()
@@ -20,7 +19,6 @@ struct CalendarTabView: View {
     @State private var showConfetti = false
     @State private var eventIconCache: [String: String?] = [:]
     @State private var scrollTask: Task<Void, Never>?
-    @State private var briefingPage = 0
     @State private var selectedEventDay: Date = Date()
 
     /// Update displayedMonth only when the month boundary actually changes.
@@ -63,48 +61,10 @@ struct CalendarTabView: View {
                 ScrollViewReader { proxy in
                     List {
                         let days = viewModel.visibleDays
-                        let briefingInsertIndex = days.firstIndex(where: { $0 >= briefingViewModel.weekStart }) ?? 0
-                        let preDays = Array(days.prefix(briefingInsertIndex))
-                        let postDays = Array(days.suffix(from: briefingInsertIndex).filter { !briefingViewModel.weekDays.contains($0) })
-
                         let today = Calendar.current.startOfDay(for: Date())
 
-                        // Pre-briefing days (past events before this week)
-                        ForEach(Array(preDays.enumerated()), id: \.element) { index, day in
-                            if shouldShowMonthBanner(for: day, after: index > 0 ? preDays[index - 1] : nil) {
-                                monthBanner(for: day)
-                            }
-                            let dayEvents = viewModel.filteredEvents(for: day)
-                            let extEvents = viewModel.externalEvents(for: day)
-                            let holiday = viewModel.publicHoliday(on: day)
-                            let school = viewModel.schoolHolidayPeriod(on: day)
-                            let isToday = day == today
-                            if !dayEvents.isEmpty || !extEvents.isEmpty || holiday != nil || school != nil || isToday {
-                                daySection(for: day, dayEvents: dayEvents, externalEvents: extEvents, publicHoliday: holiday, schoolHoliday: school, isToday: isToday, today: today)
-                                    .id(day)
-                                    .scaleEffect(y: animatingDay == day ? 0.01 : 1, anchor: .top)
-                                    .opacity(animatingDay == day ? 0 : 1)
-                                    .onAppear { scrollTracker.visibleDays.insert(day); updateMonthIfNeeded() }
-                                    .onDisappear { scrollTracker.visibleDays.remove(day) }
-                            }
-                        }
-
-                        // Briefing card — paged swipe between this week and next week
-                        Section {
-                            BriefingPagerView(
-                                briefingViewModel: briefingViewModel,
-                                calendarViewModel: viewModel,
-                                selectedPage: $briefingPage
-                            )
-                        }
-                        .id("today-anchor")
-                        .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 8, trailing: 16))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-
-                        // Post-briefing days (future events beyond this week)
-                        ForEach(Array(postDays.enumerated()), id: \.element) { index, day in
-                            if shouldShowMonthBanner(for: day, after: index > 0 ? postDays[index - 1] : briefingViewModel.weekDays.last) {
+                        ForEach(Array(days.enumerated()), id: \.element) { index, day in
+                            if shouldShowMonthBanner(for: day, after: index > 0 ? days[index - 1] : nil) {
                                 monthBanner(for: day)
                             }
                             let dayEvents = viewModel.filteredEvents(for: day)
@@ -125,31 +85,23 @@ struct CalendarTabView: View {
                     .listStyle(.plain)
                     .scrollContentBackground(.hidden)
                     .refreshable {
-                        await briefingViewModel.forceRefresh()
+                        viewModel.refreshDeviceCalendarCache()
                     }
                     .onChange(of: viewModel.selectedDate) {
                         let target = Calendar.current.startOfDay(for: viewModel.selectedDate)
                         // Delay scroll to let the month picker close first
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
                             withAnimation {
-                                if briefingViewModel.weekDays.contains(target) {
-                                    proxy.scrollTo("today-anchor", anchor: .top)
-                                } else {
-                                    let days = viewModel.visibleDays
-                                    let scrollTarget = days.first(where: { $0 >= target }) ?? days.last ?? target
-                                    proxy.scrollTo(scrollTarget, anchor: .top)
-                                }
+                                let days = viewModel.visibleDays
+                                let scrollTarget = days.first(where: { $0 >= target }) ?? days.last ?? target
+                                proxy.scrollTo(scrollTarget, anchor: .top)
                             }
                         }
                     }
                     .onChange(of: scrollToTodayTrigger) {
                         let today = Calendar.current.startOfDay(for: Date())
                         withAnimation {
-                            if briefingViewModel.weekDays.contains(today) {
-                                proxy.scrollTo("today-anchor", anchor: .top)
-                            } else {
-                                proxy.scrollTo(today, anchor: .top)
-                            }
+                            proxy.scrollTo(today, anchor: .top)
                         }
                     }
                     .onChange(of: scrollToNewEventDate) {
@@ -173,14 +125,13 @@ struct CalendarTabView: View {
                     }
                     .onAppear {
                         viewModel.refreshDeviceCalendarCache()
-                        briefingPage = 0
                         scrollToToday(proxy: proxy, reason: "onAppear")
                     }
-                    .onChange(of: briefingViewModel.headline) {
-                        // Only auto-scroll on initial load, not on AI re-generation
+                    .onChange(of: viewModel.visibleDays.count) {
+                        // Land on today once the first batch of days has loaded.
                         guard !hasScrolledInitially else { return }
                         hasScrolledInitially = true
-                        scrollToToday(proxy: proxy, reason: "briefing loaded")
+                        scrollToToday(proxy: proxy, reason: "days loaded")
                     }
                 }
 
@@ -284,7 +235,7 @@ struct CalendarTabView: View {
                     familyMembers: viewModel.allMembers,
                     currentUserUID: viewModel.currentUserUID,
                     initialDate: scrollTracker.visibleDays.min() ?? viewModel.selectedDate,
-                    claudeService: briefingViewModel.claudeService
+                    claudeService: .shared
                 ) { title, start, end, attendees, isAllDay, location, recurrenceFrequency, recurrenceEndDate, reminderEnabled, isBill, amount, note, isTodo, todoEmoji in
                     await viewModel.createEvent(
                         title: title,
@@ -319,12 +270,6 @@ struct CalendarTabView: View {
                     ConfettiView()
                 }
             }
-            .task {
-                await briefingViewModel.load()
-            }
-            .onChange(of: viewModel.eventsFingerprint) {
-                briefingViewModel.onEventsChanged()
-            }
         }
     }
 
@@ -339,14 +284,8 @@ struct CalendarTabView: View {
         scrollToTodayTask = Task {
             try? await Task.sleep(for: .milliseconds(500))
             guard !Task.isCancelled else { return }
-            if briefingViewModel.weekDays.contains(today) {
-                withAnimation {
-                    proxy.scrollTo("today-anchor", anchor: .top)
-                }
-            } else {
-                withAnimation {
-                    proxy.scrollTo(today, anchor: .top)
-                }
+            withAnimation {
+                proxy.scrollTo(today, anchor: .top)
             }
         }
     }
@@ -461,6 +400,7 @@ struct CalendarTabView: View {
                 }
                 .opacity(isPast ? 0.5 : 1)
                 .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
             }
 
             // Public holiday
@@ -475,6 +415,7 @@ struct CalendarTabView: View {
                 }
                 .opacity(isPast ? 0.5 : 1)
                 .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
             }
 
             // User events
@@ -534,6 +475,7 @@ struct CalendarTabView: View {
                             }
                         }
                         .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
                 }
             }
 
@@ -542,6 +484,7 @@ struct CalendarTabView: View {
                 externalEventRow(ekEvent)
                     .opacity(isPast ? 0.5 : 1)
                     .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
             }
 
             // "No events" only for today
@@ -550,23 +493,27 @@ struct CalendarTabView: View {
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
                     .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
             }
         } header: {
             HStack(spacing: 8) {
                 Text(Self.dayHeaderFormatter.string(from: day))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(isToday ? .primary : isPast ? Color.white.opacity(0.35) : Color.white.opacity(0.7))
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(isPast ? Color.white.opacity(0.35) : .white)
                 if isToday {
                     Text("Today")
-                        .font(.caption.bold())
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.chooPurple, in: Capsule())
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(Color(red: 0.169, green: 0.102, blue: 0.361))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.white, in: Capsule())
                 }
                 Spacer()
             }
-            .padding(.vertical, 4)
+            .textCase(nil)
+            .padding(.top, 14)
+            .padding(.bottom, 2)
+            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
         }
     }
 
@@ -588,15 +535,15 @@ struct CalendarTabView: View {
         let paid = event.isPaidOn(day)
         let todoDone = event.isTodo == true && event.isCompleted == true
 
-        return HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2)
+        return HStack(spacing: 12) {
+            Capsule()
                 .fill(eventStripColor(for: event))
-                .frame(width: 4, height: 32)
+                .frame(width: 3, height: 34)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(event.title)
-                        .font(.body)
+                        .font(.system(size: 15, weight: .semibold))
                         .strikethrough(todoDone, color: .white.opacity(0.3))
 
                     if event.isTodo == true && !todoDone {
@@ -686,10 +633,10 @@ struct CalendarTabView: View {
                     .background(.green.opacity(0.15), in: Capsule())
             } else if event.isBill != true {
                 // Attendee avatars
-                HStack(spacing: -6) {
+                HStack(spacing: -8) {
                     ForEach(attendeeMembers(for: event)) { member in
-                        MemberAvatarView(name: member.displayName, uid: member.id, emoji: member.emoji, size: 24)
-                            .overlay(Circle().stroke(Color(.systemBackground), lineWidth: 1.5))
+                        MemberAvatarView(name: member.displayName, uid: member.id, emoji: member.emoji, size: 26)
+                            .overlay(Circle().stroke(Color(red: 0.165, green: 0.106, blue: 0.337), lineWidth: 2))
                     }
                 }
             }
@@ -704,6 +651,14 @@ struct CalendarTabView: View {
             }
         }
         .opacity((paid || todoDone) ? 0.6 : 1)
+        .padding(.leading, 12)
+        .padding(.trailing, 14)
+        .padding(.vertical, 13)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+        )
     }
 
     @ViewBuilder
@@ -734,14 +689,14 @@ struct CalendarTabView: View {
     private func externalEventRow(_ event: EKEvent) -> some View {
         let calColor = Color(cgColor: event.calendar.cgColor)
 
-        return HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2)
+        return HStack(spacing: 12) {
+            Capsule()
                 .fill(calColor)
-                .frame(width: 4, height: 32)
+                .frame(width: 3, height: 34)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 3) {
                 Text(event.title ?? "")
-                    .font(.body)
+                    .font(.system(size: 15, weight: .semibold))
 
                 HStack(spacing: 4) {
                     if event.isAllDay {
@@ -784,6 +739,14 @@ struct CalendarTabView: View {
                     .allowsHitTesting(false)
             }
         }
+        .padding(.leading, 12)
+        .padding(.trailing, 14)
+        .padding(.vertical, 13)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+        )
     }
 
     // MARK: - Event Icon Matching

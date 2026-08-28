@@ -6,7 +6,6 @@ struct ContentView: View {
     @State private var calendarViewModel: CalendarViewModel?
     @State private var notesViewModel: NotesViewModel?
     @State private var bugReportsViewModel: BugReportsViewModel?
-    @State private var briefingViewModel: WeeklyBriefingViewModel?
     @State private var dinnerPlannerViewModel: DinnerPlannerViewModel?
     @State private var exerciseViewModel: ExerciseViewModel?
     @State private var houseViewModel: HouseViewModel?
@@ -28,7 +27,6 @@ struct ContentView: View {
                    let calendarVM = calendarViewModel,
                    let notesVM = notesViewModel,
                    let bugReportsVM = bugReportsViewModel,
-                   let briefingVM = briefingViewModel,
                    let dinnerVM = dinnerPlannerViewModel,
                    let exerciseVM = exerciseViewModel,
                    let houseVM = houseViewModel {
@@ -38,7 +36,6 @@ struct ContentView: View {
                         calendarViewModel: calendarVM,
                         notesViewModel: notesVM,
                         bugReportsViewModel: bugReportsVM,
-                        briefingViewModel: briefingVM,
                         dinnerPlannerViewModel: dinnerVM,
                         exerciseViewModel: exerciseVM,
                         houseViewModel: houseVM
@@ -82,13 +79,6 @@ struct ContentView: View {
                     familyId: familyId,
                     displayName: displayName
                 )
-                briefingViewModel = WeeklyBriefingViewModel(
-                    firestoreService: firestore,
-                    claudeService: .shared,
-                    weatherService: WeatherService(),
-                    deviceCalendarService: deviceCalendarService,
-                    familyId: familyId
-                )
                 dinnerPlannerViewModel = DinnerPlannerViewModel(
                     firestoreService: firestore,
                     claudeService: .shared,
@@ -119,7 +109,6 @@ struct ContentView: View {
                 calendarViewModel = nil
                 notesViewModel = nil
                 bugReportsViewModel = nil
-                briefingViewModel = nil
                 dinnerPlannerViewModel = nil
                 exerciseViewModel = nil
                 houseViewModel = nil

@@ -1,104 +1,11 @@
 import Foundation
 
-struct WeekSummaryResult {
-    var headline: String
-    var eventIcons: [String: String] = [:]  // event title → emoji
-}
-
 @Observable
 final class ClaudeAPIService {
     static let shared = ClaudeAPIService()
 
     private(set) var isLoading = false
     private(set) var errorMessage: String?
-
-    private let cacheKeyPrefix = "ClaudeAPIService.weekSummary.v3"
-    private let cacheWeekKeyPrefix = "ClaudeAPIService.weekStart.v3"
-    @ObservationIgnored private var activeGenerationTasks: [String: Task<WeekSummaryResult, Error>] = [:]
-
-    /// Generate an AI headline and summary for the week's events.
-    func generateWeekSummary(events: [EventSummaryInput], weekStart: Date, weatherSummary: String? = nil, weekLabel: String = "this week") async -> WeekSummaryResult {
-        // Check cache — keyed by week + day so it refreshes daily, not every app open
-        let weekString = Self.weekFormatter.string(from: weekStart)
-        let dayString = Self.dayFormatter.string(from: Date())
-        let cacheString = "\(weekString)_\(dayString)"
-        if let cached = loadCachedSummary(for: cacheString, weekKey: weekString) {
-            return cached
-        }
-
-        // Deduplicate concurrent requests — return existing in-flight task for this specific week
-        if let existing = activeGenerationTasks[weekString] {
-            return (try? await existing.value) ?? fallback(events: events)
-        }
-
-        let capturedEvents = events
-        let capturedWeatherSummary = weatherSummary
-        let capturedDayString = dayString
-        let capturedCacheString = cacheString
-        let capturedWeekLabel = weekLabel
-
-        let task = Task<WeekSummaryResult, Error> { [weak self] in
-            guard let self else { throw ClaudeAPIError.badResponse }
-
-            let eventList = capturedEvents.map { "• \($0.title) — \($0.dateDescription)" }.joined(separator: "\n")
-            let weatherContext = capturedWeatherSummary.map { "\n\nWeather forecast for \(capturedWeekLabel):\n\($0)" } ?? ""
-            let isNextWeek = capturedWeekLabel != "this week"
-            let timeContext = isNextWeek
-                ? "You are summarising NEXT WEEK (not the current week). All events listed are next week."
-                : "Today is \(capturedDayString). Only mention events from today onwards — never reference past days."
-
-            let prompt = """
-            You are a witty, warm family calendar assistant. Given \(capturedWeekLabel)'s events, write two things:
-
-            1. HEADLINE: A short, punchy headline capturing the week's vibe. Poetic or playful. Use a line break (\\n) to split into two short lines. STRICT LIMIT: 3-4 words per line, 4-8 words total. No quotes.\(isNextWeek ? " Make it clear this is about next week." : "")
-               Examples:
-               - "Splash and dash —\\nwhat a week"
-               - "Birthday week!\\ncelebrations ahead"
-               - "A quiet one —\\njust for you"
-
-            2. ICONS: For each event, pick the single most fitting emoji. Be creative and specific. Use standard emoji characters like: 🍽️ 🏊 🎉 💪 📚 ✈️ 🛒 🏥 🏆 🎵 🎨 🎬 🏃 🚶 ❤️ ☕ 🚗 🐾 ✂️ 🛏️ 🎮 🎁 ⭐ ⚡ 🔧 🔨 🌿 🔥 💧 🌙 ☀️ 👥 📱 💻 💳 🏠 🚴 💃 🏖️ 📸 💼 🎓 🩺 🦷 👁️ 🧠 ✨ 🪄 🎭 🧘 🏄 🐶 💇 🧳 🎂 🏋️
-               One line per event: "Event Title" = emoji
-
-            Respond in exactly this format:
-            HEADLINE: <headline>
-            ICONS:
-            "Event Title" = emoji
-
-            \(timeContext)
-
-            Events for \(capturedWeekLabel):
-            \(eventList.isEmpty ? "No events for \(capturedWeekLabel)." : eventList)\(weatherContext)
-            """
-
-            return try await self.callClaude(prompt: prompt)
-        }
-
-        activeGenerationTasks[weekString] = task
-        isLoading = true
-        defer {
-            isLoading = false
-            activeGenerationTasks.removeValue(forKey: weekString)
-        }
-
-        do {
-            let result = try await task.value
-            cacheSummary(result, cacheString: capturedCacheString, weekKey: weekString)
-            errorMessage = nil
-            return result
-        } catch {
-            errorMessage = error.localizedDescription
-            return fallback(events: capturedEvents)
-        }
-    }
-
-    /// Invalidate all cached summaries so the next calls fetch fresh.
-    func invalidateCache() {
-        let defaults = UserDefaults.standard
-        let allKeys = defaults.dictionaryRepresentation().keys
-        for key in allKeys where key.hasPrefix(cacheKeyPrefix) || key.hasPrefix(cacheWeekKeyPrefix) {
-            defaults.removeObject(forKey: key)
-        }
-    }
 
     // MARK: - API call
 
@@ -163,44 +70,6 @@ final class ClaudeAPIService {
         return try decoder.decode(T.self, from: jsonData)
     }
 
-    private func callClaude(prompt: String) async throws -> WeekSummaryResult {
-        let text = try await callClaudeRaw(prompt: prompt)
-        return parseResponse(text)
-    }
-
-    private func parseResponse(_ text: String) -> WeekSummaryResult {
-        var headline = "Your week at a glance"
-        var eventIcons: [String: String] = [:]
-
-        enum Section { case none, icons }
-        var current: Section = .none
-
-        let lines = text.components(separatedBy: "\n")
-
-        for line in lines {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            if trimmed.hasPrefix("HEADLINE:") {
-                headline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
-                headline = headline.replacingOccurrences(of: "\\n", with: "\n")
-                current = .none
-            } else if trimmed.hasPrefix("ICONS:") {
-                current = .icons
-            } else if current == .icons && trimmed.contains("=") {
-                // Parse "Event Title" = symbol.name
-                let parts = trimmed.components(separatedBy: "=")
-                if parts.count == 2 {
-                    let title = parts[0].trimmingCharacters(in: .whitespaces).trimmingCharacters(in: CharacterSet(charactersIn: "\""))
-                    let icon = parts[1].trimmingCharacters(in: .whitespaces)
-                    if !title.isEmpty && !icon.isEmpty {
-                        eventIcons[title] = icon
-                    }
-                }
-            }
-        }
-
-        return WeekSummaryResult(headline: headline, eventIcons: eventIcons)
-    }
-
     // MARK: - Natural Language Event Parsing
 
     func parseEventFromNaturalLanguage(text: String, isBill: Bool, referenceDate: Date) async -> ParsedEventInput? {
@@ -252,57 +121,6 @@ final class ClaudeAPIService {
         }
     }
 
-    // MARK: - Cache
-
-    private struct CachedSummary: Codable {
-        var headline: String
-        var eventIcons: [String: String]
-    }
-
-    private func cacheSummary(_ result: WeekSummaryResult, cacheString: String, weekKey: String) {
-        let cached = CachedSummary(headline: result.headline, eventIcons: result.eventIcons)
-        if let data = try? JSONEncoder().encode(cached) {
-            UserDefaults.standard.set(data, forKey: "\(cacheKeyPrefix).\(weekKey)")
-            UserDefaults.standard.set(cacheString, forKey: "\(cacheWeekKeyPrefix).\(weekKey)")
-        }
-    }
-
-    private func loadCachedSummary(for cacheString: String, weekKey: String) -> WeekSummaryResult? {
-        guard let cachedWeek = UserDefaults.standard.string(forKey: "\(cacheWeekKeyPrefix).\(weekKey)"),
-              cachedWeek == cacheString,
-              let data = UserDefaults.standard.data(forKey: "\(cacheKeyPrefix).\(weekKey)"),
-              let cached = try? JSONDecoder().decode(CachedSummary.self, from: data) else {
-            return nil
-        }
-        return WeekSummaryResult(headline: cached.headline, eventIcons: cached.eventIcons)
-    }
-
-    private func fallback(events: [EventSummaryInput]) -> WeekSummaryResult {
-        if events.isEmpty {
-            return WeekSummaryResult(headline: "A blank canvas —\nthe week is yours")
-        }
-        return WeekSummaryResult(headline: "Your week at a glance")
-    }
-
-    @ObservationIgnored
-    private static let weekFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-'W'ww"
-        return f
-    }()
-
-    @ObservationIgnored
-    private static let dayFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
-}
-
-/// Lightweight input for the AI prompt — keeps the API service decoupled from FamilyEvent.
-struct EventSummaryInput {
-    let title: String
-    let dateDescription: String
 }
 
 struct ParsedEventInput {
