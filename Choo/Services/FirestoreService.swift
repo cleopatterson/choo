@@ -380,6 +380,7 @@ final class FirestoreService {
                     }
                 }
                 self.eventsVersion += 1
+                WidgetDataWriter.update(from: self.events)
             }
     }
 

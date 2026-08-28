@@ -23,6 +23,8 @@ Choo is a family hub iOS app (SwiftUI, iOS 17+) with a companion web app. It rep
 - Views: `Choo/Views/{TabName}/`
 - Shared views: `Choo/Views/Shared/`
 - Services: `Choo/Services/`
+- Shared (app ↔ widget): `Choo/Shared/`
+- Widget extension: `ChooWidget/`
 - Web app: `choo-web/src/`
 - Cloud Functions: `functions/src/index.ts`
 - Design system: `docs/DESIGN_SYSTEM.md`
@@ -35,6 +37,13 @@ Choo is a family hub iOS app (SwiftUI, iOS 17+) with a companion web app. It rep
 - Glass cards: `.fill(.ultraThinMaterial)` + `.strokeBorder(.white.opacity(0.08))`
 - Week starts Monday (`cal.firstWeekday = 2`)
 - Australian context (NSW holidays, Sydney weather, AUD)
+
+## Widget
+- **ChooWidgetExtension** target — iOS home screen widget showing upcoming events/bills/to-dos
+- Sizes: small (2x2), medium, large
+- Data flow: `FirestoreService` → `WidgetDataWriter` → JSON in App Group (`group.com.tonywall.wallboard`) → widget reads via `WidgetSharedStore`
+- Shared model: `Choo/Shared/WidgetSharedData.swift` (target membership: both Choo + ChooWidgetExtension)
+- Widget refreshes on events snapshot change + every 30 min via timeline
 
 ## When Fixing Bugs
 - Read the issue description carefully

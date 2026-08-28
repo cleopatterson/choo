@@ -9,6 +9,15 @@
 /* Begin PBXBuildFile section */
 		084B608C2059387BAB27B341 /* Family.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE5C1F5794F7C17CC413EF39 /* Family.swift */; };
 		08C7369D0F81E6F0AEE398AE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 73832FD5F89D92BEC7C179ED /* FirebaseAuth */; };
+		11032BF42F905BA00016A358 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11032BF32F905BA00016A358 /* WidgetKit.framework */; };
+		11032BF62F905BA00016A358 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11032BF52F905BA00016A358 /* SwiftUI.framework */; };
+		11032C052F905BA10016A358 /* ChooWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 11032BF22F905BA00016A358 /* ChooWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		11032C132F905E450016A358 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11032C0D2F905E450016A358 /* Assets.xcassets */; };
+		11032C152F905E450016A358 /* ChooWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11032C0F2F905E450016A358 /* ChooWidgetBundle.swift */; };
+		11032C162F905E450016A358 /* UpcomingWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11032C112F905E450016A358 /* UpcomingWidget.swift */; };
+		11032C192F9065B20016A358 /* WidgetSharedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11032C172F9065B20016A358 /* WidgetSharedData.swift */; };
+		11032C1A2F9065B20016A358 /* WidgetSharedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11032C172F9065B20016A358 /* WidgetSharedData.swift */; };
+		11032C1C2F9065FA0016A358 /* WidgetDataWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11032C1B2F9065FA0016A358 /* WidgetDataWriter.swift */; };
 		11692FD12F4584CF00C75371 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 11692FD02F4584CF00C75371 /* FirebaseMessaging */; };
 		11692FD32F4585F100C75371 /* NotificationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11692FD22F4585F100C75371 /* NotificationPreferences.swift */; };
 		11692FD52F45860500C75371 /* PushNotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11692FD42F45860500C75371 /* PushNotificationService.swift */; };
@@ -135,6 +144,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		11032C032F905BA10016A358 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C60D8445BFA74FDB99701AB1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 11032BF12F905BA00016A358;
+			remoteInfo = ChooWidgetExtension;
+		};
 		CD9E0F1A2B3C4D5E6F7A8B9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C60D8445BFA74FDB99701AB1 /* Project object */;
@@ -152,6 +168,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				6F7A8B9C0D1E2F3A4B5C6D7E /* ChooShareExtension.appex in Embed Foundation Extensions */,
+				11032C052F905BA10016A358 /* ChooWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -163,6 +180,16 @@
 		043C8F162E2980E67863D623 /* AccountTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTabView.swift; sourceTree = "<group>"; };
 		0810EFAEA0F035B0D6C4777F /* String+Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Validation.swift"; sourceTree = "<group>"; };
 		0C51136155B81ECF1A4075B5 /* ErrorBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBannerView.swift; sourceTree = "<group>"; };
+		11032BF22F905BA00016A358 /* ChooWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChooWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		11032BF32F905BA00016A358 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		11032BF52F905BA00016A358 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		11032C0D2F905E450016A358 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		11032C0F2F905E450016A358 /* ChooWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooWidgetBundle.swift; sourceTree = "<group>"; };
+		11032C102F905E450016A358 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		11032C112F905E450016A358 /* UpcomingWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpcomingWidget.swift; sourceTree = "<group>"; };
+		11032C172F9065B20016A358 /* WidgetSharedData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSharedData.swift; sourceTree = "<group>"; };
+		11032C1B2F9065FA0016A358 /* WidgetDataWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataWriter.swift; sourceTree = "<group>"; };
+		11032C1D2F90681E0016A358 /* ChooWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChooWidgetExtension.entitlements; sourceTree = "<group>"; };
 		11692FD22F4585F100C75371 /* NotificationPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPreferences.swift; sourceTree = "<group>"; };
 		11692FD42F45860500C75371 /* PushNotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushNotificationService.swift; sourceTree = "<group>"; };
 		11692FD62F45861A00C75371 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -287,6 +314,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		11032BEF2F905BA00016A358 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11032BF62F905BA00016A358 /* SwiftUI.framework in Frameworks */,
+				11032BF42F905BA00016A358 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A397E53BABFCA813E9274466 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -333,9 +369,30 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
+		11032C122F905E450016A358 /* ChooWidget */ = {
+			isa = PBXGroup;
+			children = (
+				11032C0D2F905E450016A358 /* Assets.xcassets */,
+				11032C0F2F905E450016A358 /* ChooWidgetBundle.swift */,
+				11032C102F905E450016A358 /* Info.plist */,
+				11032C112F905E450016A358 /* UpcomingWidget.swift */,
+			);
+			path = ChooWidget;
+			sourceTree = "<group>";
+		};
+		11032C182F9065B20016A358 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				11032C172F9065B20016A358 /* WidgetSharedData.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		11692FCF2F4584CF00C75371 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11032BF32F905BA00016A358 /* WidgetKit.framework */,
+				11032BF52F905BA00016A358 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -343,8 +400,10 @@
 		15490019D3E6856EEDC84157 = {
 			isa = PBXGroup;
 			children = (
+				11032C1D2F90681E0016A358 /* ChooWidgetExtension.entitlements */,
 				E862BBEC61D5E054EFCFF4F3 /* Choo */,
 				BC2D3E4F5A6B7C8D9E0F1A2B /* ChooShareExtension */,
+				11032C122F905E450016A358 /* ChooWidget */,
 				3D2EC86304C226065E00AFB6 /* Products */,
 				11692FCF2F4584CF00C75371 /* Frameworks */,
 			);
@@ -372,6 +431,7 @@
 			children = (
 				F987C7B40D1ECF03EE3124C6 /* Choo.app */,
 				E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */,
+				11032BF22F905BA00016A358 /* ChooWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -505,6 +565,7 @@
 		C7E5957B8AA73DEC13421495 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				11032C1B2F9065FA0016A358 /* WidgetDataWriter.swift */,
 				11692FD42F45860500C75371 /* PushNotificationService.swift */,
 				A5B3E6DA15F871616F9194B3 /* AuthService.swift */,
 				AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */,
@@ -566,6 +627,7 @@
 		E862BBEC61D5E054EFCFF4F3 /* Choo */ = {
 			isa = PBXGroup;
 			children = (
+				11032C182F9065B20016A358 /* Shared */,
 				584D5A057BD8A0F945FBACF2 /* Info.plist */,
 				C1C2C3C4C5C6C7C8C9D0D1D2 /* Choo.entitlements */,
 				EFBFF13979BA03A8665628A4 /* App */,
@@ -625,6 +687,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		11032BF12F905BA00016A358 /* ChooWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 11032C092F905BA10016A358 /* Build configuration list for PBXNativeTarget "ChooWidgetExtension" */;
+			buildPhases = (
+				11032BEE2F905BA00016A358 /* Sources */,
+				11032BEF2F905BA00016A358 /* Frameworks */,
+				11032BF02F905BA00016A358 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ChooWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = ChooWidgetExtension;
+			productReference = 11032BF22F905BA00016A358 /* ChooWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		5F5842FF2C66C14C14FB5E9E /* Choo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 61B2FCDC346547A519D05E0D /* Build configuration list for PBXNativeTarget "Choo" */;
@@ -639,6 +720,7 @@
 			);
 			dependencies = (
 				BC8D9E0F1A2B3C4D5E6F7A8B /* PBXTargetDependency */,
+				11032C042F905BA10016A358 /* PBXTargetDependency */,
 			);
 			name = Choo;
 			packageProductDependencies = (
@@ -674,7 +756,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					11032BF12F905BA00016A358 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+				};
 			};
 			buildConfigurationList = E95F534B09AEC257FF30080E /* Build configuration list for PBXProject "Choo" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -694,11 +782,20 @@
 			targets = (
 				5F5842FF2C66C14C14FB5E9E /* Choo */,
 				AB7C8D9E0F1A2B3C4D5E6F7A /* ChooShareExtension */,
+				11032BF12F905BA00016A358 /* ChooWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		11032BF02F905BA00016A358 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11032C132F905E450016A358 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DE4F5A6B7C8D9E0F1A2B3C4D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -739,6 +836,16 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		11032BEE2F905BA00016A358 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				11032C152F905E450016A358 /* ChooWidgetBundle.swift in Sources */,
+				11032C1A2F9065B20016A358 /* WidgetSharedData.swift in Sources */,
+				11032C162F905E450016A358 /* UpcomingWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CD3E4F5A6B7C8D9E0F1A2B3C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -772,6 +879,7 @@
 				B2D3E4F5A6C7189302B4C5D6 /* DeviceCalendarService.swift in Sources */,
 				WPM1AA01BB01CC01DD01EE01 /* WeekPlanManager.swift in Sources */,
 				EOB1AA01BB01CC01DD01EE01 /* ExerciseOnboardingView.swift in Sources */,
+				11032C1C2F9065FA0016A358 /* WidgetDataWriter.swift in Sources */,
 				EE01FF02AA03BB04CC05DD06 /* ExerciseTabView.swift in Sources */,
 				EX10AA10BB10CC10DD10EE10 /* ExerciseAddSheet.swift in Sources */,
 				EXDP0AA0BB0CC0DD0EE0 /* ExerciseDayPlanSheet.swift in Sources */,
@@ -784,6 +892,7 @@
 				EX02AA02BB02CC02DD02EE02 /* ExercisePlan.swift in Sources */,
 				EX08AA08BB08CC08DD08EE08 /* ExerciseStatsBar.swift in Sources */,
 				EX07AA07BB07CC07DD07EE07 /* ExerciseWeekStripView.swift in Sources */,
+				11032C192F9065B20016A358 /* WidgetSharedData.swift in Sources */,
 				EX04AA04BB04CC04DD04EE04 /* ExerciseViewModel.swift in Sources */,
 				EX03AA03BB03CC03DD03EE03 /* ExerciseBriefing.swift in Sources */,
 				B71F3753AF30EB9207C04F18 /* ErrorBannerView.swift in Sources */,
@@ -875,6 +984,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		11032C042F905BA10016A358 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 11032BF12F905BA00016A358 /* ChooWidgetExtension */;
+			targetProxy = 11032C032F905BA10016A358 /* PBXContainerItemProxy */;
+		};
 		BC8D9E0F1A2B3C4D5E6F7A8B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AB7C8D9E0F1A2B3C4D5E6F7A /* ChooShareExtension */;
@@ -883,6 +997,84 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		11032C062F905BA10016A358 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ChooWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ChooWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ChooWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tonywall.wallboard.ChooWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		11032C072F905BA10016A358 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_ENTITLEMENTS = ChooWidgetExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ChooWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = ChooWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tonywall.wallboard.ChooWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		29957803677E1EEEC563C5E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1091,6 +1283,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		11032C092F905BA10016A358 /* Build configuration list for PBXNativeTarget "ChooWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				11032C062F905BA10016A358 /* Debug */,
+				11032C072F905BA10016A358 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		61B2FCDC346547A519D05E0D /* Build configuration list for PBXNativeTarget "Choo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
