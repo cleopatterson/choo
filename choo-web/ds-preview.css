@@ -1,0 +1,53 @@
+/* Stylesheet entry for the /design-sync bundle only — not used by the app.
+   It layers globals.css with a broader safelist of Tailwind utilities so the
+   Claude Design agent can lay out new screens, not just re-use the exact
+   classes the existing Choo screens happen to reference. */
+@import "./src/styles/globals.css";
+
+@source inline("{block,inline-block,inline,flex,inline-flex,grid,hidden}");
+@source inline("{static,relative,absolute,fixed,sticky}");
+@source inline("inset-0 inset-x-0 inset-y-0 {top,right,bottom,left}-0");
+@source inline("{flex-row,flex-col,flex-wrap,flex-nowrap,flex-1,flex-auto,flex-none,shrink,shrink-0,grow,grow-0}");
+@source inline("items-{start,center,end,stretch,baseline}");
+@source inline("justify-{start,center,end,between,around,evenly}");
+@source inline("{gap,gap-x,gap-y}-{0,0.5,1,1.5,2,2.5,3,4,5,6,8,10,12}");
+@source inline("{p,px,py,pt,pr,pb,pl}-{0,0.5,1,1.5,2,2.5,3,3.5,4,5,6,8,10,12,16}");
+@source inline("{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,auto}");
+@source inline("{space-x,space-y}-{0,1,1.5,2,3,4,5,6,8}");
+@source inline("w-{0,4,5,6,8,10,12,14,16,20,24,32,40,48,56,64,full,screen,auto,fit,px}");
+@source inline("h-{0,4,5,6,8,10,12,14,16,20,24,32,40,48,56,64,full,screen,auto,fit,px}");
+@source inline("{min-h,max-h}-{0,full,screen,fit}");
+@source inline("{min-w,max-w}-{0,xs,sm,md,lg,xl,2xl,3xl,full,fit}");
+@source inline("text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl}");
+@source inline("font-{sans,serif,mono,normal,medium,semibold,bold,extrabold}");
+@source inline("{leading,tracking}-{tight,normal,relaxed,wide}");
+@source inline("text-{left,center,right} {uppercase,lowercase,capitalize,truncate,italic}");
+@source inline("rounded{,-none,-sm,-md,-lg,-xl,-2xl,-3xl,-full}");
+@source inline("rounded-{t,b,l,r,tl,tr,bl,br}-{md,lg,xl,2xl,full}");
+@source inline("{border,border-0,border-2,border-t,border-b,border-l,border-r}");
+@source inline("{text,bg,border}-white/{5,8,10,12,15,20,25,30,40,50,60,70,80,90}");
+@source inline("{text,bg,border}-black/{10,20,30,40,50,60,70,80}");
+@source inline("{text,bg,border}-{white,black,transparent,current}");
+@source inline("{text,bg,border}-choo-{purple,amber,teal,rose}");
+@source inline("bg-choo-{purple,amber,teal,rose}/{10,15,20,30,50}");
+@source inline("{text,bg,border}-{red,orange,amber,yellow,green,emerald,teal,cyan,blue,indigo,violet,purple,pink,rose,slate,gray,zinc}-{300,400,500,600}");
+@source inline("bg-{red,orange,amber,yellow,green,emerald,teal,blue,indigo,violet,purple,pink,rose}-500/{10,15,20,25,30,40}");
+@source inline("border-{red,amber,green,blue,purple,rose}-500/{20,30,40}");
+@source inline("{overflow,overflow-x,overflow-y}-{auto,hidden,scroll,visible}");
+@source inline("grid-cols-{1,2,3,4,5,6,7,8,12}");
+@source inline("col-span-{1,2,3,4,5,6,7,12} row-span-{1,2,3}");
+@source inline("opacity-{0,10,20,30,40,50,60,70,80,90,100}");
+@source inline("z-{0,10,20,30,40,50}");
+@source inline("shadow{,-sm,-md,-lg,-xl,-2xl,-none}");
+@source inline("backdrop-blur{,-none,-sm,-md,-lg,-xl,-2xl}");
+@source inline("{cursor-pointer,cursor-default,select-none,pointer-events-none,pointer-events-auto}");
+@source inline("{object-cover,object-contain,aspect-square,aspect-video}");
+@source inline("{whitespace-nowrap,whitespace-pre-wrap,break-words}");
+@source inline("transition{,-colors,-opacity,-transform,-all} duration-{100,150,200,300,500}");
+@source inline("hover:{bg,text,border}-white/{5,10,15,20,30}");
+@source inline("hover:opacity-{70,80,90}");
+@source inline("{sm,md,lg}:{flex,grid,hidden,block,flex-row,flex-col,items-center,justify-between}");
+@source inline("{sm,md,lg}:grid-cols-{1,2,3,4,6}");
+@source inline("{sm,md,lg}:{p,px,py,gap}-{2,3,4,6,8}");
+@source inline("{sm,md,lg}:rounded-{lg,xl,2xl}");
+@source inline("{sm,md,lg}:text-{sm,base,lg,xl,2xl}");

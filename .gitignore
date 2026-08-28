@@ -46,3 +46,8 @@ functions/node_modules/
 choo-web/node_modules/
 choo-web/dist/
 choo-web/.env
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
