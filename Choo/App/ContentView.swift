@@ -10,7 +10,6 @@ struct ContentView: View {
     @State private var dinnerPlannerViewModel: DinnerPlannerViewModel?
     @State private var exerciseViewModel: ExerciseViewModel?
     @State private var houseViewModel: HouseViewModel?
-    @State private var suppliesViewModel: SuppliesViewModel?
     @State private var deviceCalendarService = DeviceCalendarService()
 
     var body: some View {
@@ -32,8 +31,7 @@ struct ContentView: View {
                    let briefingVM = briefingViewModel,
                    let dinnerVM = dinnerPlannerViewModel,
                    let exerciseVM = exerciseViewModel,
-                   let houseVM = houseViewModel,
-                   let suppliesVM = suppliesViewModel {
+                   let houseVM = houseViewModel {
                     MainTabView(
                         viewModel: viewModel,
                         shoppingViewModel: shoppingVM,
@@ -43,8 +41,7 @@ struct ContentView: View {
                         briefingViewModel: briefingVM,
                         dinnerPlannerViewModel: dinnerVM,
                         exerciseViewModel: exerciseVM,
-                        houseViewModel: houseVM,
-                        suppliesViewModel: suppliesVM
+                        houseViewModel: houseVM
                     )
                 } else {
                     LoadingView()
@@ -111,11 +108,6 @@ struct ContentView: View {
                     familyId: familyId,
                     displayName: displayName
                 )
-                suppliesViewModel = SuppliesViewModel(
-                    firestoreService: firestore,
-                    familyId: familyId,
-                    displayName: displayName
-                )
                 SharedUserContext.save(
                     uid: uid,
                     familyId: familyId,
@@ -131,7 +123,6 @@ struct ContentView: View {
                 dinnerPlannerViewModel = nil
                 exerciseViewModel = nil
                 houseViewModel = nil
-                suppliesViewModel = nil
                 SharedUserContext.clear()
             }
         }

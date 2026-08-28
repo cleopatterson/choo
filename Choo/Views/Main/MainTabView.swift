@@ -10,7 +10,6 @@ struct MainTabView: View {
     @Bindable var dinnerPlannerViewModel: DinnerPlannerViewModel
     @Bindable var exerciseViewModel: ExerciseViewModel
     @Bindable var houseViewModel: HouseViewModel
-    @Bindable var suppliesViewModel: SuppliesViewModel
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
@@ -25,7 +24,7 @@ struct MainTabView: View {
                     Label("Calendar", systemImage: "calendar")
                 }
 
-            ShoppingTabView(viewModel: shoppingViewModel, dinnerPlannerViewModel: dinnerPlannerViewModel, suppliesViewModel: suppliesViewModel, showingProfile: $showingProfile)
+            ShoppingTabView(viewModel: shoppingViewModel, dinnerPlannerViewModel: dinnerPlannerViewModel, showingProfile: $showingProfile)
                 .tag(1)
                 .tabItem {
                     Label("Shopping", systemImage: "cart")

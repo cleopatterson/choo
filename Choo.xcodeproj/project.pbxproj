@@ -78,7 +78,7 @@
 		CC02DD03EE04FF05AA06BB07 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02BB03CC04DD05EE06FF07 /* Recipe.swift */; };
 		CC03DD04EE05FF06AA07BB08 /* MealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */; };
 		CC04DD05EE06FF07AA08BB09 /* DinnerPlannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */; };
-		CC05DD06EE07FF08AA09BB0A /* DinnerStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05BB06CC07DD08EE09FF0A /* DinnerStripView.swift */; };
+		CC05DD06EE07FF08AA09BB0A /* DinnerWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */; };
 		CC06DD07EE08FF09AA0ABB0B /* RecipePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */; };
 		CC07DD08EE09FF0AAA0BBB0C /* RecipeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */; };
 		CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */; };
@@ -102,7 +102,6 @@
 		D5E6F7A8B9CA0B1C2D3E4F5A /* NSWHolidays.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4D5E6F7A8B90A1B2C3D4E5F /* NSWHolidays.swift */; };
 		D92729E5ED3347D8952B9E50 /* BugReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB8B1D3D30BB47D4B8876586 /* BugReport.swift */; };
 		D9A1B2C3E4F506172839ABCD /* MemberAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1B2C3D4F5A617283940BCDE /* MemberAvatarView.swift */; };
-		DB01BB01CC01DD01EE01FF01 /* DinnerBriefing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */; };
 		E0A69EB92008784552707E65 /* FirestoreService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */; };
 		E5F6A7B8C9DA0B42536475C6 /* EventFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9AA0B4253647586 /* EventFormView.swift */; };
 		E6F7A8B9CADB1D24869708FA /* FamilyMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8B9CADB2E35970A1B2C3D /* FamilyMember.swift */; };
@@ -131,14 +130,7 @@
 		HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */; };
 		NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */; };
 		SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */; };
-		SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */; };
-		SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */; };
 		SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */; };
-		SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */; };
-		SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */; };
-		SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */; };
-		SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */; };
-		SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */; };
 		TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */ = {isa = PBXBuildFile; fileRef = TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */; };
 		WPM1AA01BB01CC01DD01EE01 /* WeekPlanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */; };
 /* End PBXBuildFile section */
@@ -219,7 +211,7 @@
 		AA02BB03CC04DD05EE06FF07 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
 		AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerPlannerViewModel.swift; sourceTree = "<group>"; };
-		AA05BB06CC07DD08EE09FF0A /* DinnerStripView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerStripView.swift; sourceTree = "<group>"; };
+		AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerWeekView.swift; sourceTree = "<group>"; };
 		AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipePickerView.swift; sourceTree = "<group>"; };
 		AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEditView.swift; sourceTree = "<group>"; };
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
@@ -272,7 +264,6 @@
 		D4633E5B8EAC81D83F51316C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D5E6F7A8B9C0D1E2F3A4B5C6 /* ChooShareExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ChooShareExtension.entitlements; sourceTree = "<group>"; };
 		D7A8E9F1B2C3046D5E8F7A91 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerBriefing.swift; sourceTree = "<group>"; };
 		E1B2C3D4F5A617283940BCDE /* MemberAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberAvatarView.swift; sourceTree = "<group>"; };
 		E1E2E3E4E5E6E7E8E9F0F1F2 /* AddEventIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventIntent.swift; sourceTree = "<group>"; };
 		E6F7A8B9C0D1E2F3A4B5C6D7 /* ChooShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChooShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -301,14 +292,7 @@
 		HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		NR01AA01BB01CC01DD01FF01 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		SP01AA01BB01CC01DD01FF01 /* SupplyItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItem.swift; sourceTree = "<group>"; };
-		SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesViewModel.swift; sourceTree = "<group>"; };
-		SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientReviewSheet.swift; sourceTree = "<group>"; };
 		SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunDoneSheet.swift; sourceTree = "<group>"; };
-		SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyEditSheet.swift; sourceTree = "<group>"; };
-		SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuppliesSectionView.swift; sourceTree = "<group>"; };
-		SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyAddSheet.swift; sourceTree = "<group>"; };
-		SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyItemFormSheet.swift; sourceTree = "<group>"; };
-		SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplyCategoryManageSheet.swift; sourceTree = "<group>"; };
 		TA01BB01CC01DD01EE01AA01 /* TabAccent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabAccent.swift; sourceTree = "<group>"; };
 		WPM1AA01BB01CC01DD01FF01 /* WeekPlanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeekPlanManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -346,17 +330,11 @@
 		0A06086A2245042AC6E04512 /* Shopping */ = {
 			isa = PBXGroup;
 			children = (
-				AA05BB06CC07DD08EE09FF0A /* DinnerStripView.swift */,
+				AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */,
 				AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */,
 				AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */,
 				B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */,
-				SP03AA03BB03CC03DD03FF03 /* IngredientReviewSheet.swift */,
 				SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */,
-				SP05AA05BB05CC05DD05FF05 /* SupplyEditSheet.swift */,
-				SP06AA06BB06CC06DD06FF06 /* SuppliesSectionView.swift */,
-				SP07AA07BB07CC07DD07FF07 /* SupplyAddSheet.swift */,
-				SP09AA09BB09CC09DD09FF09 /* SupplyCategoryManageSheet.swift */,
-				SP08AA08BB08CC08DD08FF08 /* SupplyItemFormSheet.swift */,
 			);
 			path = Shopping;
 			sourceTree = "<group>";
@@ -420,7 +398,6 @@
 				A4B5C6D7E8F90A3142536475 /* NotesViewModel.swift */,
 				ABC688DE00D4420CB4089CD0 /* BugReportsViewModel.swift */,
 				D1E2F3A4B5C6071829304152 /* ShoppingViewModel.swift */,
-				SP02AA02BB02CC02DD02FF02 /* SuppliesViewModel.swift */,
 				AA41BB42CC43DD44EE45FF46 /* WeeklyBriefingViewModel.swift */,
 			);
 			path = ViewModels;
@@ -498,7 +475,6 @@
 				CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */,
 				CH13AA13BB13CC13DD13FF13 /* ChoreCompletion.swift */,
 				CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */,
-				DB01BB01CC01DD01EE01AA01 /* DinnerBriefing.swift */,
 				EX03AA03BB03CC03DD03FF03 /* ExerciseBriefing.swift */,
 				EX01AA01BB01CC01DD01FF01 /* ExerciseCategory.swift */,
 				EX02AA02BB02CC02DD02FF02 /* ExercisePlan.swift */,
@@ -931,7 +907,7 @@
 				56DCDBE90F095C4C2321957A /* ChooApp.swift in Sources */,
 				C3D4E5F6A7B80920314253A4 /* CalendarViewModel.swift in Sources */,
 				CC04DD05EE06FF07AA08BB09 /* DinnerPlannerViewModel.swift in Sources */,
-				CC05DD06EE07FF08AA09BB0A /* DinnerStripView.swift in Sources */,
+				CC05DD06EE07FF08AA09BB0A /* DinnerWeekView.swift in Sources */,
 				E5F6A7B8C9DA0B42536475C6 /* EventFormView.swift in Sources */,
 				F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */,
 				BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */,
@@ -951,7 +927,6 @@
 				BBD1CCD2DDD3EED4FFD5AAD6 /* NextWeekPreviewView.swift in Sources */,
 				BBE1CCE2DDE3EEE4FFE5AAE6 /* BriefingPagerView.swift in Sources */,
 				TA01BB01CC01DD01EE01FF01 /* TabAccent.swift in Sources */,
-				DB01BB01CC01DD01EE01FF01 /* DinnerBriefing.swift in Sources */,
 				BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */,
 				HC01BB01CC01DD01EE01FF01 /* HeroCardView.swift in Sources */,
 				CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */,
@@ -970,14 +945,7 @@
 				CH14AA14BB14CC14DD14EE14 /* HouseWeekStripView.swift in Sources */,
 				CH15AA15BB15CC15DD15EE15 /* HouseDayPlanSheet.swift in Sources */,
 				SP01AA01BB01CC01DD01EE01 /* SupplyItem.swift in Sources */,
-				SP02AA02BB02CC02DD02EE02 /* SuppliesViewModel.swift in Sources */,
-				SP03AA03BB03CC03DD03EE03 /* IngredientReviewSheet.swift in Sources */,
 				SP04AA04BB04CC04DD04EE04 /* RunDoneSheet.swift in Sources */,
-				SP05AA05BB05CC05DD05EE05 /* SupplyEditSheet.swift in Sources */,
-				SP06AA06BB06CC06DD06EE06 /* SuppliesSectionView.swift in Sources */,
-				SP07AA07BB07CC07DD07EE07 /* SupplyAddSheet.swift in Sources */,
-				SP09AA09BB09CC09DD09EE09 /* SupplyCategoryManageSheet.swift in Sources */,
-				SP08AA08BB08CC08DD08EE08 /* SupplyItemFormSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

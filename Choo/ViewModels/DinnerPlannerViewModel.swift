@@ -9,14 +9,11 @@ final class DinnerPlannerViewModel {
     let displayName: String
 
     var selectedDayIndex: Int?    // 0-6, triggers recipe picker
-    var lastAssignedRecipe: Recipe?  // set after meal assignment for ingredient review
     var errorMessage: String?
-    var briefingHeadline = "Dinners this week"
-    var isLoadingBriefing = false
 
-    @ObservationIgnored private var debounceTask: Task<Void, Never>?
+    /// `.task {}` re-runs on every tab appearance — this keeps load() to once.
     @ObservationIgnored private var hasLoadedInitially = false
-    @ObservationIgnored private let debounceDuration: UInt64 = 3_000_000_000
+
 
     private let calendar: Calendar = {
         var cal = Calendar.current
@@ -29,7 +26,6 @@ final class DinnerPlannerViewModel {
         self.claudeService = claudeService
         self.familyId = familyId
         self.displayName = displayName
-        loadCachedBriefing()
     }
 
     // MARK: - Week Computation
@@ -109,8 +105,8 @@ final class DinnerPlannerViewModel {
             errorMessage = error.localizedDescription
         }
 
-        await generateBriefing()
         hasLoadedInitially = true
+
     }
 
     // MARK: - Assign / Clear
@@ -133,8 +129,6 @@ final class DinnerPlannerViewModel {
 
         do {
             try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-            lastAssignedRecipe = recipe
-            debounceBriefingRegeneration()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -164,7 +158,6 @@ final class DinnerPlannerViewModel {
             if !stillAssigned {
                 await removeRecipeFromShoppingList(recipeId: recipeId)
             }
-            debounceBriefingRegeneration()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -312,7 +305,6 @@ final class DinnerPlannerViewModel {
         )
 
         try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-        debounceBriefingRegeneration()
     }
 
     private func buildAutoPlanContext() -> DinnerPlanContext {
@@ -366,112 +358,6 @@ final class DinnerPlannerViewModel {
             last_week_recipe_ids: Array(lastWeekRecipeIds),
             days: dayInfos
         )
-    }
-
-    // MARK: - AI Briefing
-
-    private func generateBriefing() async {
-        let weekString = Self.weekFormatter.string(from: weekStart)
-        let dayString = Self.dayFormatter.string(from: Date())
-        let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-
-        if let data = UserDefaults.standard.data(forKey: cacheKey),
-           let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) {
-            briefingHeadline = cached.headline
-            return
-        }
-
-        isLoadingBriefing = true
-        defer { isLoadingBriefing = false }
-
-        let mealList = buildMealListForPrompt()
-
-        let prompt = """
-        You are a warm, friendly family meal planner — like a foodie friend who loves a good dinner. Given this week's dinner plan (with cuisine, effort, and richness metadata), write:
-
-        1. HEADLINE: A short, warm headline (4-8 words) capturing the week's dinner vibe. Use a line break (\\n) to split into two short lines. No quotes.
-           Examples:
-           - "Taco Tuesday vibes —\\nall week long"
-           - "A mix of favourites\\nand something new"
-           - "Comfort food week —\\ncosy evenings ahead"
-
-        Respond in exactly this format:
-        HEADLINE: <headline>
-
-        This week's dinner plan (\(plannedCount) of 7 nights planned):
-        \(mealList.isEmpty ? "No dinners planned yet." : mealList)
-        """
-
-        do {
-            let text = try await claudeService.callClaudeRaw(prompt: prompt, maxTokens: 200)
-            var parsedHeadline = "Dinners this week"
-
-            for line in text.components(separatedBy: "\n") {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                if trimmed.hasPrefix("HEADLINE:") {
-                    parsedHeadline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
-                    parsedHeadline = parsedHeadline.replacingOccurrences(of: "\\n", with: "\n")
-                }
-            }
-
-            briefingHeadline = parsedHeadline
-
-            let briefing = DinnerBriefing(weekStart: weekStart, headline: parsedHeadline)
-            if let encoded = try? JSONEncoder().encode(briefing) {
-                UserDefaults.standard.set(encoded, forKey: cacheKey)
-            }
-        } catch {
-            briefingHeadline = "Dinners this week"
-        }
-    }
-
-    private func debounceBriefingRegeneration() {
-        guard hasLoadedInitially else { return }
-        debounceTask?.cancel()
-        debounceTask = Task {
-            do {
-                try await Task.sleep(nanoseconds: debounceDuration)
-                guard !Task.isCancelled else { return }
-                let weekString = Self.weekFormatter.string(from: weekStart)
-                let dayString = Self.dayFormatter.string(from: Date())
-                let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-                UserDefaults.standard.removeObject(forKey: cacheKey)
-                await generateBriefing()
-            } catch {
-                // Cancelled
-            }
-        }
-    }
-
-    private func buildMealListForPrompt() -> String {
-        let dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        var lines: [String] = []
-
-        for dayIndex in 0..<7 {
-            let key = String(dayIndex)
-            if let meal = assignments[key] {
-                var details: [String] = [meal.recipeName]
-                if let recipe = recipe(for: meal) {
-                    if let cuisine = recipe.cuisineType { details.append(cuisine.displayName) }
-                    if let effort = recipe.prepEffortEnum { details.append("effort: \(effort.displayName)") }
-                    if let richness = recipe.calorieDensityEnum { details.append("richness: \(richness.displayName)") }
-                    if let prep = recipe.prepTimeDisplay { details.append(prep) }
-                }
-                lines.append("• \(dayNames[dayIndex]): \(details.joined(separator: ", "))")
-            }
-        }
-
-        return lines.joined(separator: "\n")
-    }
-
-    private func loadCachedBriefing() {
-        let weekString = Self.weekFormatter.string(from: weekStart)
-        let dayString = Self.dayFormatter.string(from: Date())
-        let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-
-        guard let data = UserDefaults.standard.data(forKey: cacheKey),
-              let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) else { return }
-        briefingHeadline = cached.headline
     }
 
     // MARK: - Formatters
