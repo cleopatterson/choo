@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="8%" y1="0%" x2="92%" y2="100%">
+      <stop offset="0%" stop-color="#9F7BF7"></stop>
+      <stop offset="55%" stop-color="#8B5CF6"></stop>
+      <stop offset="100%" stop-color="#7534E8"></stop>
+    </linearGradient>
+    <radialGradient id="bub" cx="38%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#FFFFFF"></stop>
+      <stop offset="62%" stop-color="#FBFAFF"></stop>
+      <stop offset="100%" stop-color="#E7E0FB"></stop>
+    </radialGradient>
+    <radialGradient id="spec" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"></stop>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"></stop>
+    </radialGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#3B1D82" flood-opacity="0.28"></feDropShadow>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"></rect>
+
+  <g filter="url(#soft)">
+    <circle cx="382" cy="352" r="208" fill="url(#bub)"></circle>
+    <circle cx="698" cy="486" r="142" fill="url(#bub)"></circle>
+    <circle cx="602" cy="708" r="102" fill="url(#bub)"></circle>
+    <circle cx="378" cy="796" r="76" fill="url(#bub)"></circle>
+  </g>
+
+  <ellipse cx="322" cy="278" rx="86" ry="62" fill="url(#spec)" transform="rotate(-24 322 278)"></ellipse>
+  <ellipse cx="655" cy="430" rx="56" ry="40" fill="url(#spec)" transform="rotate(-24 655 430)"></ellipse>
+  <ellipse cx="571" cy="668" rx="40" ry="29" fill="url(#spec)" transform="rotate(-24 571 668)"></ellipse>
+  <ellipse cx="356" cy="768" rx="29" ry="21" fill="url(#spec)" transform="rotate(-24 356 768)"></ellipse>
+</svg>
