@@ -1,0 +1,54 @@
+{
+  "projectId": "aa73a811-02ac-4cb1-a15b-9fe583de0473",
+  "shape": "package",
+  "pkg": "choo-web",
+  "globalName": "ChooWeb",
+  "buildCmd": "npm run build && node ../.ds-sync/node_modules/@tailwindcss/cli/dist/index.mjs -i ds-preview.css -o dist/ds-styles.css --minify",
+  "srcDir": "src",
+  "tsconfig": "tsconfig.app.json",
+  "cssEntry": "dist/ds-styles.css",
+  "componentSrcMap": {
+    "NavBar": "src/components/layout/NavBar.tsx",
+    "TabBar": "src/components/layout/TabBar.tsx",
+    "ProfileSheet": "src/components/layout/ProfileSheet.tsx",
+    "EventForm": "src/components/calendar/EventForm.tsx",
+    "EventDetail": "src/components/calendar/EventDetail.tsx",
+    "NoteEditor": "src/components/notes/NoteEditor.tsx",
+    "LoginPage": "src/components/auth/LoginPage.tsx",
+    "MemoryRouter": null
+  },
+  "overrides": {
+    "NavBar": {
+      "cardMode": "column"
+    },
+    "TabBar": {
+      "cardMode": "column"
+    },
+    "LoginPage": {
+      "cardMode": "single",
+      "viewport": "390x780",
+      "primaryStory": "Default"
+    },
+    "ProfileSheet": {
+      "cardMode": "single",
+      "viewport": "440x520",
+      "primaryStory": "Default"
+    },
+    "EventForm": {
+      "cardMode": "single",
+      "viewport": "560x700",
+      "primaryStory": "NewEvent"
+    },
+    "EventDetail": {
+      "cardMode": "single",
+      "viewport": "560x520",
+      "primaryStory": "Event"
+    },
+    "NoteEditor": {
+      "cardMode": "single",
+      "viewport": "560x640",
+      "primaryStory": "EditingAList"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
