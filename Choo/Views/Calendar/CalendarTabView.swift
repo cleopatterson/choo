@@ -43,6 +43,18 @@ struct CalendarTabView: View {
         return f
     }()
 
+    private static let dayShortFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "EEE d"
+        return f
+    }()
+
+    /// "TODAY · FRI 28" on today, otherwise "SAT 29".
+    private func dayHeaderLabel(for day: Date, isToday: Bool) -> String {
+        let short = Self.dayShortFormatter.string(from: day).uppercased()
+        return isToday ? "TODAY · \(short)" : short
+    }
+
     private static let shortDateFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "EEE d MMM"
@@ -298,86 +310,42 @@ struct CalendarTabView: View {
     }
 
     private func monthBanner(for date: Date) -> some View {
-        let cal = Calendar.current
-        let month = cal.component(.month, from: date)
-        let theme = monthTheme(for: month)
+        let month = Calendar.current.component(.month, from: date)
 
-        return ZStack {
-            // Full-bleed gradient wash
-            Rectangle()
-                .fill(.thinMaterial)
-                .overlay(
-                    LinearGradient(
-                        colors: [theme.color.opacity(0.20), theme.secondaryColor.opacity(0.08), .clear],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-            // Scattered decorative icons (left/center to clear main icon on right)
-            decorativeIcon(theme.decorativeIcons[0], size: 40, color: theme.color, opacity: 0.12)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .offset(x: 160, y: 8)
-            decorativeIcon(theme.decorativeIcons[1], size: 28, color: theme.secondaryColor, opacity: 0.10)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                .offset(x: 100, y: -10)
-            decorativeIcon(theme.decorativeIcons[2], size: 22, color: theme.color, opacity: 0.08)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                .offset(x: 40, y: 20)
-            decorativeIcon(theme.decorativeIcons[3], size: 18, color: theme.secondaryColor, opacity: 0.06)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                .offset(x: -20, y: 16)
-
-            // Main icon as faded decorative element
-            decorativeIcon(theme.symbol, size: 50, color: theme.color, opacity: 0.14)
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
-                .offset(x: -20, y: 0)
-
-            // Main content
-            HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(Self.monthYearFormatter.string(from: date))
-                        .font(.system(.title, design: .serif).bold())
-                        .foregroundStyle(.primary)
-                    Text(theme.tagline)
-                        .font(.subheadline)
-                        .foregroundStyle(theme.color.opacity(0.8))
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 20)
+        return VStack(alignment: .leading, spacing: 2) {
+            Text(Self.monthYearFormatter.string(from: date))
+                .font(.system(size: 28, weight: .bold, design: .serif))
+                .foregroundStyle(.white)
+            Text(monthTagline(for: month))
+                .font(.system(size: 13))
+                .foregroundStyle(Self.accentLilac.opacity(0.8))
         }
-        .frame(maxWidth: .infinity, minHeight: 100)
-        .clipped()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 18)
+        .padding(.top, 22)
+        .padding(.bottom, 20)
         .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
         .listRowBackground(Color.clear)
     }
 
-    private func decorativeIcon(_ name: String, size: CGFloat, color: Color, opacity: Double) -> some View {
-        let stableRotation = Double(abs(name.hashValue % 30)) - 15
-        return Image(systemName: name)
-            .font(.system(size: size))
-            .foregroundStyle(color.opacity(opacity))
-            .rotationEffect(.degrees(stableRotation))
-    }
-
     /// Per-month theme (Southern Hemisphere / Australia). Every month unique — no repeated primary icons.
-    private func monthTheme(for month: Int) -> (symbol: String, color: Color, secondaryColor: Color, decorativeIcons: [String], tagline: String) {
+    /// The season line under the month name — Australian seasons.
+    private func monthTagline(for month: Int) -> String {
         switch month {
-        case 1:  return ("sun.max.fill",         .orange, .yellow,  ["umbrella.fill", "drop.fill", "sparkles", "flame.fill"],               "Peak summer")
-        case 2:  return ("heart.fill",            .pink,   .red,     ["sparkles", "heart.circle.fill", "star.fill", "gift.fill"],            "Love & late summer")
-        case 3:  return ("leaf.fill",             .orange, .brown,   ["wind", "cloud.fill", "cup.and.saucer.fill", "leaf.circle.fill"],      "Autumn begins")
-        case 4:  return ("cloud.rain.fill",       .teal,   .gray,    ["umbrella.fill", "drop.fill", "leaf.fill", "wind"],                    "Autumn rains")
-        case 5:  return ("flame.fill",            .brown,  .orange,  ["wind", "cloud.fog.fill", "cup.and.saucer.fill", "moon.stars.fill"],   "Cosy autumn")
-        case 6:  return ("snowflake",             .cyan,   .blue,    ["cloud.snow.fill", "wind.snow", "thermometer.snowflake", "scarf.fill"],"Winter arrives")
-        case 7:  return ("thermometer.snowflake", .blue,   .indigo,  ["snowflake", "cloud.snow.fill", "wind", "moon.fill"],                  "Deep winter")
-        case 8:  return ("wind",                  .indigo, .cyan,    ["cloud.fog.fill", "snowflake", "sun.haze.fill", "leaf.fill"],          "Winter's end")
-        case 9:  return ("camera.macro",          .pink,   .green,   ["bird.fill", "ladybug.fill", "sparkles", "leaf.fill"],                 "Spring blooms")
-        case 10: return ("moon.stars.fill",       .purple, .orange,  ["sparkles", "flame.fill", "star.fill", "wand.and.stars"],              "Halloween")
-        case 11: return ("bird.fill",             .green,  .mint,    ["camera.macro", "sun.haze.fill", "leaf.fill", "ladybug.fill"],         "Late spring")
-        case 12: return ("gift.fill",             .red,    .green,   ["star.fill", "tree.fill", "sparkles", "bell.fill"],                    "Christmas & summer")
-        default: return ("calendar",              .blue,   .purple,  ["star.fill", "sparkles", "circle.fill", "heart.fill"],                 "")
+        case 1:  return "Peak summer"
+        case 2:  return "Love & late summer"
+        case 3:  return "Autumn begins"
+        case 4:  return "Autumn rains"
+        case 5:  return "Cosy autumn"
+        case 6:  return "Winter arrives"
+        case 7:  return "Deep winter"
+        case 8:  return "Winter's end"
+        case 9:  return "Spring blooms"
+        case 10: return "Halloween"
+        case 11: return "Late spring"
+        case 12: return "Christmas & summer"
+        default: return ""
         }
     }
 
@@ -400,7 +368,8 @@ struct CalendarTabView: View {
                 }
                 .opacity(isPast ? 0.5 : 1)
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
 
             // Public holiday
@@ -415,7 +384,8 @@ struct CalendarTabView: View {
                 }
                 .opacity(isPast ? 0.5 : 1)
                 .listRowBackground(Color.clear)
-                .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
+                .listRowSeparator(.hidden)
+                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
 
             // User events
@@ -475,7 +445,8 @@ struct CalendarTabView: View {
                             }
                         }
                         .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                 }
             }
 
@@ -484,7 +455,8 @@ struct CalendarTabView: View {
                 externalEventRow(ekEvent)
                     .opacity(isPast ? 0.5 : 1)
                     .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
 
             // "No events" only for today
@@ -493,53 +465,34 @@ struct CalendarTabView: View {
                     .font(.subheadline)
                     .foregroundStyle(.tertiary)
                     .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 5, leading: 16, bottom: 5, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             }
         } header: {
-            HStack(spacing: 8) {
-                Text(Self.dayHeaderFormatter.string(from: day))
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(isPast ? Color.white.opacity(0.35) : .white)
-                if isToday {
-                    Text("Today")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color(red: 0.169, green: 0.102, blue: 0.361))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(.white, in: Capsule())
-                }
-                Spacer()
-            }
-            .textCase(nil)
-            .padding(.top, 14)
-            .padding(.bottom, 2)
-            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+            Text(dayHeaderLabel(for: day, isToday: isToday))
+                .font(.system(size: 11, weight: .bold))
+                .tracking(1.2)
+                .foregroundStyle(isToday ? Self.accentLilac : .white.opacity(isPast ? 0.25 : 0.4))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .textCase(nil)
+                .padding(.leading, 2)
+                .padding(.top, 20)
+                .padding(.bottom, 2)
+                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                .listRowSeparator(.hidden)
         }
+        // Belt and braces: no rules between events, days or months.
+        .listRowSeparator(.hidden)
+        .listSectionSeparator(.hidden)
     }
 
     // MARK: - Event Row
-
-    private func eventStripColor(for event: FamilyEvent) -> Color {
-        if event.isTodo == true {
-            return event.urgencyState == .overdue ? .red : .cyan
-        }
-        if event.isBill == true { return .primary }
-        let uids = event.attendeeUIDs ?? []
-        if uids.count == 1 {
-            return MemberAvatarView.color(for: uids[0])
-        }
-        return .chooPurple
-    }
 
     private func eventRow(_ event: FamilyEvent, on day: Date) -> some View {
         let paid = event.isPaidOn(day)
         let todoDone = event.isTodo == true && event.isCompleted == true
 
         return HStack(spacing: 12) {
-            Capsule()
-                .fill(eventStripColor(for: event))
-                .frame(width: 3, height: 34)
-
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 6) {
                     Text(event.title)
@@ -632,34 +585,43 @@ struct CalendarTabView: View {
                     .padding(.vertical, 3)
                     .background(.green.opacity(0.15), in: Capsule())
             } else if event.isBill != true {
+                if let glyph = eventIcon(for: event) {
+                    Image(systemName: glyph)
+                        .font(.system(size: 14))
+                        .foregroundStyle(.white.opacity(0.5))
+                }
+
                 // Attendee avatars
                 HStack(spacing: -8) {
                     ForEach(attendeeMembers(for: event)) { member in
                         MemberAvatarView(name: member.displayName, uid: member.id, emoji: member.emoji, size: 26)
-                            .overlay(Circle().stroke(Color(red: 0.165, green: 0.106, blue: 0.337), lineWidth: 2))
+                            .overlay(Circle().stroke(Self.avatarRing, lineWidth: 2))
                     }
                 }
             }
         }
-        .overlay(alignment: .trailing) {
-            if let icon = eventIcon(for: event) {
-                Image(systemName: icon)
-                    .font(.system(size: 32))
-                    .foregroundStyle((paid || todoDone) ? .green.opacity(0.18) : .white.opacity(0.12))
-                    .offset(x: -45)
-                    .allowsHitTesting(false)
-            }
-        }
         .opacity((paid || todoDone) ? 0.6 : 1)
-        .padding(.leading, 12)
-        .padding(.trailing, 14)
+        .padding(.horizontal, 14)
         .padding(.vertical, 13)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+        .background(Self.eventCardFill, in: RoundedRectangle(cornerRadius: 16))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(Self.eventCardStroke, lineWidth: 1)
         )
     }
+
+    // MARK: - 9b palette
+
+    /// rgba(150,110,250,.45) — bright enough to hold its own on the gradient.
+    private static let eventCardFill = Color(red: 0.588, green: 0.431, blue: 0.980).opacity(0.45)
+    /// rgba(206,193,255,.4)
+    private static let eventCardStroke = Color(red: 0.808, green: 0.757, blue: 1.0).opacity(0.4)
+    /// rgba(232,226,255,.85) — the meta line under an event title.
+    private static let eventMetaColor = Color(red: 0.910, green: 0.886, blue: 1.0).opacity(0.85)
+    /// #c4b5fd — today's day header and the month season line.
+    private static let accentLilac = Color(red: 0.769, green: 0.710, blue: 0.992)
+    /// #372a63 — the ring separating overlapping faces from the card.
+    private static let avatarRing = Color(red: 0.216, green: 0.165, blue: 0.388)
 
     @ViewBuilder
     private func todoUrgencyBadge(for event: FamilyEvent) -> some View {
