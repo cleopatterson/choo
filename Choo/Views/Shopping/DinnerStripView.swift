@@ -24,7 +24,6 @@ struct DinnerStripView: View {
                 badge: "Dinners this week",
                 dateRange: viewModel.weekDateRange,
                 headline: viewModel.briefingHeadline,
-                summary: viewModel.briefingSummary,
                 accent: .shopping,
                 isLoading: viewModel.isLoadingBriefing
             )

@@ -37,7 +37,6 @@ struct ExerciseTabView: View {
                     VStack(spacing: 16) {
                         ExerciseBriefingView(
                             headline: viewModel.briefingHeadline,
-                            summary: viewModel.briefingSummary,
                             isLoading: viewModel.isLoadingBriefing,
                             dateRange: viewModel.weekDateRange
                         )

@@ -12,7 +12,6 @@ final class DinnerPlannerViewModel {
     var lastAssignedRecipe: Recipe?  // set after meal assignment for ingredient review
     var errorMessage: String?
     var briefingHeadline = "Dinners this week"
-    var briefingSummary = ""
     var isLoadingBriefing = false
 
     @ObservationIgnored private var debounceTask: Task<Void, Never>?
@@ -379,7 +378,6 @@ final class DinnerPlannerViewModel {
         if let data = UserDefaults.standard.data(forKey: cacheKey),
            let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) {
             briefingHeadline = cached.headline
-            briefingSummary = cached.summary
             return
         }
 
@@ -397,17 +395,8 @@ final class DinnerPlannerViewModel {
            - "A mix of favourites\\nand something new"
            - "Comfort food week —\\ncosy evenings ahead"
 
-        2. SUMMARY: One short sentence referencing actual recipe names. Under 120 characters.
-           - Notice cuisine patterns (e.g. "Three Italian nights — the Thai curry breaks it up nicely")
-           - Notice effort patterns (e.g. "Two big cooks back to back — the easy nights balance it out")
-           - Notice richness patterns (e.g. "Light Mon and Fri, rich Wed and Sat — good balance")
-           - If repetitive: gently note it. "Pasta twice — maybe swap one for something lighter?"
-           - If mostly unplanned: be encouraging. "Only Monday sorted — plenty of room for inspiration."
-           - Reference actual recipe names, not generic terms.
-
         Respond in exactly this format:
         HEADLINE: <headline>
-        SUMMARY: <summary>
 
         This week's dinner plan (\(plannedCount) of 7 nights planned):
         \(mealList.isEmpty ? "No dinners planned yet." : mealList)
@@ -416,28 +405,23 @@ final class DinnerPlannerViewModel {
         do {
             let text = try await claudeService.callClaudeRaw(prompt: prompt, maxTokens: 200)
             var parsedHeadline = "Dinners this week"
-            var parsedSummary = ""
 
             for line in text.components(separatedBy: "\n") {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if trimmed.hasPrefix("HEADLINE:") {
                     parsedHeadline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
                     parsedHeadline = parsedHeadline.replacingOccurrences(of: "\\n", with: "\n")
-                } else if trimmed.hasPrefix("SUMMARY:") {
-                    parsedSummary = String(trimmed.dropFirst(8)).trimmingCharacters(in: .whitespaces)
                 }
             }
 
             briefingHeadline = parsedHeadline
-            briefingSummary = parsedSummary
 
-            let briefing = DinnerBriefing(weekStart: weekStart, headline: parsedHeadline, summary: parsedSummary)
+            let briefing = DinnerBriefing(weekStart: weekStart, headline: parsedHeadline)
             if let encoded = try? JSONEncoder().encode(briefing) {
                 UserDefaults.standard.set(encoded, forKey: cacheKey)
             }
         } catch {
             briefingHeadline = "Dinners this week"
-            briefingSummary = plannedCount > 0 ? "\(plannedCount) dinner\(plannedCount == 1 ? "" : "s") planned." : "No dinners planned yet."
         }
     }
 
@@ -488,7 +472,6 @@ final class DinnerPlannerViewModel {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) else { return }
         briefingHeadline = cached.headline
-        briefingSummary = cached.summary
     }
 
     // MARK: - Formatters

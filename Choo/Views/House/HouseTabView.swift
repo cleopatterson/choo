@@ -11,7 +11,6 @@ struct HouseTabView: View {
                     VStack(spacing: 16) {
                         HouseBriefingView(
                             headline: viewModel.briefingHeadline,
-                            summary: viewModel.briefingSummary,
                             isLoading: viewModel.isLoadingBriefing,
                             dateRange: viewModel.weekDateRange
                         )
@@ -90,7 +89,6 @@ struct HouseTabView: View {
 
 private struct HouseBriefingView: View {
     let headline: String
-    let summary: String
     let isLoading: Bool
     var dateRange: String = ""
 
@@ -99,7 +97,6 @@ private struct HouseBriefingView: View {
             badge: "This week",
             dateRange: dateRange,
             headline: headline,
-            summary: summary,
             accent: .house,
             isLoading: isLoading
         )

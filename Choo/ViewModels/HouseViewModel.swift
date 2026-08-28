@@ -10,7 +10,6 @@ final class HouseViewModel {
 
     var showingCategoryForm = false
     var briefingHeadline = "Your house this week"
-    var briefingSummary = ""
     var isLoadingBriefing = false
     var errorMessage: String?
     var expandedCategoryId: String?
@@ -620,7 +619,6 @@ final class HouseViewModel {
         if let data = UserDefaults.standard.data(forKey: cacheKey),
            let cached = try? JSONDecoder().decode(HouseBriefing.self, from: data) {
             briefingHeadline = cached.headline
-            briefingSummary = cached.summary
             return
         }
 
@@ -640,8 +638,6 @@ final class HouseViewModel {
            - "Gutters overdue\\ntime to get up there"
            - "House is ticking along\\nnice work"
 
-        2. SUMMARY: One short sentence referencing actual chore names. Under 120 characters. Be practical and warm.
-
         Important:
         - Be warm and practical, like a family member helping organise
         - Reference actual chore names
@@ -650,7 +646,6 @@ final class HouseViewModel {
 
         Respond in exactly this format:
         HEADLINE: <headline>
-        SUMMARY: <summary>
 
         House status (\(totalDue) due, \(totalOverdue) overdue):
         \(dueList.isEmpty ? "Everything is up to date!" : dueList)
@@ -659,28 +654,23 @@ final class HouseViewModel {
         do {
             let text = try await claudeService.callClaudeRaw(prompt: prompt, maxTokens: 200)
             var parsedHeadline = "Your house this week"
-            var parsedSummary = ""
 
             for line in text.components(separatedBy: "\n") {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if trimmed.hasPrefix("HEADLINE:") {
                     parsedHeadline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
                     parsedHeadline = parsedHeadline.replacingOccurrences(of: "\\n", with: "\n")
-                } else if trimmed.hasPrefix("SUMMARY:") {
-                    parsedSummary = String(trimmed.dropFirst(8)).trimmingCharacters(in: .whitespaces)
                 }
             }
 
             briefingHeadline = parsedHeadline
-            briefingSummary = parsedSummary
 
-            let briefing = HouseBriefing(date: Date(), headline: parsedHeadline, summary: parsedSummary)
+            let briefing = HouseBriefing(date: Date(), headline: parsedHeadline)
             if let encoded = try? JSONEncoder().encode(briefing) {
                 UserDefaults.standard.set(encoded, forKey: cacheKey)
             }
         } catch {
             briefingHeadline = "Your house this week"
-            briefingSummary = dueCount > 0 ? "\(dueCount) chore\(dueCount == 1 ? "" : "s") due." : "Everything is up to date!"
         }
     }
 
@@ -722,7 +712,6 @@ final class HouseViewModel {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let cached = try? JSONDecoder().decode(HouseBriefing.self, from: data) else { return }
         briefingHeadline = cached.headline
-        briefingSummary = cached.summary
     }
 
     // MARK: - Formatters

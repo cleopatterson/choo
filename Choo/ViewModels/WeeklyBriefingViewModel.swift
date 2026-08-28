@@ -14,9 +14,7 @@ final class WeeklyBriefingViewModel {
     var nextWeekBriefing: WeeklyBriefing?
     var forecasts: [DayForecast] = []
     var headline = "Your week at a glance"
-    var summary = ""
     var nextWeekHeadline = "Next week preview"
-    var nextWeekSummary = ""
     var eventCounts: [Date: Int] = [:]
     var nextWeekEventCounts: [Date: Int] = [:]
     var isLoadingBriefing = false
@@ -192,7 +190,6 @@ final class WeeklyBriefingViewModel {
         let result = await claudeService.generateWeekSummary(events: inputs, weekStart: weekStart, weatherSummary: weatherSummary)
         print("[Briefing] Result: headline=\(result.headline), icons=\(result.eventIcons)")
         headline = result.headline
-        summary = result.summary
         aiEventIcons = result.eventIcons
     }
 
@@ -202,7 +199,6 @@ final class WeeklyBriefingViewModel {
         let nwEvents = eventsNextWeek()
         guard !nwEvents.isEmpty else {
             nextWeekHeadline = "Next week preview"
-            nextWeekSummary = ""
             return
         }
 
@@ -219,7 +215,6 @@ final class WeeklyBriefingViewModel {
 
         let result = await claudeService.generateWeekSummary(events: inputs, weekStart: nextWeekStart, weatherSummary: weatherSummary, weekLabel: "next week")
         nextWeekHeadline = result.headline
-        nextWeekSummary = result.summary
         nextWeekAiEventIcons = result.eventIcons
     }
 
@@ -398,7 +393,6 @@ final class WeeklyBriefingViewModel {
         briefing = WeeklyBriefing(
             weekStart: weekStart,
             headline: headline,
-            summary: summary,
             highlights: highlights,
             otherEvents: otherEvents,
             bills: bills,
@@ -456,7 +450,6 @@ final class WeeklyBriefingViewModel {
         nextWeekBriefing = WeeklyBriefing(
             weekStart: nextWeekStart,
             headline: nextWeekHeadline,
-            summary: nextWeekSummary,
             highlights: highlights,
             otherEvents: otherEvents,
             bills: [],
@@ -621,7 +614,6 @@ final class WeeklyBriefingViewModel {
         if calendar.isDate(cached.weekStart, equalTo: weekStart, toGranularity: .weekOfYear) {
             briefing = cached
             headline = cached.headline
-            summary = cached.summary
         }
     }
 

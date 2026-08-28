@@ -20,10 +20,9 @@ struct WeeklyBriefingCardView: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            // Layer 1: Editorial header with AI summary
+            // Layer 1: Editorial header
             BriefingCoverView(
                 headline: viewModel.headline,
-                summary: viewModel.summary,
                 weekLabel: weekLabel,
                 isLoading: viewModel.isLoadingBriefing
             )

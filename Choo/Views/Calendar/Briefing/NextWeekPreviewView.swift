@@ -20,7 +20,6 @@ struct NextWeekPreviewView: View {
             // Layer 1: Editorial header (separate card, matches this-week layout)
             BriefingCoverView(
                 headline: viewModel.nextWeekHeadline,
-                summary: viewModel.nextWeekSummary,
                 weekLabel: weekLabel,
                 badge: "Next week",
                 isNextWeek: true

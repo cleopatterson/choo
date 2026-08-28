@@ -2,7 +2,6 @@ import Foundation
 
 struct WeekSummaryResult {
     var headline: String
-    var summary: String
     var eventIcons: [String: String] = [:]  // event title → emoji
 }
 
@@ -57,15 +56,11 @@ final class ClaudeAPIService {
                - "Birthday week!\\ncelebrations ahead"
                - "A quiet one —\\njust for you"
 
-            2. SUMMARY: One or two SHORT sentences about the most exciting events only — outings, dinners, parties, fun stuff. Skip chores, bills, and routine. If there are overdue or due-soon TO-DOs, mention them naturally (e.g. "that Amazon return is overdue" not "TO-DO: Amazon return (overdue)"). If weather data is provided, weave it in briefly. Keep it punchy and under 120 characters.
-               Examples: "Dinner at Ormeggio on Friday — sunshine all week!" or "Swim Monday, birthday bash Saturday. Don't forget the car service!"
-
-            3. ICONS: For each event, pick the single most fitting emoji. Be creative and specific. Use standard emoji characters like: 🍽️ 🏊 🎉 💪 📚 ✈️ 🛒 🏥 🏆 🎵 🎨 🎬 🏃 🚶 ❤️ ☕ 🚗 🐾 ✂️ 🛏️ 🎮 🎁 ⭐ ⚡ 🔧 🔨 🌿 🔥 💧 🌙 ☀️ 👥 📱 💻 💳 🏠 🚴 💃 🏖️ 📸 💼 🎓 🩺 🦷 👁️ 🧠 ✨ 🪄 🎭 🧘 🏄 🐶 💇 🧳 🎂 🏋️
+            2. ICONS: For each event, pick the single most fitting emoji. Be creative and specific. Use standard emoji characters like: 🍽️ 🏊 🎉 💪 📚 ✈️ 🛒 🏥 🏆 🎵 🎨 🎬 🏃 🚶 ❤️ ☕ 🚗 🐾 ✂️ 🛏️ 🎮 🎁 ⭐ ⚡ 🔧 🔨 🌿 🔥 💧 🌙 ☀️ 👥 📱 💻 💳 🏠 🚴 💃 🏖️ 📸 💼 🎓 🩺 🦷 👁️ 🧠 ✨ 🪄 🎭 🧘 🏄 🐶 💇 🧳 🎂 🏋️
                One line per event: "Event Title" = emoji
 
             Respond in exactly this format:
             HEADLINE: <headline>
-            SUMMARY: <summary>
             ICONS:
             "Event Title" = emoji
 
@@ -175,10 +170,9 @@ final class ClaudeAPIService {
 
     private func parseResponse(_ text: String) -> WeekSummaryResult {
         var headline = "Your week at a glance"
-        var summary = ""
         var eventIcons: [String: String] = [:]
 
-        enum Section { case none, summary, icons }
+        enum Section { case none, icons }
         var current: Section = .none
 
         let lines = text.components(separatedBy: "\n")
@@ -189,13 +183,8 @@ final class ClaudeAPIService {
                 headline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
                 headline = headline.replacingOccurrences(of: "\\n", with: "\n")
                 current = .none
-            } else if trimmed.hasPrefix("SUMMARY:") {
-                summary = String(trimmed.dropFirst(8)).trimmingCharacters(in: .whitespaces)
-                current = .summary
             } else if trimmed.hasPrefix("ICONS:") {
                 current = .icons
-            } else if current == .summary && !trimmed.isEmpty {
-                summary += " " + trimmed
             } else if current == .icons && trimmed.contains("=") {
                 // Parse "Event Title" = symbol.name
                 let parts = trimmed.components(separatedBy: "=")
@@ -209,7 +198,7 @@ final class ClaudeAPIService {
             }
         }
 
-        return WeekSummaryResult(headline: headline, summary: summary, eventIcons: eventIcons)
+        return WeekSummaryResult(headline: headline, eventIcons: eventIcons)
     }
 
     // MARK: - Natural Language Event Parsing
@@ -267,12 +256,11 @@ final class ClaudeAPIService {
 
     private struct CachedSummary: Codable {
         var headline: String
-        var summary: String
         var eventIcons: [String: String]
     }
 
     private func cacheSummary(_ result: WeekSummaryResult, cacheString: String, weekKey: String) {
-        let cached = CachedSummary(headline: result.headline, summary: result.summary, eventIcons: result.eventIcons)
+        let cached = CachedSummary(headline: result.headline, eventIcons: result.eventIcons)
         if let data = try? JSONEncoder().encode(cached) {
             UserDefaults.standard.set(data, forKey: "\(cacheKeyPrefix).\(weekKey)")
             UserDefaults.standard.set(cacheString, forKey: "\(cacheWeekKeyPrefix).\(weekKey)")
@@ -286,22 +274,14 @@ final class ClaudeAPIService {
               let cached = try? JSONDecoder().decode(CachedSummary.self, from: data) else {
             return nil
         }
-        return WeekSummaryResult(headline: cached.headline, summary: cached.summary, eventIcons: cached.eventIcons)
+        return WeekSummaryResult(headline: cached.headline, eventIcons: cached.eventIcons)
     }
 
     private func fallback(events: [EventSummaryInput]) -> WeekSummaryResult {
         if events.isEmpty {
-            return WeekSummaryResult(
-                headline: "A blank canvas —\nthe week is yours",
-                summary: "Nothing on the calendar yet. Perfect for spontaneous plans or a well-earned rest."
-            )
+            return WeekSummaryResult(headline: "A blank canvas —\nthe week is yours")
         }
-        let titles = events.prefix(4).map(\.title).joined(separator: ", ")
-        let more = events.count > 4 ? " and more" : ""
-        return WeekSummaryResult(
-            headline: "Your week at a glance",
-            summary: "\(titles)\(more) — \(events.count) event\(events.count == 1 ? "" : "s") lined up."
-        )
+        return WeekSummaryResult(headline: "Your week at a glance")
     }
 
     @ObservationIgnored

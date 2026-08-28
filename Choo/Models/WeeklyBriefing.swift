@@ -3,17 +3,15 @@ import Foundation
 struct WeeklyBriefing: Codable {
     var weekStart: Date
     var headline: String
-    var summary: String
     var highlights: [WeekHighlight]
     var otherEvents: [WeekHighlight]
     var bills: [BriefingBill]
     var todos: [BriefingTodo]
     var agenda: [DayAgendaItem]
 
-    init(weekStart: Date, headline: String, summary: String, highlights: [WeekHighlight], otherEvents: [WeekHighlight], bills: [BriefingBill], todos: [BriefingTodo] = [], agenda: [DayAgendaItem]) {
+    init(weekStart: Date, headline: String, highlights: [WeekHighlight], otherEvents: [WeekHighlight], bills: [BriefingBill], todos: [BriefingTodo] = [], agenda: [DayAgendaItem]) {
         self.weekStart = weekStart
         self.headline = headline
-        self.summary = summary
         self.highlights = highlights
         self.otherEvents = otherEvents
         self.bills = bills
@@ -25,7 +23,6 @@ struct WeeklyBriefing: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         weekStart = try container.decode(Date.self, forKey: .weekStart)
         headline = try container.decode(String.self, forKey: .headline)
-        summary = try container.decode(String.self, forKey: .summary)
         highlights = try container.decode([WeekHighlight].self, forKey: .highlights)
         otherEvents = try container.decode([WeekHighlight].self, forKey: .otherEvents)
         bills = try container.decode([BriefingBill].self, forKey: .bills)

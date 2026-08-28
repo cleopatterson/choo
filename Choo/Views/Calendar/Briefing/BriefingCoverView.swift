@@ -2,7 +2,6 @@ import SwiftUI
 
 struct BriefingCoverView: View {
     let headline: String
-    let summary: String
     let weekLabel: String
     var badge: String = "This week"
     var isNextWeek: Bool = false
@@ -13,7 +12,6 @@ struct BriefingCoverView: View {
             badge: badge,
             dateRange: weekLabel,
             headline: headline,
-            summary: summary,
             accent: .calendar,
             isLoading: isLoading
         )
