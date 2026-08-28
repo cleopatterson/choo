@@ -15,29 +15,27 @@ struct ShoppingTabView: View {
     @State private var runOpen = true
     @State private var showingDoneSheet = false
     @State private var itemToDelete: ShoppingItem?
-    @State private var dinnerPlanMode = false
+    @State private var showingDinnerPicker = false
 
     var body: some View {
         NavigationStack {
             ScrollViewReader { scrollProxy in
                 List {
-                    // ── Dinners: week mosaic (+ plan mode) ──
-                    DinnerWeekView(
+                    // ── This week's dinners ──
+                    DinnerPicksView(
                         viewModel: dinnerPlannerViewModel,
-                        planMode: $dinnerPlanMode
+                        showingPicker: $showingDinnerPicker
                     )
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
 
-                    // ── This Week's Run ── (plan mode gives dinners the whole screen)
-                    if !dinnerPlanMode {
-                        runCard(scrollProxy: scrollProxy)
-                            .id("run")
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 16, trailing: 16))
-                    }
+                    // ── This Week's Run ──
+                    runCard(scrollProxy: scrollProxy)
+                        .id("run")
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 16, trailing: 16))
                 }
             }
             .listStyle(.plain)
@@ -76,13 +74,8 @@ struct ShoppingTabView: View {
                 editSheet(for: item)
                     .presentationBackground(.ultraThinMaterial)
             }
-            .sheet(isPresented: Binding(
-                get: { dinnerPlannerViewModel.selectedDayIndex != nil },
-                set: { if !$0 { dinnerPlannerViewModel.selectedDayIndex = nil } }
-            )) {
-                RecipePickerView(viewModel: dinnerPlannerViewModel)
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.ultraThinMaterial)
+            .fullScreenCover(isPresented: $showingDinnerPicker) {
+                DinnerPickSheet(viewModel: dinnerPlannerViewModel)
             }
             .sheet(isPresented: $showingDoneSheet) {
                 RunDoneSheet(

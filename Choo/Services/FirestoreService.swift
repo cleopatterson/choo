@@ -617,6 +617,17 @@ final class FirestoreService {
             .setData(from: mealPlan)
     }
 
+    /// One-off read of past meal plans, newest first — used to work out when
+    /// each recipe was actually last cooked.
+    func fetchRecentMealPlans(familyId: String, limit: Int = 26) async throws -> [MealPlan] {
+        let snapshot = try await db.collection("families").document(familyId)
+            .collection("mealPlans")
+            .order(by: "weekStart", descending: true)
+            .limit(to: limit)
+            .getDocuments()
+        return snapshot.documents.compactMap { try? $0.data(as: MealPlan.self) }
+    }
+
     func listenToLastWeekMealPlan(familyId: String, weekStart: Date) {
         lastWeekMealPlanListener?.remove()
         let docId = MealPlan.docId(for: weekStart)

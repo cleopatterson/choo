@@ -67,8 +67,7 @@
 		CC02DD03EE04FF05AA06BB07 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02BB03CC04DD05EE06FF07 /* Recipe.swift */; };
 		CC03DD04EE05FF06AA07BB08 /* MealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */; };
 		CC04DD05EE06FF07AA08BB09 /* DinnerPlannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */; };
-		CC05DD06EE07FF08AA09BB0A /* DinnerWeekView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */; };
-		CC06DD07EE08FF09AA0ABB0B /* RecipePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */; };
+		CC05DD06EE07FF08AA09BB0A /* DinnerPicksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05BB06CC07DD08EE09FF0A /* DinnerPicksView.swift */; };
 		CC07DD08EE09FF0AAA0BBB0C /* RecipeEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */; };
 		CH01AA01BB01CC01DD01EE01 /* ChoreCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH01AA01BB01CC01DD01FF01 /* ChoreCategory.swift */; };
 		CH02AA02BB02CC02DD02EE02 /* ChoresPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = CH02AA02BB02CC02DD02FF02 /* ChoresPlan.swift */; };
@@ -200,8 +199,7 @@
 		AA02BB03CC04DD05EE06FF07 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		AA03BB04CC05DD06EE07FF08 /* MealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlan.swift; sourceTree = "<group>"; };
 		AA04BB05CC06DD07EE08FF09 /* DinnerPlannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerPlannerViewModel.swift; sourceTree = "<group>"; };
-		AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerWeekView.swift; sourceTree = "<group>"; };
-		AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipePickerView.swift; sourceTree = "<group>"; };
+		AA05BB06CC07DD08EE09FF0A /* DinnerPicksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerPicksView.swift; sourceTree = "<group>"; };
 		AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEditView.swift; sourceTree = "<group>"; };
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
 		AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySetupView.swift; sourceTree = "<group>"; };
@@ -308,9 +306,8 @@
 		0A06086A2245042AC6E04512 /* Shopping */ = {
 			isa = PBXGroup;
 			children = (
-				AA05BB06CC07DD08EE09FF0A /* DinnerWeekView.swift */,
+				AA05BB06CC07DD08EE09FF0A /* DinnerPicksView.swift */,
 				AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */,
-				AA06BB07CC08DD09EE0AFF0B /* RecipePickerView.swift */,
 				B1D8EAB9283B18AC09A60B3A /* ShoppingTabView.swift */,
 				SP04AA04BB04CC04DD04FF04 /* RunDoneSheet.swift */,
 			);
@@ -860,7 +857,6 @@
 				2B3C4D5E6F7A8B9C0D1E2F3A /* PendingShareManager.swift in Sources */,
 				CC02DD03EE04FF05AA06BB07 /* Recipe.swift in Sources */,
 				CC07DD08EE09FF0AAA0BBB0C /* RecipeEditView.swift in Sources */,
-				CC06DD07EE08FF09AA0ABB0B /* RecipePickerView.swift in Sources */,
 				1A2B3C4D5E6F7A8B9C0D1E2F /* SharedUserContext.swift in Sources */,
 				NR01AA01BB01CC01DD01EE01 /* NavigationRouter.swift in Sources */,
 				C66E3028A5F993A5B6670648 /* ShoppingItem.swift in Sources */,
@@ -874,7 +870,7 @@
 				56DCDBE90F095C4C2321957A /* ChooApp.swift in Sources */,
 				C3D4E5F6A7B80920314253A4 /* CalendarViewModel.swift in Sources */,
 				CC04DD05EE06FF07AA08BB09 /* DinnerPlannerViewModel.swift in Sources */,
-				CC05DD06EE07FF08AA09BB0A /* DinnerWeekView.swift in Sources */,
+				CC05DD06EE07FF08AA09BB0A /* DinnerPicksView.swift in Sources */,
 				E5F6A7B8C9DA0B42536475C6 /* EventFormView.swift in Sources */,
 				F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */,
 				BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */,

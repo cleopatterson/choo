@@ -81,9 +81,9 @@ struct ContentView: View {
                 )
                 dinnerPlannerViewModel = DinnerPlannerViewModel(
                     firestoreService: firestore,
-                    claudeService: .shared,
                     familyId: familyId,
-                    displayName: displayName
+                    displayName: displayName,
+                    userUID: uid
                 )
                 exerciseViewModel = ExerciseViewModel(
                     firestoreService: firestore,

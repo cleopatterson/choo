@@ -34,7 +34,10 @@ export interface MealPlan {
   id?: string
   familyId: string
   weekStart: Date
-  assignments: Record<string, MealAssignment> // "0"-"6" Mon=0..Sun=6
+  /** Legacy: a meal per night, "0"-"6" Mon=0..Sun=6. Older weeks only. */
+  assignments: Record<string, MealAssignment>
+  /** This week's meals, with no night attached. */
+  picks?: MealAssignment[]
 }
 
 export type SupplyCategory = 'coldGoods' | 'breakfast' | 'pantry' | 'cleaning'

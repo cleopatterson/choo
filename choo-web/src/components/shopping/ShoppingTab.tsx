@@ -54,8 +54,30 @@ export default function ShoppingTab() {
       <NavBar title="Shopping" onProfile={() => setShowProfile(true)} />
 
       <div className="p-4 space-y-4">
-        {/* Dinner strip */}
-        {mealPlan && (
+        {/* This week's dinners — a set of meals, no nights attached */}
+        {mealPlan && (mealPlan.picks?.length ? (
+          <div className="glass rounded-2xl p-3">
+            <div className="text-[10px] text-white/40 font-bold tracking-wider uppercase mb-2">
+              This week's dinners
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {mealPlan.picks.map((meal, i) => (
+                <div
+                  key={`${meal.recipeId}-${i}`}
+                  className={`flex items-center gap-2 rounded-xl bg-white/6 border border-white/10 p-2.5 ${
+                    mealPlan.picks!.length % 2 === 1 && i === mealPlan.picks!.length - 1 ? 'col-span-2' : ''
+                  }`}
+                >
+                  <div className="w-8 h-8 shrink-0 rounded-xl bg-white/6 flex items-center justify-center text-base">
+                    {meal.recipeIcon}
+                  </div>
+                  <div className="text-sm font-semibold leading-tight">{meal.recipeName}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          /* Weeks planned before dinners stopped being per-night */
           <div className="glass rounded-2xl p-3">
             <div className="text-[10px] text-white/40 font-bold tracking-wider uppercase mb-2">
               This week's dinners
@@ -75,7 +97,7 @@ export default function ShoppingTab() {
               })}
             </div>
           </div>
-        )}
+        ))}
 
         {/* Add item */}
         <form onSubmit={handleAddItem} className="flex gap-2">

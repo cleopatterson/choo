@@ -124,6 +124,7 @@ export const useShoppingStore = create<ShoppingStore>((set, get) => ({
             familyId: data.familyId,
             weekStart: data.weekStart?.toDate?.() ?? weekStart,
             assignments: data.assignments ?? {},
+            picks: data.picks ?? undefined,
           },
         })
       } else {
