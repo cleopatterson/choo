@@ -162,7 +162,8 @@ export default function EventForm({ familyId, displayName, userUID, onClose, edi
             <input type="checkbox" checked={isAllDay} onChange={(e) => setIsAllDay(e.target.checked)} className="accent-choo-purple" />
             All day
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          {/* iOS datetime-local has an intrinsic min width — side by side overflows a phone */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-[10px] text-white/40 mb-1 block">Start</label>
               <input
