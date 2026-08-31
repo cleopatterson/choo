@@ -37,40 +37,43 @@ export default function EventForm({ familyId, displayName, userUID, onClose, edi
     const start = new Date(startDate)
     const end = new Date(endDate)
 
-    if (isEditing && editEvent) {
-      await updateEvent(familyId, {
-        ...editEvent,
-        title: title.trim(),
-        startDate: start,
-        endDate: end,
-        isAllDay: isAllDay || undefined,
-        location: location || undefined,
-        isBill: isBill || undefined,
-        amount: isBill && amount ? parseFloat(amount) : undefined,
-        isTodo: isTodo || undefined,
-        recurrenceFrequency: recurrence || undefined,
-        note: note || undefined,
-        lastModifiedByUID: userUID,
-      })
-    } else {
-      await createEvent(familyId, {
-        familyId,
-        title: title.trim(),
-        startDate: start,
-        endDate: end,
-        createdBy: displayName,
-        isAllDay: isAllDay || undefined,
-        location: location || undefined,
-        isBill: isBill || undefined,
-        amount: isBill && amount ? parseFloat(amount) : undefined,
-        isTodo: isTodo || undefined,
-        recurrenceFrequency: recurrence || undefined,
-        note: note || undefined,
-        lastModifiedByUID: userUID,
-      })
+    try {
+      if (isEditing && editEvent) {
+        await updateEvent(familyId, {
+          ...editEvent,
+          title: title.trim(),
+          startDate: start,
+          endDate: end,
+          isAllDay: isAllDay || undefined,
+          location: location || undefined,
+          isBill: isBill || undefined,
+          amount: isBill && amount ? parseFloat(amount) : undefined,
+          isTodo: isTodo || undefined,
+          recurrenceFrequency: recurrence || undefined,
+          note: note || undefined,
+          lastModifiedByUID: userUID,
+        })
+      } else {
+        await createEvent(familyId, {
+          familyId,
+          title: title.trim(),
+          startDate: start,
+          endDate: end,
+          createdBy: displayName,
+          isAllDay: isAllDay || undefined,
+          location: location || undefined,
+          isBill: isBill || undefined,
+          amount: isBill && amount ? parseFloat(amount) : undefined,
+          isTodo: isTodo || undefined,
+          recurrenceFrequency: recurrence || undefined,
+          note: note || undefined,
+          lastModifiedByUID: userUID,
+        })
+      }
+      onClose()
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
-    onClose()
   }
 
   return (

@@ -32,4 +32,9 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 // IndexedDB persistence: snapshots render instantly from disk on reload,
 // then refresh live — no loading state while the network catches up.
-export const db = initializeFirestore(app, { localCache: persistentLocalCache() })
+// ignoreUndefinedProperties: optional fields are written as `foo || undefined`
+// (matching the iOS SDK, which drops nils); the JS SDK rejects undefined without it.
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache(),
+  ignoreUndefinedProperties: true,
+})
