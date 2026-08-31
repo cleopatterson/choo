@@ -40,6 +40,9 @@ function toEvent(id: string, data: any): FamilyEvent {
     isCompleted: data.isCompleted,
     completedDate: data.completedDate?.toDate?.(),
     todoEmoji: data.todoEmoji,
+    classification: data.classification
+      ? { ...data.classification, classifiedAt: data.classification.classifiedAt?.toDate?.() }
+      : undefined,
   }
 }
 
@@ -69,10 +72,21 @@ export const useCalendarStore = create<CalendarStore>((set, get) => ({
       where('startDate', '>', Timestamp.fromDate(sixMonthsAgo)),
       orderBy('startDate')
     )
-    const unsub = onSnapshot(q, (snapshot) => {
-      const events = snapshot.docs.map((d) => toEvent(d.id, d.data()))
-      set({ events })
-    })
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const events = snapshot.docs.map((d) => toEvent(d.id, d.data()))
+        set({ events })
+      },
+      (error) => {
+        // A rejected listen terminates silently otherwise — retry so the agenda
+        // can't sit frozen for the rest of the session.
+        console.error('[calendar] events listener error — retrying in 5s', error)
+        setTimeout(() => {
+          if (get()._unsub === unsub) get().listen(familyId)
+        }, 5000)
+      }
+    )
     set({ _unsub: unsub })
   },
 

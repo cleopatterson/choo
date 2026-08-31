@@ -58,6 +58,12 @@
 		B71F3753AF30EB9207C04F18 /* ErrorBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C51136155B81ECF1A4075B5 /* ErrorBannerView.swift */; };
 		BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01BB02CC03DD04EE05FF06 /* Secrets.swift */; };
 		BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */; };
+		EC02AA01BB01CC01DD01EE01 /* EventClassificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC01AA01BB01CC01DD01EE01 /* EventClassificationService.swift */; };
+		CT02AA01BB01CC01DD01EE01 /* CalendarTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CT01AA01BB01CC01DD01EE01 /* CalendarTheme.swift */; };
+		MH02AA01BB01CC01DD01EE01 /* MonthHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MH01AA01BB01CC01DD01EE01 /* MonthHeroView.swift */; };
+		DG02AA01BB01CC01DD01EE01 /* DayGutterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DG01AA01BB01CC01DD01EE01 /* DayGutterView.swift */; };
+		RC02AA01BB01CC01DD01EE01 /* EventRegisterCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = RC01AA01BB01CC01DD01EE01 /* EventRegisterCards.swift */; };
+		HB02AA01BB01CC01DD01EE01 /* HolidayBleed.swift in Sources */ = {isa = PBXBuildFile; fileRef = HB01AA01BB01CC01DD01EE01 /* HolidayBleed.swift */; };
 		BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */; };
 		BB31CC32DD33EE34FF35AA36 /* DayForecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA31BB32CC33DD34EE35FF36 /* DayForecast.swift */; };
 		BC01BB01CC01DD01EE01FF01 /* BriefingCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC01BB01CC01DD01EE01AA01 /* BriefingCardView.swift */; };
@@ -202,6 +208,12 @@
 		AA05BB06CC07DD08EE09FF0A /* DinnerPicksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DinnerPicksView.swift; sourceTree = "<group>"; };
 		AA07BB08CC09DD0AEE0BFF0C /* RecipeEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeEditView.swift; sourceTree = "<group>"; };
 		AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPIService.swift; sourceTree = "<group>"; };
+		EC01AA01BB01CC01DD01EE01 /* EventClassificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventClassificationService.swift; sourceTree = "<group>"; };
+		CT01AA01BB01CC01DD01EE01 /* CalendarTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarTheme.swift; sourceTree = "<group>"; };
+		MH01AA01BB01CC01DD01EE01 /* MonthHeroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthHeroView.swift; sourceTree = "<group>"; };
+		DG01AA01BB01CC01DD01EE01 /* DayGutterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayGutterView.swift; sourceTree = "<group>"; };
+		RC01AA01BB01CC01DD01EE01 /* EventRegisterCards.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventRegisterCards.swift; sourceTree = "<group>"; };
+		HB01AA01BB01CC01DD01EE01 /* HolidayBleed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HolidayBleed.swift; sourceTree = "<group>"; };
 		AA145D59EA1B0017FF389D6F /* FamilySetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySetupView.swift; sourceTree = "<group>"; };
 		AA21BB22CC23DD24EE25FF26 /* WeatherService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherService.swift; sourceTree = "<group>"; };
 		AA31BB32CC33DD34EE35FF36 /* DayForecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayForecast.swift; sourceTree = "<group>"; };
@@ -393,6 +405,11 @@
 				DD11EE12FF13AA14BB15CC16 /* Briefing */,
 				C3E4F5A6B7D829A413C5D6E7 /* CalendarSourcesView.swift */,
 				66354A190B16CD04D2645084 /* CalendarTabView.swift */,
+				CT01AA01BB01CC01DD01EE01 /* CalendarTheme.swift */,
+				MH01AA01BB01CC01DD01EE01 /* MonthHeroView.swift */,
+				DG01AA01BB01CC01DD01EE01 /* DayGutterView.swift */,
+				RC01AA01BB01CC01DD01EE01 /* EventRegisterCards.swift */,
+				HB01AA01BB01CC01DD01EE01 /* HolidayBleed.swift */,
 				A3B4C5D6E7F819203142DEFA /* EventDetailView.swift */,
 				B5C6D7E8F9AA0B4253647586 /* EventFormView.swift */,
 			);
@@ -519,6 +536,7 @@
 				11692FD42F45860500C75371 /* PushNotificationService.swift */,
 				A5B3E6DA15F871616F9194B3 /* AuthService.swift */,
 				AA11BB12CC13DD14EE15FF16 /* ClaudeAPIService.swift */,
+				EC01AA01BB01CC01DD01EE01 /* EventClassificationService.swift */,
 				A1C2D3E4F5B6078291A3B4C5 /* DeviceCalendarService.swift */,
 				C009B91E9C7F9BB64EE4ECBE /* FirestoreService.swift */,
 				HK01AA02BB03CC04DD05EE06 /* HealthKitService.swift */,
@@ -875,6 +893,12 @@
 				F2B3C4D5E6A718293041CDEF /* EventDetailView.swift in Sources */,
 				BB01CC02DD03EE04FF05AA06 /* Secrets.swift in Sources */,
 				BB11CC12DD13EE14FF15AA16 /* ClaudeAPIService.swift in Sources */,
+				EC02AA01BB01CC01DD01EE01 /* EventClassificationService.swift in Sources */,
+				CT02AA01BB01CC01DD01EE01 /* CalendarTheme.swift in Sources */,
+				MH02AA01BB01CC01DD01EE01 /* MonthHeroView.swift in Sources */,
+				DG02AA01BB01CC01DD01EE01 /* DayGutterView.swift in Sources */,
+				RC02AA01BB01CC01DD01EE01 /* EventRegisterCards.swift in Sources */,
+				HB02AA01BB01CC01DD01EE01 /* HolidayBleed.swift in Sources */,
 				HK11AA22BB33CC44DD55EE66 /* HealthKitService.swift in Sources */,
 				BB21CC22DD23EE24FF25AA26 /* WeatherService.swift in Sources */,
 				BB31CC32DD33EE34FF35AA36 /* DayForecast.swift in Sources */,

@@ -7,11 +7,11 @@ Choo is a family hub iOS app (SwiftUI, iOS 17+) with a companion web app. It rep
 - **Pattern**: MVVM with `@Observable` (NOT `ObservableObject`)
 - **Views**: Use `@Bindable var viewModel` for two-way bindings
 - **Data layer**: `FirestoreService` is the single source of truth — all CRUD and snapshot listeners live there
-- **AI**: `ClaudeAPIService` for summaries and event parsing (Haiku model)
+- **AI**: `ClaudeAPIService` for summaries and event parsing (Haiku model); `EventClassificationService` classifies calendar events into visual registers (fun/utility/routine), stored on the event doc as `classification`
 - **State**: `@ObservationIgnored` for private state that shouldn't trigger view updates
 
 ## 5 Tabs
-1. **Calendar** — events, bills, to-dos with recurrence. Views in `Choo/Views/Calendar/`
+1. **Calendar** — one scrolling agenda; events, bills, to-dos with recurrence, rendered in three Haiku-classified registers (fun/utility/routine) with month heroes and a holiday bleed for multi-day trips (see "Calendar Agenda" in `docs/DESIGN_SYSTEM.md`). Views in `Choo/Views/Calendar/`
 2. **Shopping** — shopping lists, dinner planner, supplies. Views in `Choo/Views/Shopping/`
 3. **Exercise** — weekly plan with 3 time slots per day. Views in `Choo/Views/Exercise/`
 4. **House** — chores grouped by category with due/overdue tracking. Views in `Choo/Views/House/`

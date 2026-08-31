@@ -50,6 +50,11 @@ struct ContentView: View {
         .onChange(of: viewModel.authService.currentUser?.uid) {
             Task { await viewModel.resolveAuthState() }
         }
+        // Auth restore finishing with no user changes only isLoading (uid stays
+        // nil→nil), so watch it too or a cached session strands on a dead UI.
+        .onChange(of: viewModel.authService.isLoading) {
+            Task { await viewModel.resolveAuthState() }
+        }
         .onChange(of: viewModel.authFlowState) {
             if viewModel.authFlowState == .ready,
                let familyId = viewModel.userProfile?.familyId {

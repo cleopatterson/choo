@@ -301,6 +301,18 @@
 - [x] **Edit sheet** — standard form with name field + frequency picker; Cancel/Save toolbar; delete button with confirmation
 - [x] **Family member assignees show initials** — replaced generic 👤 with first letter (e.g. "T" for Tony, "A" for Alex)
 
+### Calendar Registers Redesign (Aug 31, branch `feat/calendar-registers`)
+- [x] **Three event registers** — FUN (emoji-scene cards, tint gradients) / UTILITY (flat quiet cards, category left-border) / ROUTINE (one thin line); design from the "Choo Calendar" Claude Design project (`Calendar Build Spec.md`, option 11a)
+- [x] **Haiku classification** — `EventClassificationService` batches unclassified events (≤10/call) through `callClaudeJSON`; result stored on the event doc as `classification` (targeted `updateData`, staleness via `classifiedTitle`); iOS classifies, web renders; bills/todos never sent
+- [x] **Anticipation ramp** — FUN cards intensify as the day nears (whisper → chip → glow → "Today! 🎈" shimmer); pure client date math (`RampStage`)
+- [x] **Day gutter layout** — 40pt day-number gutter replaces full-width day headers; Google-style today (filled lilac circle + rule with dot above the row)
+- [x] **Month heroes** — full-bleed 168pt seasonal gradient bands with drifting bubbles between months; never shown for the current month so today sits at the top
+- [x] **Holiday bleed** — classified multi-day trips wash a sky tint + ribbon down the agenda rows they span (occurrence-aware for recurring trips; respects member filter; mid-span "✈️ trip" marker rows)
+- [x] **Instant start** — cached auth session (UserDefaults / localStorage) skips the loading screen on both platforms; web gains Firestore IndexedDB persistence + listener error retry; iOS watches `isLoading` so a failed restore can't strand a dead UI
+- [x] **Web agenda rebuild** — `CalendarTab.tsx` week view → same agenda (registers, heroes, bleed, ramp); "Show past events" toggle replaces week navigation
+- [x] **Scroll performance** — toolbar month title isolated into its own observable (no body re-eval during scroll); emoji scenes animate only near/today; glow as static blur not per-frame `.shadow`
+- [x] **New files** — `CalendarTheme`, `MonthHeroView`, `DayGutterView`, `EventRegisterCards`, `HolidayBleed`, `EventClassificationService` (pbxproj registered manually)
+
 ---
 
 ## In Progress — Shopping List UX (Feb 12)

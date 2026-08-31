@@ -6,66 +6,56 @@ private final class ScrollTracker {
     var visibleDays: Set<Date> = []
 }
 
-struct CalendarTabView: View {
-    @Bindable var viewModel: CalendarViewModel
-    @Binding var showingProfile: Bool
-    @State private var scrollToTodayTrigger = false
-    @State private var scrollTracker = ScrollTracker()
-    @State private var displayedMonth: Date = Calendar.current.startOfDay(for: Date())
-    @State private var hasScrolledInitially = false
-    @State private var scrollToNewEventDate: Date?
-    @State private var pendingScrollDate: Date?
-    @State private var animatingDay: Date?
-    @State private var showConfetti = false
-    @State private var eventIconCache: [String: String?] = [:]
-    @State private var scrollTask: Task<Void, Never>?
-    @State private var selectedEventDay: Date = Date()
+/// Holds the toolbar month title in its own observable so scroll-driven month
+/// changes re-render only the small title button, never the whole tab body.
+@Observable
+private final class MonthTitleModel {
+    var displayedMonth: Date = Calendar.current.startOfDay(for: Date())
+}
 
-    /// Update displayedMonth only when the month boundary actually changes.
-    private func updateMonthIfNeeded() {
-        guard let minDay = scrollTracker.visibleDays.min() else { return }
-        let cal = Calendar.current
-        if cal.component(.month, from: minDay) != cal.component(.month, from: displayedMonth)
-            || cal.component(.year, from: minDay) != cal.component(.year, from: displayedMonth) {
-            displayedMonth = minDay
-        }
-    }
-
-    private static let dayHeaderFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEEE, MMM d"
-        return f
-    }()
-
-    private static let timeFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.timeStyle = .short
-        return f
-    }()
-
-    private static let dayShortFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE d"
-        return f
-    }()
-
-    /// "TODAY · FRI 28" on today, otherwise "SAT 29".
-    private func dayHeaderLabel(for day: Date, isToday: Bool) -> String {
-        let short = Self.dayShortFormatter.string(from: day).uppercased()
-        return isToday ? "TODAY · \(short)" : short
-    }
-
-    private static let shortDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE d MMM"
-        return f
-    }()
+private struct MonthTitleLabel: View {
+    let model: MonthTitleModel
+    let isPickerOpen: Bool
 
     private static let monthYearFormatter: DateFormatter = {
         let f = DateFormatter()
         f.dateFormat = "MMMM yyyy"
         return f
     }()
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(Self.monthYearFormatter.string(from: model.displayedMonth))
+                .font(.system(.headline, design: .serif))
+            Image(systemName: isPickerOpen ? "chevron.up" : "chevron.down")
+                .font(.caption.bold())
+        }
+    }
+}
+
+struct CalendarTabView: View {
+    @Bindable var viewModel: CalendarViewModel
+    @Binding var showingProfile: Bool
+    @State private var scrollToTodayTrigger = false
+    @State private var scrollTracker = ScrollTracker()
+    @State private var monthTitle = MonthTitleModel()
+    @State private var hasScrolledInitially = false
+    @State private var scrollToNewEventDate: Date?
+    @State private var pendingScrollDate: Date?
+    @State private var animatingDay: Date?
+    @State private var showConfetti = false
+    @State private var scrollTask: Task<Void, Never>?
+    @State private var selectedEventDay: Date = Date()
+
+    /// Update the toolbar month only when the month boundary actually changes.
+    private func updateMonthIfNeeded() {
+        guard let minDay = scrollTracker.visibleDays.min() else { return }
+        let cal = Calendar.current
+        if cal.component(.month, from: minDay) != cal.component(.month, from: monthTitle.displayedMonth)
+            || cal.component(.year, from: minDay) != cal.component(.year, from: monthTitle.displayedMonth) {
+            monthTitle.displayedMonth = minDay
+        }
+    }
 
     var body: some View {
         NavigationStack {
@@ -76,21 +66,12 @@ struct CalendarTabView: View {
                         let today = Calendar.current.startOfDay(for: Date())
 
                         ForEach(Array(days.enumerated()), id: \.element) { index, day in
-                            if shouldShowMonthBanner(for: day, after: index > 0 ? days[index - 1] : nil) {
-                                monthBanner(for: day)
+                            if shouldShowMonthHero(for: day, after: index > 0 ? days[index - 1] : nil) {
+                                monthHeroRow(for: day)
                             }
-                            let dayEvents = viewModel.filteredEvents(for: day)
-                            let extEvents = viewModel.externalEvents(for: day)
-                            let holiday = viewModel.publicHoliday(on: day)
-                            let school = viewModel.schoolHolidayPeriod(on: day)
-                            let isToday = day == today
-                            if !dayEvents.isEmpty || !extEvents.isEmpty || holiday != nil || school != nil || isToday {
-                                daySection(for: day, dayEvents: dayEvents, externalEvents: extEvents, publicHoliday: holiday, schoolHoliday: school, isToday: isToday, today: today)
-                                    .id(day)
-                                    .scaleEffect(y: animatingDay == day ? 0.01 : 1, anchor: .top)
-                                    .opacity(animatingDay == day ? 0 : 1)
-                                    .onAppear { scrollTracker.visibleDays.insert(day); updateMonthIfNeeded() }
-                                    .onDisappear { scrollTracker.visibleDays.remove(day) }
+                            let items = dayRowItems(for: day, isToday: day == today)
+                            if !items.isEmpty {
+                                dayGroup(for: day, items: items, isToday: day == today, today: today)
                             }
                         }
                     }
@@ -137,7 +118,11 @@ struct CalendarTabView: View {
                     }
                     .onAppear {
                         viewModel.refreshDeviceCalendarCache()
+                        viewModel.kickClassificationBackfill()
                         scrollToToday(proxy: proxy, reason: "onAppear")
+                    }
+                    .onChange(of: viewModel.eventsFingerprint) {
+                        viewModel.kickClassificationBackfill()
                     }
                     .onChange(of: viewModel.visibleDays.count) {
                         // Land on today once the first batch of days has loaded.
@@ -187,12 +172,7 @@ struct CalendarTabView: View {
                         Button {
                             withAnimation { viewModel.showingMonthPicker.toggle() }
                         } label: {
-                            HStack(spacing: 4) {
-                                Text(Self.monthYearFormatter.string(from: displayedMonth))
-                                    .font(.system(.headline, design: .serif))
-                                Image(systemName: viewModel.showingMonthPicker ? "chevron.up" : "chevron.down")
-                                    .font(.caption.bold())
-                            }
+                            MonthTitleLabel(model: monthTitle, isPickerOpen: viewModel.showingMonthPicker)
                         }
 
                         Button {
@@ -285,7 +265,7 @@ struct CalendarTabView: View {
         }
     }
 
-    // MARK: - Month Banner
+    // MARK: - Scrolling
 
     @State private var scrollToTodayTask: Task<Void, Never>?
 
@@ -302,495 +282,304 @@ struct CalendarTabView: View {
         }
     }
 
-    // dayHasContent check is now inlined in ForEach body to avoid double-computing events
+    // MARK: - Month Hero
 
-    private func shouldShowMonthBanner(for day: Date, after previousDay: Date?) -> Bool {
+    /// Heroes mark month boundaries further down the agenda — never the month
+    /// you're already in, so today always sits at the top of the screen.
+    private func shouldShowMonthHero(for day: Date, after previousDay: Date?) -> Bool {
+        let cal = Calendar.current
+        if cal.isDate(day, equalTo: Date(), toGranularity: .month) { return false }
         guard let prev = previousDay else { return true }
-        return Calendar.current.component(.month, from: day) != Calendar.current.component(.month, from: prev)
+        return cal.component(.month, from: day) != cal.component(.month, from: prev)
     }
 
-    private func monthBanner(for date: Date) -> some View {
-        let month = Calendar.current.component(.month, from: date)
-
-        return VStack(alignment: .leading, spacing: 2) {
-            Text(Self.monthYearFormatter.string(from: date))
-                .font(.system(size: 28, weight: .bold, design: .serif))
-                .foregroundStyle(.white)
-            Text(monthTagline(for: month))
-                .font(.system(size: 13))
-                .foregroundStyle(Self.accentLilac.opacity(0.8))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 18)
-        .padding(.top, 22)
-        .padding(.bottom, 20)
-        .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(Color.clear)
+    private func monthHeroRow(for day: Date) -> some View {
+        MonthHeroView(monthDate: day)
+            .listRowInsets(EdgeInsets(top: 22, leading: 0, bottom: 4, trailing: 0))
+            .listRowSeparator(.hidden)
+            // Mid-trip heroes keep their art and carry only the ribbon
+            .listRowBackground(
+                Group {
+                    if let trip = viewModel.tripSpan(on: day), trip.position != .start {
+                        TripWashBackground(color: CalendarTheme.tripHue, position: trip.position, tintVisible: false)
+                    } else {
+                        Color.clear
+                    }
+                }
+            )
     }
 
-    /// Per-month theme (Southern Hemisphere / Australia). Every month unique — no repeated primary icons.
-    /// The season line under the month name — Australian seasons.
-    private func monthTagline(for month: Int) -> String {
-        switch month {
-        case 1:  return "Peak summer"
-        case 2:  return "Love & late summer"
-        case 3:  return "Autumn begins"
-        case 4:  return "Autumn rains"
-        case 5:  return "Cosy autumn"
-        case 6:  return "Winter arrives"
-        case 7:  return "Deep winter"
-        case 8:  return "Winter's end"
-        case 9:  return "Spring blooms"
-        case 10: return "Halloween"
-        case 11: return "Late spring"
-        case 12: return "Christmas & summer"
-        default: return ""
+    // MARK: - Day rows
+
+    private enum DayRowItem: Identifiable {
+        case school(SchoolHolidayPeriod)
+        case publicHoliday(Holiday)
+        case family(FamilyEvent)
+        case external(EKEvent)
+        case tripContinues(FamilyEvent, isLastDay: Bool)
+        case noEvents
+
+        var id: String {
+            switch self {
+            case .school(let s): return "school-\(s.name)"
+            case .publicHoliday(let h): return "holiday-\(h.name)"
+            case .family(let e): return "event-\(e.id ?? e.title)"
+            case .external(let e): return "ext-\(e.eventIdentifier ?? "")"
+            case .tripContinues(let e, _): return "trip-\(e.id ?? e.title)"
+            case .noEvents: return "no-events"
+            }
         }
     }
 
-    // MARK: - Day Section
+    /// Register rank for in-day ordering: the trip's own start-day card leads,
+    /// then fun, utility, routine; ties broken by start time.
+    private func registerRank(_ event: FamilyEvent, on day: Date) -> Int {
+        if event.isTripSpan && viewModel.isTripOccurrenceStart(event, on: day) { return -1 }
+        switch event.effectiveRegister {
+        case .fun: return 0
+        case .utility: return 1
+        case .routine: return 2
+        }
+    }
+
+    private func dayRowItems(for day: Date, isToday: Bool) -> [DayRowItem] {
+        // A trip only renders its own card on its start day — after that the bleed carries it
+        let dayEvents = viewModel.filteredEvents(for: day)
+            .filter { !($0.isTripSpan && !viewModel.isTripOccurrenceStart($0, on: day)) }
+            .sorted { a, b in
+                let ra = registerRank(a, on: day), rb = registerRank(b, on: day)
+                if ra != rb { return ra < rb }
+                return a.startDate < b.startDate
+            }
+        let extEvents = viewModel.externalEvents(for: day)
+
+        var items: [DayRowItem] = []
+        if let school = viewModel.schoolHolidayPeriod(on: day) { items.append(.school(school)) }
+        if let holiday = viewModel.publicHoliday(on: day) { items.append(.publicHoliday(holiday)) }
+        items.append(contentsOf: dayEvents.map { .family($0) })
+        items.append(contentsOf: extEvents.map { .external($0) })
+        if items.isEmpty, let trip = viewModel.tripSpan(on: day), trip.position != .start {
+            // Mid-span trip days with nothing else on still render, so the bleed
+            // has a row to run under and the trip stays visible/tappable.
+            items.append(.tripContinues(trip.event, isLastDay: trip.position == .end))
+        }
+        if items.isEmpty && isToday { items.append(.noEvents) }
+        return items
+    }
+
+    /// One celebration per day keeps the loud purple treatment; later same-day
+    /// celebrations quieten to the social tint so the agenda never becomes a wall of noise.
+    private func funTint(for event: FamilyEvent, in items: [DayRowItem]) -> CalendarTheme.FunTint {
+        let subtype = event.effectiveSubtype
+        if subtype != .celebration { return CalendarTheme.funTint(for: subtype) }
+        let firstCelebration = items.compactMap { item -> FamilyEvent? in
+            if case .family(let e) = item, e.effectiveRegister == .fun, e.effectiveSubtype == .celebration { return e }
+            return nil
+        }.first
+        return firstCelebration?.id == event.id ? .celebration : .social
+    }
 
     @ViewBuilder
-    private func daySection(for day: Date, dayEvents: [FamilyEvent], externalEvents: [EKEvent], publicHoliday: Holiday?, schoolHoliday: SchoolHolidayPeriod?, isToday: Bool, today: Date) -> some View {
+    private func dayGroup(for day: Date, items: [DayRowItem], isToday: Bool, today: Date) -> some View {
         let isPast = day < today
+        let trip = viewModel.tripSpan(on: day)
 
-        Section {
-            // School holiday label
-            if let school = schoolHoliday {
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(.green)
-                        .frame(width: 4, height: 20)
-                    Text(school.name)
-                        .font(.caption)
-                        .foregroundStyle(.green)
+        ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+            VStack(alignment: .leading, spacing: 12) {
+                if index == 0 && isToday {
+                    TodayRule()
                 }
-                .opacity(isPast ? 0.5 : 1)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-            }
-
-            // Public holiday
-            if let holiday = publicHoliday {
-                HStack(spacing: 8) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(.orange)
-                        .frame(width: 4, height: 24)
-                    Text(holiday.name)
-                        .font(.subheadline.bold())
-                        .foregroundStyle(.orange)
-                }
-                .opacity(isPast ? 0.5 : 1)
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-            }
-
-            // User events
-            if !dayEvents.isEmpty {
-                ForEach(dayEvents) { event in
-                    eventRow(event, on: day)
-                        .opacity(isPast ? 0.5 : 1)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectedEventDay = day
-                            viewModel.selectedEvent = event
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                Task { await viewModel.deleteEvent(event) }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
-                        .swipeActions(edge: .leading) {
-                            if event.isTodo == true {
-                                let done = event.isCompleted == true
-                                Button {
-                                    if !done {
-                                        UINotificationFeedbackGenerator().notificationOccurred(.success)
-                                        showConfetti = true
-                                    }
-                                    Task {
-                                        await viewModel.toggleTodoCompleted(event)
-                                        if !done {
-                                            try? await Task.sleep(for: .seconds(2.0))
-                                            showConfetti = false
-                                        }
-                                    }
-                                } label: {
-                                    Label(done ? "Undo" : "Done", systemImage: done ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
-                                }
-                                .tint(done ? .orange : .green)
-                            } else if event.isBill == true {
-                                let paid = event.isPaidOn(day)
-                                Button {
-                                    if !paid {
-                                        UINotificationFeedbackGenerator().notificationOccurred(.success)
-                                        showConfetti = true
-                                    }
-                                    Task {
-                                        await viewModel.toggleBillPaid(event, on: day)
-                                        if !paid {
-                                            try? await Task.sleep(for: .seconds(2.0))
-                                            showConfetti = false
-                                        }
-                                    }
-                                } label: {
-                                    Label(paid ? "Unpay" : "Paid", systemImage: paid ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
-                                }
-                                .tint(paid ? .orange : .green)
-                            }
-                        }
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                }
-            }
-
-            // Device calendar events
-            ForEach(externalEvents, id: \.eventIdentifier) { ekEvent in
-                externalEventRow(ekEvent)
-                    .opacity(isPast ? 0.5 : 1)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-            }
-
-            // "No events" only for today
-            if dayEvents.isEmpty && externalEvents.isEmpty && publicHoliday == nil && schoolHoliday == nil && isToday {
-                Text("No events")
-                    .font(.subheadline)
-                    .foregroundStyle(.tertiary)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-            }
-        } header: {
-            Text(dayHeaderLabel(for: day, isToday: isToday))
-                .font(.system(size: 11, weight: .bold))
-                .tracking(1.2)
-                .foregroundStyle(isToday ? Self.accentLilac : .white.opacity(isPast ? 0.25 : 0.4))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .textCase(nil)
-                .padding(.leading, 2)
-                .padding(.top, 20)
-                .padding(.bottom, 2)
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
-        }
-        // Belt and braces: no rules between events, days or months.
-        .listRowSeparator(.hidden)
-        .listSectionSeparator(.hidden)
-    }
-
-    // MARK: - Event Row
-
-    private func eventRow(_ event: FamilyEvent, on day: Date) -> some View {
-        let paid = event.isPaidOn(day)
-        let todoDone = event.isTodo == true && event.isCompleted == true
-
-        return HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: 6) {
-                    Text(event.title)
-                        .font(.system(size: 15, weight: .semibold))
-                        .strikethrough(todoDone, color: .white.opacity(0.3))
-
-                    if event.isTodo == true && !todoDone {
-                        todoUrgencyBadge(for: event)
+                HStack(alignment: .top, spacing: 12) {
+                    if index == 0 {
+                        DayGutterView(day: day, isToday: isToday, isPast: isPast)
                     }
+                    rowContent(for: item, on: day, items: items)
+                        .frame(maxWidth: .infinity)
                 }
-
-                HStack(spacing: 4) {
-                    if event.isTodo == true {
-                        if event.todoHasDueDate {
-                            Text(todoDone ? "Done" : "Due \(Self.shortDateFormatter.string(from: event.endDate))")
-                                .font(.caption)
-                                .foregroundStyle(todoDone ? .green : (event.urgencyState == .overdue ? .red : .secondary))
-                        } else {
-                            Text(todoDone ? "Done" : "No due date")
-                                .font(.caption)
-                                .foregroundStyle(todoDone ? .green : .secondary)
-                        }
-                        if let emoji = event.todoEmoji, !emoji.isEmpty {
-                            Text(emoji)
-                                .font(.caption)
-                        }
-                    } else if event.isBill == true {
-                        if let amt = event.amount {
-                            Text(amt, format: .currency(code: "AUD"))
-                                .font(.caption)
-                                .foregroundStyle(paid ? .green : .secondary)
-                        }
-                    } else if event.isAllDay == true {
-                        Text("All day")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+            }
+            .opacity(isPast ? 0.5 : 1)
+            .scaleEffect(y: animatingDay == day ? 0.01 : 1, anchor: .top)
+            .opacity(animatingDay == day ? 0 : 1)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(
+                top: index == 0 ? 16 : 4,
+                leading: index == 0 ? 14 : 66,
+                bottom: 4,
+                trailing: 14
+            ))
+            .listRowBackground(
+                Group {
+                    if let trip {
+                        TripWashBackground(color: CalendarTheme.tripHue, position: trip.position)
                     } else {
-                        Text(Self.timeFormatter.string(from: event.startDate))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if event.isBill != true && event.isTodo != true, let loc = event.location, !loc.isEmpty {
-                        Image(systemName: "mappin")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text(loc)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-
-                    if event.isTodo != true, let freq = event.recurrence {
-                        Image(systemName: "repeat")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text(freq.displayName)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if event.reminderEnabled == true {
-                        Image(systemName: "bell.fill")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                        Color.clear
                     }
                 }
-            }
-
-            Spacer()
-
-            if event.isTodo == true {
-                if todoDone {
-                    Text("DONE")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.green)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(.green.opacity(0.15), in: Capsule())
-                } else {
-                    Image(systemName: "circle")
-                        .font(.title3)
-                        .foregroundStyle(.white.opacity(0.2))
-                }
-            } else if event.isBill == true && paid {
-                Text("PAID")
-                    .font(.caption2.bold())
-                    .foregroundStyle(.green)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(.green.opacity(0.15), in: Capsule())
-            } else if event.isBill != true {
-                if let glyph = eventIcon(for: event) {
-                    Image(systemName: glyph)
-                        .font(.system(size: 14))
-                        .foregroundStyle(.white.opacity(0.5))
-                }
-
-                // Attendee avatars
-                HStack(spacing: -8) {
-                    ForEach(attendeeMembers(for: event)) { member in
-                        MemberAvatarView(name: member.displayName, uid: member.id, emoji: member.emoji, size: 26)
-                            .overlay(Circle().stroke(Self.avatarRing, lineWidth: 2))
-                    }
-                }
-            }
+            )
+            .modifier(FirstRowMarker(day: day, isFirst: index == 0, scrollTracker: scrollTracker, updateMonth: updateMonthIfNeeded))
         }
-        .opacity((paid || todoDone) ? 0.6 : 1)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 13)
-        .background(Self.eventCardFill, in: RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .strokeBorder(Self.eventCardStroke, lineWidth: 1)
-        )
     }
-
-    // MARK: - 9b palette
-
-    /// rgba(150,110,250,.45) — bright enough to hold its own on the gradient.
-    private static let eventCardFill = Color(red: 0.588, green: 0.431, blue: 0.980).opacity(0.45)
-    /// rgba(206,193,255,.4)
-    private static let eventCardStroke = Color(red: 0.808, green: 0.757, blue: 1.0).opacity(0.4)
-    /// rgba(232,226,255,.85) — the meta line under an event title.
-    private static let eventMetaColor = Color(red: 0.910, green: 0.886, blue: 1.0).opacity(0.85)
-    /// #c4b5fd — today's day header and the month season line.
-    private static let accentLilac = Color(red: 0.769, green: 0.710, blue: 0.992)
-    /// #372a63 — the ring separating overlapping faces from the card.
-    private static let avatarRing = Color(red: 0.216, green: 0.165, blue: 0.388)
 
     @ViewBuilder
-    private func todoUrgencyBadge(for event: FamilyEvent) -> some View {
-        let state = event.urgencyState
-        let (label, color): (String, Color) = {
-            switch state {
-            case .overdue: return ("Overdue", .red)
-            case .dueSoon: return ("Due soon", .orange)
-            case .active: return event.todoHasDueDate ? ("Active", .cyan) : ("Flexible", Color.white.opacity(0.4))
-            case .flexible: return ("Flexible", Color.white.opacity(0.4))
-            default: return ("", .clear)
+    private func rowContent(for item: DayRowItem, on day: Date, items: [DayRowItem]) -> some View {
+        switch item {
+        case .school(let school):
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.green)
+                    .frame(width: 4, height: 20)
+                Text(school.name)
+                    .font(.caption)
+                    .foregroundStyle(.green)
+                Spacer(minLength: 0)
             }
-        }()
-        if !label.isEmpty {
-            Text(label)
-                .font(.system(size: 9, weight: .bold))
-                .textCase(.uppercase)
-                .foregroundStyle(color)
-                .padding(.horizontal, 5)
-                .padding(.vertical, 2)
-                .background(color.opacity(0.15), in: Capsule())
-        }
-    }
 
-    // MARK: - External Event Row
+        case .publicHoliday(let holiday):
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.orange)
+                    .frame(width: 4, height: 24)
+                Text(holiday.name)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.orange)
+                Spacer(minLength: 0)
+            }
 
-    private func externalEventRow(_ event: EKEvent) -> some View {
-        let calColor = Color(cgColor: event.calendar.cgColor)
-
-        return HStack(spacing: 12) {
-            Capsule()
-                .fill(calColor)
-                .frame(width: 3, height: 34)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(event.title ?? "")
-                    .font(.system(size: 15, weight: .semibold))
-
-                HStack(spacing: 4) {
-                    if event.isAllDay {
-                        Text("All day")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text(Self.timeFormatter.string(from: event.startDate))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if let loc = event.location, !loc.isEmpty {
-                        Image(systemName: "mappin")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                        Text(loc)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-
-                    Text(event.calendar.title)
-                        .font(.caption2)
-                        .foregroundStyle(calColor.opacity(0.8))
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 1)
-                        .background(calColor.opacity(0.15), in: Capsule())
+        case .family(let event):
+            eventCard(for: event, on: day, items: items)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    selectedEventDay = day
+                    viewModel.selectedEvent = event
                 }
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        Task { await viewModel.deleteEvent(event) }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    if event.isTodo == true {
+                        let done = event.isCompleted == true
+                        Button {
+                            if !done {
+                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                showConfetti = true
+                            }
+                            Task {
+                                await viewModel.toggleTodoCompleted(event)
+                                if !done {
+                                    try? await Task.sleep(for: .seconds(2.0))
+                                    showConfetti = false
+                                }
+                            }
+                        } label: {
+                            Label(done ? "Undo" : "Done", systemImage: done ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
+                        }
+                        .tint(done ? .orange : .green)
+                    } else if event.isBill == true {
+                        let paid = event.isPaidOn(day)
+                        Button {
+                            if !paid {
+                                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                showConfetti = true
+                            }
+                            Task {
+                                await viewModel.toggleBillPaid(event, on: day)
+                                if !paid {
+                                    try? await Task.sleep(for: .seconds(2.0))
+                                    showConfetti = false
+                                }
+                            }
+                        } label: {
+                            Label(paid ? "Unpay" : "Paid", systemImage: paid ? "arrow.uturn.backward.circle.fill" : "checkmark.circle.fill")
+                        }
+                        .tint(paid ? .orange : .green)
+                    }
+                }
+
+        case .external(let ekEvent):
+            ExternalEventRow(event: ekEvent)
+
+        case .tripContinues(let event, let isLastDay):
+            HStack(spacing: 6) {
+                Text("✈️")
+                    .font(.system(size: 12))
+                    .opacity(0.7)
+                Text(isLastDay ? "\(event.title) — last day" : event.title)
+                    .font(.custom("Georgia-Italic", size: 12.5))
+                    .foregroundStyle(CalendarTheme.tripHue.opacity(0.7))
+                Spacer(minLength: 0)
+            }
+            .padding(.vertical, 2)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                selectedEventDay = day
+                viewModel.selectedEvent = event
             }
 
-            Spacer()
+        case .noEvents:
+            Text("No events")
+                .font(.subheadline)
+                .foregroundStyle(.tertiary)
+                .padding(.top, 4)
         }
-        .overlay(alignment: .trailing) {
-            if let icon = eventIcon(for: event.title ?? "") {
-                Image(systemName: icon)
-                    .font(.system(size: 32))
-                    .foregroundStyle(calColor.opacity(0.09))
-                    .offset(x: -10)
-                    .allowsHitTesting(false)
-            }
-        }
-        .padding(.leading, 12)
-        .padding(.trailing, 14)
-        .padding(.vertical, 13)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-        .overlay(
-            RoundedRectangle(cornerRadius: 14)
-                .strokeBorder(.white.opacity(0.08), lineWidth: 1)
-        )
     }
 
-    // MARK: - Event Icon Matching
-
-    private func eventIcon(for event: FamilyEvent) -> String? {
-        if event.isTodo == true {
-            return event.isCompleted == true ? "checkmark.circle.fill" : "circle"
+    @ViewBuilder
+    private func eventCard(for event: FamilyEvent, on day: Date, items: [DayRowItem]) -> some View {
+        let attendees = attendeeMembers(for: event)
+        switch event.effectiveRegister {
+        case .fun:
+            FunEventCard(event: event, day: day, attendees: attendees, tint: funTint(for: event, in: items))
+        case .utility:
+            UtilityEventCard(event: event, day: day, attendees: attendees)
+        case .routine:
+            RoutineEventRow(event: event, attendees: attendees)
         }
-        if event.isBill == true {
-            return "dollarsign.circle.fill"
-        }
-        return eventIcon(for: event.title)
-    }
-
-    private func eventIcon(for title: String) -> String? {
-        if let cached = eventIconCache[title] { return cached }
-        let icon = matchEventIcon(for: title)
-        eventIconCache[title] = icon
-        return icon
-    }
-
-    private func matchEventIcon(for title: String) -> String? {
-        let lower = title.lowercased()
-
-        // Food & drink
-        if lower.containsAny("lunch", "dinner", "brunch", "food", "eat", "restaurant", "breakfast", "bbq", "barbecue", "picnic") { return "fork.knife" }
-        if lower.containsAny("coffee", "cafe", "café") { return "cup.and.saucer.fill" }
-        if lower.containsAny("cook", "bake", "kitchen") { return "flame.fill" }
-
-        // Social
-        if lower.containsAny("birthday", "party") { return "party.popper" }
-        if lower.containsAny("meeting", "call", "zoom", "teams") { return "person.2.fill" }
-        if lower.containsAny("date", "anniversary", "valentine") { return "heart.fill" }
-
-        // Health
-        if lower.containsAny("doctor", "medical", "hospital", "health", "physio", "therapy") { return "cross.case.fill" }
-        if lower.containsAny("dentist", "teeth", "orthodont") { return "mouth.fill" }
-
-        // Fitness & sport
-        if lower.containsAny("gym", "workout", "exercise", "fitness", "crossfit") { return "dumbbell.fill" }
-        if lower.containsAny("run", "jog", "parkrun") { return "figure.run" }
-        if lower.containsAny("swim", "pool") { return "figure.pool.swim" }
-        if lower.containsAny("soccer", "football", "cricket", "tennis", "basketball", "sport", "game", "match") { return "trophy.fill" }
-        if lower.containsAny("walk", "hike", "bush") { return "figure.walk" }
-        if lower.containsAny("bike", "cycle", "cycling") { return "bicycle" }
-        if lower.containsAny("dance", "ballet") { return "figure.dance" }
-        if lower.containsAny("yoga", "pilates", "stretch") { return "figure.mind.and.body" }
-        if lower.containsAny("surf") { return "figure.surfing" }
-
-        // Kids & school
-        if lower.containsAny("school", "class", "homework", "study", "exam", "test") { return "book.fill" }
-        if lower.containsAny("play", "playground", "park") { return "figure.play" }
-
-        // Transport & travel
-        if lower.containsAny("pick up", "drop off", "drive", "car") { return "car.fill" }
-        if lower.containsAny("travel", "flight", "airport", "fly") { return "airplane" }
-        if lower.containsAny("holiday", "vacation") { return "suitcase.fill" }
-        if lower.containsAny("beach") { return "beach.umbrella.fill" }
-
-        // Home & errands
-        if lower.containsAny("shop", "store", "market", "groceries") { return "cart.fill" }
-        if lower.containsAny("clean", "cleaning", "tidy") { return "sparkles" }
-        if lower.containsAny("garden", "plant", "mow") { return "leaf.fill" }
-        if lower.containsAny("hair", "haircut", "barber") { return "scissors" }
-        if lower.containsAny("vet", "pet", "dog", "cat") { return "pawprint.fill" }
-
-        // Entertainment
-        if lower.containsAny("movie", "cinema", "film") { return "film.fill" }
-        if lower.containsAny("music", "concert", "gig") { return "music.note" }
-        if lower.containsAny("photo", "camera") { return "camera.fill" }
-        if lower.containsAny("paint", "art", "draw", "craft") { return "paintbrush.fill" }
-        if lower.containsAny("book", "read", "library") { return "book.fill" }
-
-        // Work
-        if lower.containsAny("work", "office") { return "briefcase.fill" }
-
-        return nil
     }
 
     private func attendeeMembers(for event: FamilyEvent) -> [AnyFamilyMember] {
         let uids = event.attendeeUIDs ?? []
         return viewModel.allMembers.filter { uids.contains($0.id) }
+    }
+}
+
+/// Google-style "now" rule: a dot and a thin line running above today's row.
+private struct TodayRule: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            Circle()
+                .fill(CalendarTheme.accentLilac)
+                .frame(width: 6, height: 6)
+            Rectangle()
+                .fill(CalendarTheme.accentLilac.opacity(0.7))
+                .frame(height: 1)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+/// Attaches the day anchor id and scroll tracking to the first row of a day group.
+private struct FirstRowMarker: ViewModifier {
+    let day: Date
+    let isFirst: Bool
+    let scrollTracker: ScrollTracker
+    let updateMonth: () -> Void
+
+    func body(content: Content) -> some View {
+        if isFirst {
+            content
+                .id(day)
+                .onAppear {
+                    scrollTracker.visibleDays.insert(day)
+                    updateMonth()
+                }
+                .onDisappear { scrollTracker.visibleDays.remove(day) }
+        } else {
+            content
+        }
     }
 }
 

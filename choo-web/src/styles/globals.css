@@ -107,3 +107,25 @@ body {
 .transition-base {
   transition: all 0.2s ease;
 }
+
+/* Calendar agenda motion */
+@keyframes cal-float {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-7px) rotate(var(--rot, 0deg)); }
+}
+@keyframes cal-drift {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(4px, -9px); }
+  66% { transform: translate(-5px, 4px); }
+}
+@keyframes cal-shimmer {
+  0%, 60% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.cal-float { animation: cal-float 7s ease-in-out infinite; }
+.cal-drift { animation: cal-drift 9s ease-in-out infinite; }
+.cal-shimmer { animation: cal-shimmer 2.8s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-float, .cal-drift, .cal-shimmer { animation: none !important; }
+}

@@ -424,6 +424,15 @@ final class FirestoreService {
             .updateData(["attendeeUIDs": attendeeUIDs])
     }
 
+    /// Targeted write of just the classification map — never touches other fields,
+    /// so a background backfill can't clobber a concurrent user edit.
+    func updateEventClassification(familyId: String, eventId: String, classification: EventClassification) async throws {
+        let encoded = try Firestore.Encoder().encode(classification)
+        try await db.collection("families").document(familyId)
+            .collection("events").document(eventId)
+            .updateData(["classification": encoded])
+    }
+
     func deleteEvent(familyId: String, eventId: String) async throws {
         try await db.collection("families").document(familyId)
             .collection("events").document(eventId)
