@@ -2,6 +2,21 @@ export type RecurrenceFrequency = 'daily' | 'weekly' | 'fortnightly' | 'monthly'
 
 export type TodoUrgencyState = 'notStarted' | 'active' | 'dueSoon' | 'overdue' | 'done' | 'flexible'
 
+export type EventRegister = 'fun' | 'utility' | 'routine'
+
+export type EventSubtype = 'celebration' | 'social' | 'trip' | 'health' | 'errand' | 'admin' | 'recurring'
+
+/** Haiku classification stored on the event doc (written by iOS; web only renders it). */
+export interface EventClassification {
+  register: string
+  subtype: string
+  glyph: string
+  sceneEmoji: string[]
+  confidence: number
+  classifiedTitle: string
+  classifiedAt?: Date
+}
+
 export interface FamilyEvent {
   id?: string
   familyId: string
@@ -26,6 +41,7 @@ export interface FamilyEvent {
   isCompleted?: boolean
   completedDate?: Date
   todoEmoji?: string
+  classification?: EventClassification
 }
 
 // --- Helper functions (ported from iOS FamilyEvent) ---
@@ -158,4 +174,97 @@ export function occursOn(event: FamilyEvent, day: Date): boolean {
     default:
       return false
   }
+}
+
+// --- Classification helpers (mirror of iOS FamilyEvent) ---
+
+function hasFreshClassification(event: FamilyEvent): boolean {
+  return event.classification?.classifiedTitle === event.title
+}
+
+const REGISTERS: EventRegister[] = ['fun', 'utility', 'routine']
+const SUBTYPES: EventSubtype[] = ['celebration', 'social', 'trip', 'health', 'errand', 'admin', 'recurring']
+
+/** Rendering register with local validation — mirrors iOS `effectiveRegister`. */
+export function getRegister(event: FamilyEvent): EventRegister {
+  if (event.isBill || event.isTodo) return 'utility'
+  const c = event.classification
+  if (c && hasFreshClassification(event) && REGISTERS.includes(c.register as EventRegister) && c.confidence >= 0.6) {
+    if (c.register === 'routine' && !event.recurrenceFrequency) return 'utility'
+    return c.register as EventRegister
+  }
+  if (event.recurrenceFrequency === 'weekly' || event.recurrenceFrequency === 'fortnightly') return 'routine'
+  return 'utility'
+}
+
+export function getSubtype(event: FamilyEvent): EventSubtype {
+  const c = event.classification
+  if (c && hasFreshClassification(event) && SUBTYPES.includes(c.subtype as EventSubtype)) {
+    return c.subtype as EventSubtype
+  }
+  return 'errand'
+}
+
+export function getSpanDayCount(event: FamilyEvent): number {
+  if (!event.isAllDay) return 0
+  return Math.max(0, differenceInCalendarDays(startOfDay(event.endDate), startOfDay(event.startDate)))
+}
+
+/** A classified multi-day trip — drives the holiday bleed. */
+export function isTripSpan(event: FamilyEvent): boolean {
+  return getRegister(event) === 'fun' && getSubtype(event) === 'trip' && getSpanDayCount(event) >= 1
+}
+
+export type TripSpanPosition = 'start' | 'middle' | 'end'
+
+export interface TripSpanInfo {
+  event: FamilyEvent
+  position: TripSpanPosition
+}
+
+/** Whether this day is the first day of a trip occurrence — occurrence-aware,
+ * so later occurrences of a recurring trip get a start day too. */
+export function isTripOccurrenceStart(event: FamilyEvent, day: Date): boolean {
+  return !occursOn(event, addDays(day, -1))
+}
+
+/** The trip whose span covers this day, if any. Earliest-starting trip wins overlaps. */
+export function getTripSpanForDay(events: FamilyEvent[], day: Date): TripSpanInfo | null {
+  const trips = events
+    .filter((e) => isTripSpan(e) && occursOn(e, day))
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+  const trip = trips[0]
+  if (!trip) return null
+  const position: TripSpanPosition = isTripOccurrenceStart(trip, day)
+    ? 'start'
+    : !occursOn(trip, addDays(day, 1))
+      ? 'end'
+      : 'middle'
+  return { event: trip, position }
+}
+
+// --- Anticipation ramp (pure date math, FUN cards only) ---
+
+export type RampStage = 'distant' | 'week' | 'near' | 'today' | 'past'
+
+export function getRampStage(eventDay: Date, today: Date = new Date()): RampStage {
+  const days = differenceInCalendarDays(startOfDay(eventDay), startOfDay(today))
+  if (days < 0) return 'past'
+  if (days === 0) return 'today'
+  if (days <= 2) return 'near'
+  if (days <= 13) return 'week'
+  return 'distant'
+}
+
+const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
+
+/** Countdown copy: whispers spell numbers ("two weeks away…"), chips use digits ("in 6 days"). */
+export function getCountdownText(eventDay: Date, today: Date = new Date()): string {
+  const days = differenceInCalendarDays(startOfDay(eventDay), startOfDay(today))
+  if (days <= 0) return 'Today! 🎈'
+  if (days === 1) return 'tomorrow'
+  if (days <= 13) return `in ${days} days`
+  const weeks = Math.round(days / 7)
+  const word = NUMBER_WORDS[weeks] ?? String(weeks)
+  return `${word} weeks away…`
 }

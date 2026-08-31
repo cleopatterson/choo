@@ -9,6 +9,47 @@ enum AuthFlowState: Equatable {
     case ready
 }
 
+/// The last signed-in session, cached so a cold start can render the app
+/// immediately and refresh behind the scenes instead of showing a loading screen.
+private struct CachedSession: Codable {
+    let uid: String
+    let email: String
+    let displayName: String
+    let familyId: String
+    let roleRaw: String
+
+    private static let key = "cachedAuthSession"
+
+    static func load() -> CachedSession? {
+        guard let data = UserDefaults.standard.data(forKey: key) else { return nil }
+        return try? JSONDecoder().decode(CachedSession.self, from: data)
+    }
+
+    static func save(uid: String, profile: UserProfile) {
+        guard let familyId = profile.familyId else { return }
+        let session = CachedSession(uid: uid, email: profile.email, displayName: profile.displayName, familyId: familyId, roleRaw: profile.role.rawValue)
+        if let data = try? JSONEncoder().encode(session) {
+            UserDefaults.standard.set(data, forKey: key)
+        }
+    }
+
+    static func clear() {
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+
+    var profile: UserProfile {
+        UserProfile(
+            id: uid,
+            email: email,
+            displayName: displayName,
+            familyId: familyId,
+            role: UserRole(rawValue: roleRaw) ?? .member,
+            fcmTokens: nil,
+            notificationPreferences: nil
+        )
+    }
+}
+
 @MainActor
 @Observable
 final class AuthViewModel {
@@ -28,9 +69,17 @@ final class AuthViewModel {
     // MARK: - Auth State Resolution
 
     /// Call after auth state changes to determine the correct flow state.
+    /// Cold starts go straight to the app from the cached session (no loading
+    /// screen) and the profile refreshes silently once auth confirms.
     func resolveAuthState() async {
         guard !authService.isLoading else {
-            authFlowState = .loading
+            // Auth restore is in flight (fires within a frame). Trust the cached
+            // session so the agenda renders immediately from Firestore's disk cache.
+            if authFlowState == .loading, let cached = CachedSession.load() {
+                userProfile = cached.profile
+                firestoreService.listenToFamily(familyId: cached.familyId)
+                authFlowState = .ready
+            }
             return
         }
 
@@ -38,6 +87,7 @@ final class AuthViewModel {
             authFlowState = .login
             firestoreService.stopListening()
             userProfile = nil
+            CachedSession.clear()
             return
         }
 
@@ -46,15 +96,21 @@ final class AuthViewModel {
                 userProfile = profile
                 if let familyId = profile.familyId {
                     firestoreService.listenToFamily(familyId: familyId)
+                    CachedSession.save(uid: user.uid, profile: profile)
                     authFlowState = .ready
                 } else {
+                    CachedSession.clear()
                     authFlowState = .familySetup
                 }
             } else {
                 // User exists in Auth but no Firestore profile — needs family setup
+                CachedSession.clear()
                 authFlowState = .familySetup
             }
         } catch {
+            // Offline or transient failure: stay on the cached session rather
+            // than bouncing to a login screen.
+            guard authFlowState != .ready else { return }
             errorMessage = error.localizedDescription
             authFlowState = .login
         }
@@ -160,6 +216,7 @@ final class AuthViewModel {
             try authService.signOut()
             firestoreService.stopListening()
             userProfile = nil
+            CachedSession.clear()
             authFlowState = .login
         } catch {
             errorMessage = error.localizedDescription

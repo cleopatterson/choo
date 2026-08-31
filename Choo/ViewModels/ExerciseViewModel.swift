@@ -112,7 +112,6 @@ final class ExerciseViewModel {
     var selectedDayIndex: Int?
     var showingCategoryForm = false
     var briefingHeadline = "Your exercise week"
-    var briefingSummary = ""
     var isLoadingBriefing = false
     var errorMessage: String?
     var expandedCategoryId: String?
@@ -801,7 +800,6 @@ final class ExerciseViewModel {
         if let data = UserDefaults.standard.data(forKey: cacheKey),
            let cached = try? JSONDecoder().decode(ExerciseBriefing.self, from: data) {
             briefingHeadline = cached.headline
-            briefingSummary = cached.summary
             return
         }
 
@@ -825,13 +823,6 @@ final class ExerciseViewModel {
            - "Building strength —\\none day at a time"
            - "Rest is training too —\\ngood call"
 
-        2. SUMMARY: One short sentence referencing actual session names. Be supportive and honest. Under 120 characters.
-           - If well balanced (mix of cardio, strength, flexibility, rest): affirm the variety. "Yoga and weights — your body will thank you for the mix."
-           - If heavy/intense (6-7 sessions, lots of high intensity): gently flag it. "That's a big week — make sure you're listening to your body."
-           - If rest-heavy or light: be encouraging, not judgmental. "Sometimes less is more. A solid foundation to build from."
-           - If one-dimensional (all the same type): suggest variety warmly. "All running — maybe a stretch session could balance things out?"
-           - Reference the actual session names, not generic terms.
-
         Important tone notes:
         - Be warm and real, like a friend checking in
         - It's OK to gently suggest more rest or variety — caring honesty, not toxic positivity
@@ -844,7 +835,6 @@ final class ExerciseViewModel {
 
         Respond in exactly this format:
         HEADLINE: <headline>
-        SUMMARY: <summary>
 
         This week's HealthKit actuals:
         - Average daily steps: \(healthKitService.weekAverageSteps)
@@ -859,29 +849,24 @@ final class ExerciseViewModel {
         do {
             let text = try await claudeService.callClaudeRaw(prompt: prompt, maxTokens: 200)
             var parsedHeadline = "Your exercise week"
-            var parsedSummary = ""
 
             for line in text.components(separatedBy: "\n") {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if trimmed.hasPrefix("HEADLINE:") {
                     parsedHeadline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
                     parsedHeadline = parsedHeadline.replacingOccurrences(of: "\\n", with: "\n")
-                } else if trimmed.hasPrefix("SUMMARY:") {
-                    parsedSummary = String(trimmed.dropFirst(8)).trimmingCharacters(in: .whitespaces)
                 }
             }
 
             briefingHeadline = parsedHeadline
-            briefingSummary = parsedSummary
 
             // Cache
-            let briefing = ExerciseBriefing(weekStart: weekStart, headline: parsedHeadline, summary: parsedSummary)
+            let briefing = ExerciseBriefing(weekStart: weekStart, headline: parsedHeadline)
             if let encoded = try? JSONEncoder().encode(briefing) {
                 UserDefaults.standard.set(encoded, forKey: cacheKey)
             }
         } catch {
             briefingHeadline = "Your exercise week"
-            briefingSummary = sessionCount > 0 ? "\(sessionCount) session\(sessionCount == 1 ? "" : "s") planned this week." : "No sessions planned yet."
         }
     }
 
@@ -940,7 +925,6 @@ final class ExerciseViewModel {
         guard let data = UserDefaults.standard.data(forKey: cacheKey),
               let cached = try? JSONDecoder().decode(ExerciseBriefing.self, from: data) else { return }
         briefingHeadline = cached.headline
-        briefingSummary = cached.summary
     }
 
     // MARK: - Formatters

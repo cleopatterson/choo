@@ -380,6 +380,7 @@ final class FirestoreService {
                     }
                 }
                 self.eventsVersion += 1
+                WidgetDataWriter.update(from: self.events)
             }
     }
 
@@ -421,6 +422,15 @@ final class FirestoreService {
         try await db.collection("families").document(familyId)
             .collection("events").document(eventId)
             .updateData(["attendeeUIDs": attendeeUIDs])
+    }
+
+    /// Targeted write of just the classification map — never touches other fields,
+    /// so a background backfill can't clobber a concurrent user edit.
+    func updateEventClassification(familyId: String, eventId: String, classification: EventClassification) async throws {
+        let encoded = try Firestore.Encoder().encode(classification)
+        try await db.collection("families").document(familyId)
+            .collection("events").document(eventId)
+            .updateData(["classification": encoded])
     }
 
     func deleteEvent(familyId: String, eventId: String) async throws {
@@ -614,6 +624,17 @@ final class FirestoreService {
         try await db.collection("families").document(familyId)
             .collection("mealPlans").document(docId)
             .setData(from: mealPlan)
+    }
+
+    /// One-off read of past meal plans, newest first — used to work out when
+    /// each recipe was actually last cooked.
+    func fetchRecentMealPlans(familyId: String, limit: Int = 26) async throws -> [MealPlan] {
+        let snapshot = try await db.collection("families").document(familyId)
+            .collection("mealPlans")
+            .order(by: "weekStart", descending: true)
+            .limit(to: limit)
+            .getDocuments()
+        return snapshot.documents.compactMap { try? $0.data(as: MealPlan.self) }
     }
 
     func listenToLastWeekMealPlan(familyId: String, weekStart: Date) {

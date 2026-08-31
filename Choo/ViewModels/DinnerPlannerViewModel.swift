@@ -1,23 +1,23 @@
 import Foundation
 
+/// Dinners are a set of meals for the week, not a meal per night. You pick the
+/// 5–6 things you want to eat, and that set is what you shop for.
 @MainActor
 @Observable
 final class DinnerPlannerViewModel {
     let firestoreService: FirestoreService
-    let claudeService: ClaudeAPIService
     let familyId: String
     let displayName: String
+    let userUID: String
 
-    var selectedDayIndex: Int?    // 0-6, triggers recipe picker
-    var lastAssignedRecipe: Recipe?  // set after meal assignment for ingredient review
     var errorMessage: String?
-    var briefingHeadline = "Dinners this week"
-    var briefingSummary = ""
-    var isLoadingBriefing = false
 
-    @ObservationIgnored private var debounceTask: Task<Void, Never>?
+    /// Recipe id → the Monday of the most recent *past* week it was cooked.
+    private(set) var lastCookedWeek: [String: Date] = [:]
+    private(set) var hasLoadedHistory = false
+
+    /// `.task {}` re-runs on every tab appearance — this keeps load() to once.
     @ObservationIgnored private var hasLoadedInitially = false
-    @ObservationIgnored private let debounceDuration: UInt64 = 3_000_000_000
 
     private let calendar: Calendar = {
         var cal = Calendar.current
@@ -25,12 +25,11 @@ final class DinnerPlannerViewModel {
         return cal
     }()
 
-    init(firestoreService: FirestoreService, claudeService: ClaudeAPIService, familyId: String, displayName: String) {
+    init(firestoreService: FirestoreService, familyId: String, displayName: String, userUID: String) {
         self.firestoreService = firestoreService
-        self.claudeService = claudeService
         self.familyId = familyId
         self.displayName = displayName
-        loadCachedBriefing()
+        self.userUID = userUID
     }
 
     // MARK: - Week Computation
@@ -50,41 +49,52 @@ final class DinnerPlannerViewModel {
         calendar.date(byAdding: .day, value: -7, to: weekStart) ?? weekStart
     }
 
-    var lastWeekDays: [Date] {
-        (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: lastWeekStart) }
-    }
-
     var weekDateRange: String {
         let startDay = calendar.component(.day, from: weekStart)
         let endDate = weekDays.last ?? weekStart
         return "\(startDay)–\(Self.endDateFormatter.string(from: endDate))"
     }
 
-    // MARK: - Assignments (from Firestore listener)
+    // MARK: - This week's picks
 
-    var assignments: [String: MealAssignment] {
-        firestoreService.currentMealPlan?.assignments ?? [:]
+    /// The meals chosen for this week. Weeks planned before dinners stopped
+    /// being per-night are read back through their old day assignments.
+    var picks: [MealAssignment] {
+        if let picks = firestoreService.currentMealPlan?.picks {
+            return picks
+        }
+        let legacy = firestoreService.currentMealPlan?.assignments ?? [:]
+        return legacy.keys.sorted().compactMap { legacy[$0] }
     }
 
-    var lastWeekAssignments: [String: MealAssignment] {
-        firestoreService.lastWeekMealPlan?.assignments ?? [:]
+    var pickedRecipeIds: Set<String> {
+        Set(picks.map(\.recipeId))
+    }
+
+    func isPicked(_ recipe: Recipe) -> Bool {
+        guard let id = recipe.id else { return false }
+        return pickedRecipeIds.contains(id)
+    }
+
+    /// The design aims for 5–6 meals a week.
+    static let targetPickCount = 6
+
+    var pickCountLabel: String {
+        "\(picks.count) of \(Self.targetPickCount) picked · aiming for 5–6"
     }
 
     var lastWeekRecipeIds: Set<String> {
-        Set(lastWeekAssignments.values.map(\.recipeId))
-    }
-
-    var plannedCount: Int {
-        assignments.count
+        let plan = firestoreService.lastWeekMealPlan
+        let fromPicks = (plan?.picks ?? []).map(\.recipeId)
+        let fromDays = (plan?.assignments ?? [:]).values.map(\.recipeId)
+        return Set(fromPicks).union(fromDays)
     }
 
     var ingredientCount: Int {
-        let assignedRecipeIds = Set(assignments.values.map(\.recipeId))
         let ingredients = firestoreService.recipes
-            .filter { assignedRecipeIds.contains($0.id ?? "") }
+            .filter { pickedRecipeIds.contains($0.id ?? "") }
             .flatMap(\.ingredients)
 
-        // Deduplicate by lowercased name
         var seen = Set<String>()
         var count = 0
         for ingredient in ingredients {
@@ -110,62 +120,72 @@ final class DinnerPlannerViewModel {
             errorMessage = error.localizedDescription
         }
 
-        await generateBriefing()
         hasLoadedInitially = true
+        await loadCookingHistory()
     }
 
-    // MARK: - Assign / Clear
+    /// Reads past meal plans once so "last had it" is a real date, not a guess.
+    func loadCookingHistory() async {
+        do {
+            let plans = try await firestoreService.fetchRecentMealPlans(familyId: familyId)
+            var mostRecent: [String: Date] = [:]
+            for plan in plans where plan.weekStart < weekStart {
+                let ids = Set((plan.picks ?? []).map(\.recipeId))
+                    .union(plan.assignments.values.map(\.recipeId))
+                for id in ids where mostRecent[id] == nil || mostRecent[id]! < plan.weekStart {
+                    mostRecent[id] = plan.weekStart
+                }
+            }
+            lastCookedWeek = mostRecent
+            hasLoadedHistory = true
+        } catch {
+            // History is a nicety — a failure here shouldn't block planning.
+            hasLoadedHistory = true
+        }
+    }
 
-    func assignRecipe(_ recipe: Recipe, toDayIndex: Int) async {
-        guard let recipeId = recipe.id else { return }
+    // MARK: - Pick / Unpick
 
-        var updated = assignments
-        updated[String(toDayIndex)] = MealAssignment(
+    func togglePick(_ recipe: Recipe) async {
+        if isPicked(recipe) {
+            await removePick(recipe)
+        } else {
+            await addPick(recipe)
+        }
+    }
+
+    func addPick(_ recipe: Recipe) async {
+        guard let recipeId = recipe.id, !pickedRecipeIds.contains(recipeId) else { return }
+        var updated = picks
+        updated.append(MealAssignment(
             recipeId: recipeId,
             recipeName: recipe.name,
             recipeIcon: recipe.icon
-        )
-
-        let plan = MealPlan(
-            familyId: familyId,
-            weekStart: weekStart,
-            assignments: updated
-        )
-
-        do {
-            try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-            lastAssignedRecipe = recipe
-            debounceBriefingRegeneration()
-        } catch {
-            errorMessage = error.localizedDescription
-        }
-
-        selectedDayIndex = nil
+        ))
+        await savePicks(updated)
     }
 
-    func clearDay(_ dayIndex: Int) async {
-        let key = String(dayIndex)
-        guard let assignment = assignments[key] else { return }
-        let recipeId = assignment.recipeId
+    func removePick(_ recipe: Recipe) async {
+        guard let recipeId = recipe.id else { return }
+        await removePick(recipeId: recipeId)
+    }
 
-        var updated = assignments
-        updated.removeValue(forKey: key)
+    func removePick(recipeId: String) async {
+        let updated = picks.filter { $0.recipeId != recipeId }
+        guard updated.count != picks.count else { return }
+        await savePicks(updated)
+        await removeRecipeFromShoppingList(recipeId: recipeId)
+    }
 
+    private func savePicks(_ updated: [MealAssignment]) async {
         let plan = MealPlan(
             familyId: familyId,
             weekStart: weekStart,
-            assignments: updated
+            assignments: [:],
+            picks: updated
         )
-
         do {
             try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-
-            // Only remove shopping items if this recipe isn't assigned to another day
-            let stillAssigned = updated.values.contains { $0.recipeId == recipeId }
-            if !stillAssigned {
-                await removeRecipeFromShoppingList(recipeId: recipeId)
-            }
-            debounceBriefingRegeneration()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -175,7 +195,6 @@ final class DinnerPlannerViewModel {
 
     private func removeRecipeFromShoppingList(recipeId: String) async {
         guard let listId = firestoreService.shoppingLists.first?.id else { return }
-
         do {
             try await firestoreService.deleteShoppingItemsByRecipe(
                 familyId: familyId,
@@ -193,11 +212,89 @@ final class DinnerPlannerViewModel {
         firestoreService.recipes.first { $0.id == assignment.recipeId }
     }
 
-    /// Count of unchecked shopping items for a given recipe (for "🛒 N to buy" tag).
     func uncheckedIngredientCount(for recipeId: String) -> Int {
         firestoreService.shoppingItems
             .filter { $0.sourceRecipeId == recipeId && !$0.isChecked }
             .count
+    }
+
+    // MARK: - "Last had it"
+
+    /// e.g. "had it last week", "last had 5 weeks ago", "never made it".
+    func lastHadText(for recipe: Recipe) -> String {
+        guard let id = recipe.id else { return "" }
+        guard let week = lastCookedWeek[id] else {
+            return hasLoadedHistory ? "never made it" : ""
+        }
+        let weeks = calendar.dateComponents([.weekOfYear], from: week, to: weekStart).weekOfYear ?? 0
+        switch weeks {
+        case ..<1: return "had it this week"
+        case 1: return "had it last week"
+        default: return "last had \(weeks) weeks ago"
+        }
+    }
+
+    /// The line under a meal in the pick list: "25 min · had it last week".
+    func librarySubtitle(for recipe: Recipe) -> String {
+        [recipe.prepTimeDisplay, lastHadText(for: recipe)]
+            .compactMap { $0 }
+            .filter { !$0.isEmpty }
+            .joined(separator: " · ")
+    }
+
+    func hadItLastWeek(_ recipe: Recipe) -> Bool {
+        guard let id = recipe.id else { return false }
+        return lastWeekRecipeIds.contains(id)
+    }
+
+    /// Meals you haven't had for longest float to the top of the pick list.
+    var libraryRecipes: [Recipe] {
+        firestoreService.recipes.sorted { lhs, rhs in
+            let lhsWeek = lhs.id.flatMap { lastCookedWeek[$0] }
+            let rhsWeek = rhs.id.flatMap { lastCookedWeek[$0] }
+            switch (lhsWeek, rhsWeek) {
+            case (nil, nil): return lhs.name < rhs.name
+            case (nil, _):   return true      // never cooked comes first
+            case (_, nil):   return false
+            case let (l?, r?):
+                return l == r ? lhs.name < rhs.name : l < r
+            }
+        }
+    }
+
+    // MARK: - Week context
+
+    /// "Tony's out Wed and Fri", read from the calendar — or a plain count.
+    var contextLabel: String {
+        let nights = awayNights
+        guard !nights.isEmpty else {
+            return "\(picks.count) meal\(picks.count == 1 ? "" : "s") for the week"
+        }
+        let firstName = displayName.split(separator: " ").first.map(String.init) ?? displayName
+        return "\(firstName)'s out \(Self.listPhrase(nights))"
+    }
+
+    /// Nights this week where the user has an evening (5pm onwards) event.
+    var awayNights: [String] {
+        weekDays
+            .filter { day in
+                firestoreService.events.contains { event in
+                    guard event.isBill != true, event.isTodo != true, event.isAllDay != true else { return false }
+                    guard calendar.isDate(event.startDate, inSameDayAs: day) else { return false }
+                    guard (event.attendeeUIDs ?? []).contains(userUID) else { return false }
+                    return calendar.component(.hour, from: event.startDate) >= 17
+                }
+            }
+            .map { Self.abbrevFormatter.string(from: $0) }
+    }
+
+    /// ["Wed"] → "Wed"; ["Wed","Fri"] → "Wed and Fri"; 3+ → "Wed, Thu and Fri".
+    private static func listPhrase(_ items: [String]) -> String {
+        switch items.count {
+        case 0: return ""
+        case 1: return items[0]
+        default: return items.dropLast().joined(separator: ", ") + " and " + items[items.count - 1]
+        }
     }
 
     // MARK: - Day Helpers
@@ -214,298 +311,11 @@ final class DinnerPlannerViewModel {
         calendar.isDateInToday(date)
     }
 
-    func isPast(_ date: Date) -> Bool {
-        calendar.startOfDay(for: date) < calendar.startOfDay(for: Date())
-    }
-
     var todayIndex: Int? {
         weekDays.firstIndex(where: { calendar.isDateInToday($0) })
     }
 
-    // MARK: - Today Hero Helpers
-
-    var todayDayLabel: String {
-        guard let idx = todayIndex else { return "TODAY" }
-        let date = weekDays[idx]
-        return "TONIGHT · \(Self.todayLabelFormatter.string(from: date))"
-    }
-
-    var todayAssignment: MealAssignment? {
-        guard let idx = todayIndex else { return nil }
-        return assignments[String(idx)]
-    }
-
-    var todayRecipe: Recipe? {
-        todayAssignment.flatMap { recipe(for: $0) }
-    }
-
-    // MARK: - Auto-Plan
-
-    func autoPlanWeek() async throws {
-        let context = buildAutoPlanContext()
-        let contextJSON = try JSONEncoder().encode(context)
-        let contextString = String(data: contextJSON, encoding: .utf8) ?? "{}"
-
-        let system = """
-        You are a household dinner coordinator for an Australian family. You plan \
-        what to cook each night based on available cooking time and meal variety.
-
-        You receive a JSON context with:
-        - week_start: the Monday date for this week
-        - recipes: all available meals with prep_time_minutes, cuisine, and last_cooked_days_ago
-        - last_week_recipe_ids: recipes cooked last week (avoid repeating)
-        - days: per-day info with evening_free_minutes and evening_events
-
-        Respond with JSON only, no other text:
-        {
-          "plan": [
-            {"day": 0, "recipe_id": "some-id"},
-            {"day": 1, "recipe_id": "another-id"},
-            ...
-          ]
-        }
-
-        Rules:
-        1. day is 0-6 (Monday=0 through Sunday=6)
-        2. You MUST plan ALL 7 days — every single day must have a recipe_id
-        3. Use recipe_id from the provided recipes list — never invent IDs
-        4. Include "Bitsa" (fend-for-yourself / leftovers) exactly once per week — \
-        ideally on a busy evening, midweek, or when the family is eating out
-        5. If a day's evening_events contains a "Dinner with..." event, the family is \
-        eating out — assign Bitsa to that night (nobody needs to cook)
-        6. Never suggest a meal whose prep time exceeds the evening's free time
-        7. Exclude recipes from last_week_recipe_ids where possible
-        8. Prioritise recipes with higher last_cooked_days_ago (variety)
-        9. No same-cuisine meals on consecutive nights
-        10. Keep big-cook meals (prep 60+ min) for weekends when there's more time
-        11. Include at least one fish night per week (any recipe with "Fish" in the name)
-        12. Balance the week: mix easy and medium effort, light and rich
-        """
-
-        let response: DinnerAutoPlanResponse = try await claudeService.callClaudeJSON(
-            system: system,
-            prompt: contextString,
-            maxTokens: 600
-        )
-
-        // Map AI response to MealAssignments
-        let recipes = firestoreService.recipes
-        var newAssignments: [String: MealAssignment] = [:]
-
-        for entry in response.plan {
-            let dayKey = String(entry.day)
-            if let recipeId = entry.recipe_id,
-               let recipe = recipes.first(where: { $0.id == recipeId }) {
-                newAssignments[dayKey] = MealAssignment(
-                    recipeId: recipeId,
-                    recipeName: recipe.name,
-                    recipeIcon: recipe.icon
-                )
-            }
-        }
-
-        guard !newAssignments.isEmpty else { return }
-
-        let plan = MealPlan(
-            familyId: familyId,
-            weekStart: weekStart,
-            assignments: newAssignments
-        )
-
-        try await firestoreService.saveMealPlan(familyId: familyId, mealPlan: plan)
-        debounceBriefingRegeneration()
-    }
-
-    private func buildAutoPlanContext() -> DinnerPlanContext {
-        let recipes = firestoreService.recipes
-        let events = firestoreService.events
-        let now = Date()
-
-        // Build recipe info with last-cooked tracking
-        let allMealPlans = [firestoreService.currentMealPlan, firestoreService.lastWeekMealPlan].compactMap { $0 }
-        let recentRecipeIds = Set(allMealPlans.flatMap { $0.assignments.values.map(\.recipeId) })
-
-        let recipeInfos: [DinnerPlanContext.RecipeInfo] = recipes.compactMap { recipe in
-            guard let id = recipe.id else { return nil }
-            let lastCookedDaysAgo = recentRecipeIds.contains(id) ? 3 : 14  // Simplified: recent = 3d, not recent = 14d
-            return DinnerPlanContext.RecipeInfo(
-                id: id,
-                name: recipe.name,
-                prep_time_minutes: recipe.prepTimeMinutes ?? 30,
-                cuisine: recipe.cuisine ?? "other",
-                last_cooked_days_ago: lastCookedDaysAgo
-            )
-        }
-
-        // Build per-day info
-        let dayInfos: [DinnerPlanContext.DayInfo] = (0..<7).map { dayIndex in
-            let date = weekDays[dayIndex]
-            let dayEvents = events.filter { event in
-                calendar.isDate(event.startDate, inSameDayAs: date)
-            }
-            // Estimate evening free minutes: assume 120 min available, subtract evening events (17:00-21:00)
-            let eveningMinutes = dayEvents.reduce(0) { total, event in
-                let hour = calendar.component(.hour, from: event.startDate)
-                guard hour >= 17 else { return total }
-                let duration = event.endDate.timeIntervalSince(event.startDate) / 60
-                return total + Int(duration)
-            }
-            let freeMinutes = max(0, 120 - eveningMinutes)
-
-            let eventTitles = dayEvents.map(\.title)
-
-            return DinnerPlanContext.DayInfo(
-                day: dayIndex,
-                evening_free_minutes: freeMinutes,
-                evening_events: eventTitles
-            )
-        }
-
-        return DinnerPlanContext(
-            week_start: Self.dayFormatter.string(from: weekStart),
-            recipes: recipeInfos,
-            last_week_recipe_ids: Array(lastWeekRecipeIds),
-            days: dayInfos
-        )
-    }
-
-    // MARK: - AI Briefing
-
-    private func generateBriefing() async {
-        let weekString = Self.weekFormatter.string(from: weekStart)
-        let dayString = Self.dayFormatter.string(from: Date())
-        let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-
-        if let data = UserDefaults.standard.data(forKey: cacheKey),
-           let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) {
-            briefingHeadline = cached.headline
-            briefingSummary = cached.summary
-            return
-        }
-
-        isLoadingBriefing = true
-        defer { isLoadingBriefing = false }
-
-        let mealList = buildMealListForPrompt()
-
-        let prompt = """
-        You are a warm, friendly family meal planner — like a foodie friend who loves a good dinner. Given this week's dinner plan (with cuisine, effort, and richness metadata), write:
-
-        1. HEADLINE: A short, warm headline (4-8 words) capturing the week's dinner vibe. Use a line break (\\n) to split into two short lines. No quotes.
-           Examples:
-           - "Taco Tuesday vibes —\\nall week long"
-           - "A mix of favourites\\nand something new"
-           - "Comfort food week —\\ncosy evenings ahead"
-
-        2. SUMMARY: One short sentence referencing actual recipe names. Under 120 characters.
-           - Notice cuisine patterns (e.g. "Three Italian nights — the Thai curry breaks it up nicely")
-           - Notice effort patterns (e.g. "Two big cooks back to back — the easy nights balance it out")
-           - Notice richness patterns (e.g. "Light Mon and Fri, rich Wed and Sat — good balance")
-           - If repetitive: gently note it. "Pasta twice — maybe swap one for something lighter?"
-           - If mostly unplanned: be encouraging. "Only Monday sorted — plenty of room for inspiration."
-           - Reference actual recipe names, not generic terms.
-
-        Respond in exactly this format:
-        HEADLINE: <headline>
-        SUMMARY: <summary>
-
-        This week's dinner plan (\(plannedCount) of 7 nights planned):
-        \(mealList.isEmpty ? "No dinners planned yet." : mealList)
-        """
-
-        do {
-            let text = try await claudeService.callClaudeRaw(prompt: prompt, maxTokens: 200)
-            var parsedHeadline = "Dinners this week"
-            var parsedSummary = ""
-
-            for line in text.components(separatedBy: "\n") {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                if trimmed.hasPrefix("HEADLINE:") {
-                    parsedHeadline = String(trimmed.dropFirst(9)).trimmingCharacters(in: .whitespaces)
-                    parsedHeadline = parsedHeadline.replacingOccurrences(of: "\\n", with: "\n")
-                } else if trimmed.hasPrefix("SUMMARY:") {
-                    parsedSummary = String(trimmed.dropFirst(8)).trimmingCharacters(in: .whitespaces)
-                }
-            }
-
-            briefingHeadline = parsedHeadline
-            briefingSummary = parsedSummary
-
-            let briefing = DinnerBriefing(weekStart: weekStart, headline: parsedHeadline, summary: parsedSummary)
-            if let encoded = try? JSONEncoder().encode(briefing) {
-                UserDefaults.standard.set(encoded, forKey: cacheKey)
-            }
-        } catch {
-            briefingHeadline = "Dinners this week"
-            briefingSummary = plannedCount > 0 ? "\(plannedCount) dinner\(plannedCount == 1 ? "" : "s") planned." : "No dinners planned yet."
-        }
-    }
-
-    private func debounceBriefingRegeneration() {
-        guard hasLoadedInitially else { return }
-        debounceTask?.cancel()
-        debounceTask = Task {
-            do {
-                try await Task.sleep(nanoseconds: debounceDuration)
-                guard !Task.isCancelled else { return }
-                let weekString = Self.weekFormatter.string(from: weekStart)
-                let dayString = Self.dayFormatter.string(from: Date())
-                let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-                UserDefaults.standard.removeObject(forKey: cacheKey)
-                await generateBriefing()
-            } catch {
-                // Cancelled
-            }
-        }
-    }
-
-    private func buildMealListForPrompt() -> String {
-        let dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        var lines: [String] = []
-
-        for dayIndex in 0..<7 {
-            let key = String(dayIndex)
-            if let meal = assignments[key] {
-                var details: [String] = [meal.recipeName]
-                if let recipe = recipe(for: meal) {
-                    if let cuisine = recipe.cuisineType { details.append(cuisine.displayName) }
-                    if let effort = recipe.prepEffortEnum { details.append("effort: \(effort.displayName)") }
-                    if let richness = recipe.calorieDensityEnum { details.append("richness: \(richness.displayName)") }
-                    if let prep = recipe.prepTimeDisplay { details.append(prep) }
-                }
-                lines.append("• \(dayNames[dayIndex]): \(details.joined(separator: ", "))")
-            }
-        }
-
-        return lines.joined(separator: "\n")
-    }
-
-    private func loadCachedBriefing() {
-        let weekString = Self.weekFormatter.string(from: weekStart)
-        let dayString = Self.dayFormatter.string(from: Date())
-        let cacheKey = "DinnerBriefing.\(familyId).\(weekString)_\(dayString)"
-
-        guard let data = UserDefaults.standard.data(forKey: cacheKey),
-              let cached = try? JSONDecoder().decode(DinnerBriefing.self, from: data) else { return }
-        briefingHeadline = cached.headline
-        briefingSummary = cached.summary
-    }
-
     // MARK: - Formatters
-
-    @ObservationIgnored
-    private static let weekFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-'W'ww"
-        return f
-    }()
-
-    @ObservationIgnored
-    private static let dayFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "yyyy-MM-dd"
-        return f
-    }()
 
     @ObservationIgnored
     private static let endDateFormatter: DateFormatter = {
@@ -527,44 +337,4 @@ final class DinnerPlannerViewModel {
         f.dateFormat = "d"
         return f
     }()
-
-    @ObservationIgnored
-    private static let todayLabelFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "EEE d"
-        return f
-    }()
-}
-
-// MARK: - Auto-Plan Models
-
-struct DinnerPlanContext: Encodable {
-    var week_start: String
-    var recipes: [RecipeInfo]
-    var last_week_recipe_ids: [String]
-    var days: [DayInfo]
-
-    struct RecipeInfo: Encodable {
-        var id: String
-        var name: String
-        var prep_time_minutes: Int
-        var cuisine: String
-        var last_cooked_days_ago: Int
-    }
-
-    struct DayInfo: Encodable {
-        var day: Int
-        var evening_free_minutes: Int
-        var evening_events: [String]
-    }
-}
-
-struct DinnerAutoPlanResponse: Decodable {
-    var plan: [DinnerDayPlan]
-
-    struct DinnerDayPlan: Decodable {
-        var day: Int
-        var recipe_id: String?
-        var status: String?
-    }
 }

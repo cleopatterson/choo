@@ -296,3 +296,49 @@ VStack(spacing: 8) {
 .frame(maxWidth: .infinity)
 .padding(.vertical, 20)
 ```
+
+---
+
+## Calendar Agenda — Event Registers
+
+The Calendar tab renders one scrolling agenda where events are NOT uniform rows.
+Each event is classified (Haiku, stored on the event doc as `classification`)
+into one of three **registers** controlling its visual weight. Anticipation is
+loud; obligation is quiet. Source of truth: `Calendar Build Spec.md` in the
+"Choo Calendar" Claude Design project; iOS views in `Choo/Views/Calendar/`,
+web mirror in `choo-web/src/components/calendar/CalendarTab.tsx`.
+
+### Registers
+| Register | Events | Treatment |
+|----------|--------|-----------|
+| **FUN** (celebration / social / trip) | birthdays, parties, meals out, holidays | radius-18 card, tint gradient (celebration purple `rgba(196,128,255,…)`, social amber `rgba(251,176,110,…)`, trip sky `rgba(56,189,248,…)`), 2–3 emoji scene, title 18/700, avatars bottom-right |
+| **UTILITY** | appointments, errands, bills, todos | flat `rgba(139,92,246,.06)` fill, hairline border, 3pt category left-border (health teal / errand slate / admin rose), 16px emoji glyph, meta line with ↻ recurrence + 🔔 reminder |
+| **ROUTINE** (weekly/fortnightly recurring) | lessons, training, bins | one thin radius-13 row, dim 14.5/500 title, ⟳ + time. Device EKEvents also use this row (calendar-colour dot) |
+
+Bills and todos are never sent to Haiku; unclassified events fall back to
+utility (routine if weekly-recurring). All tokens live in `CalendarTheme.swift`.
+
+### Anticipation ramp (FUN only — pure date math, never the model)
+| Distance | Scene | Countdown |
+|----------|-------|-----------|
+| ≥ 2 weeks | 40% opacity, sat .55 | serif italic whisper "two weeks away…" |
+| 3–13 days | 68%, sat .8 | pill chip "in 6 days" |
+| 1–2 days | 85% + glow | chip |
+| today | 100% + strong glow | gradient chip "Today! 🎈" with shimmer |
+
+Scenes animate ONLY at near/today stages (perf); reduce-motion kills all motion.
+
+### Day gutter + today
+No full-width day headers. 40pt left gutter: day number 19/700 over uppercase
+weekday 10/700. Today = Google-style filled lilac circle (`#c4b5fd`, dark text)
+plus a thin rule with a leading dot above the row. The current month never
+shows a month hero — heroes (full-bleed 168pt seasonal gradient bands, Georgia
+serif month name, drifting bubbles) appear only at later month boundaries.
+
+### Holiday bleed
+A classified multi-day trip washes every agenda row it spans: sky tint +
+3pt left ribbon (`TripWashBackground` via `listRowBackground` on iOS; a
+contiguous-run wrapper div on web). The trip's card renders only on its
+occurrence start day; mid-span days with nothing else on show a small
+"✈️ <title>" marker (— last day on the final day). Month heroes mid-span keep
+their art and carry only the ribbon.

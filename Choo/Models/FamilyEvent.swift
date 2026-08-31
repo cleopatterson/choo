@@ -21,6 +21,64 @@ enum RecurrenceFrequency: String, CaseIterable, Identifiable {
     }
 }
 
+/// Visual register for an event — controls how loud its calendar card is.
+enum EventRegister: String {
+    case fun
+    case utility
+    case routine
+}
+
+enum EventSubtype: String {
+    case celebration
+    case social
+    case trip
+    case health
+    case errand
+    case admin
+    case recurring
+
+    /// Unknown raw values quietly become errand (utility styling).
+    init(lenient raw: String?) {
+        self = EventSubtype(rawValue: raw ?? "") ?? .errand
+    }
+}
+
+/// Haiku classification result stored on the event document.
+/// All-optional on FamilyEvent so old documents decode unchanged.
+struct EventClassification: Codable, Hashable {
+    var register: String        // "fun" | "utility" | "routine"
+    var subtype: String         // celebration|social|trip|health|errand|admin|recurring
+    var glyph: String           // one emoji
+    var sceneEmoji: [String]    // up to 3 emoji for the FUN scene
+    var confidence: Double
+    var classifiedTitle: String // the exact title that was classified — staleness check
+    var classifiedAt: Date
+
+    init(register: String, subtype: String, glyph: String, sceneEmoji: [String], confidence: Double, classifiedTitle: String, classifiedAt: Date) {
+        self.register = register
+        self.subtype = subtype
+        self.glyph = glyph
+        self.sceneEmoji = sceneEmoji
+        self.confidence = confidence
+        self.classifiedTitle = classifiedTitle
+        self.classifiedAt = classifiedAt
+    }
+
+    // Lenient decoding: a partial or malformed classification map must never
+    // fail the whole event's decode (which would silently drop the event).
+    // Missing fields degrade to values that read as "stale, utility".
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        register = (try? c.decodeIfPresent(String.self, forKey: .register)) ?? EventRegister.utility.rawValue
+        subtype = (try? c.decodeIfPresent(String.self, forKey: .subtype)) ?? EventSubtype.errand.rawValue
+        glyph = (try? c.decodeIfPresent(String.self, forKey: .glyph)) ?? ""
+        sceneEmoji = (try? c.decodeIfPresent([String].self, forKey: .sceneEmoji)) ?? []
+        confidence = (try? c.decodeIfPresent(Double.self, forKey: .confidence)) ?? 0
+        classifiedTitle = (try? c.decodeIfPresent(String.self, forKey: .classifiedTitle)) ?? ""
+        classifiedAt = (try? c.decodeIfPresent(Date.self, forKey: .classifiedAt)) ?? .distantPast
+    }
+}
+
 enum TodoUrgencyState {
     case notStarted
     case active
@@ -55,10 +113,59 @@ struct FamilyEvent: Codable, Identifiable, Hashable {
     var isCompleted: Bool?
     var completedDate: Date?
     var todoEmoji: String?
+    var classification: EventClassification?
 
     var recurrence: RecurrenceFrequency? {
         guard let raw = recurrenceFrequency else { return nil }
         return RecurrenceFrequency(rawValue: raw)
+    }
+
+    // MARK: - Classification helpers
+
+    /// Whether the stored classification still matches the current title.
+    var hasFreshClassification: Bool {
+        guard let c = classification else { return false }
+        return c.classifiedTitle == title
+    }
+
+    /// Whether this event should be sent to Haiku. Bills and todos are never classified.
+    var needsClassification: Bool {
+        guard isBill != true && isTodo != true else { return false }
+        return !hasFreshClassification
+    }
+
+    /// The register used for rendering, with local validation of the model's answer:
+    /// routine is only honoured for genuinely recurring events, and low confidence
+    /// demotes to utility (quiet is the safe failure).
+    var effectiveRegister: EventRegister {
+        if isBill == true || isTodo == true { return .utility }
+        if hasFreshClassification, let c = classification,
+           let register = EventRegister(rawValue: c.register), c.confidence >= 0.6 {
+            if register == .routine && recurrence == nil { return .utility }
+            return register
+        }
+        // Unclassified fallback: weekly rhythm reads as routine, everything else stays quiet
+        if recurrence == .weekly || recurrence == .fortnightly { return .routine }
+        return .utility
+    }
+
+    var effectiveSubtype: EventSubtype {
+        if hasFreshClassification, let c = classification {
+            return EventSubtype(lenient: c.subtype)
+        }
+        return .errand
+    }
+
+    /// Days covered beyond the first (0 for single-day events).
+    var spanDayCount: Int {
+        guard isAllDay == true else { return 0 }
+        let cal = Calendar.current
+        return max(0, cal.dateComponents([.day], from: cal.startOfDay(for: startDate), to: cal.startOfDay(for: endDate)).day ?? 0)
+    }
+
+    /// A classified multi-day trip — drives the holiday bleed down the agenda.
+    var isTripSpan: Bool {
+        effectiveRegister == .fun && effectiveSubtype == .trip && spanDayCount >= 1
     }
 
     // MARK: - Per-occurrence paid tracking

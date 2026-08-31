@@ -4,7 +4,6 @@ struct BriefingCardView: View {
     let badge: String
     let dateRange: String
     let headline: String
-    let summary: String
     let accent: TabAccent
     var isLoading: Bool = false
 
@@ -21,14 +20,6 @@ struct BriefingCardView: View {
                 .lineLimit(2)
                 .minimumScaleFactor(0.75)
                 .fixedSize(horizontal: false, vertical: true)
-
-            if !summary.isEmpty {
-                Text(summary)
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.75))
-                    .lineLimit(4)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,9 +67,6 @@ struct BriefingCardView: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(.white.opacity(0.08))
                 .frame(height: 20)
-            RoundedRectangle(cornerRadius: 4)
-                .fill(.white.opacity(0.06))
-                .frame(width: 200, height: 14)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)

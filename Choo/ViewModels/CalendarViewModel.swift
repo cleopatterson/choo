@@ -1,6 +1,18 @@
 import Foundation
 import EventKit
 
+enum TripSpanPosition {
+    case start
+    case middle
+    case end
+}
+
+/// A classified multi-day trip covering a given agenda day — drives the holiday bleed.
+struct TripSpanInfo {
+    let event: FamilyEvent
+    let position: TripSpanPosition
+}
+
 @MainActor
 @Observable
 final class CalendarViewModel {
@@ -30,6 +42,9 @@ final class CalendarViewModel {
     @ObservationIgnored private var _eventsCacheKey: String = ""
     @ObservationIgnored private var _cachedAllMembers: [AnyFamilyMember] = []
     @ObservationIgnored private var _membersCacheKey: String = ""
+    @ObservationIgnored private var _cachedTripEvents: [FamilyEvent] = []
+    @ObservationIgnored private var _tripCacheKey: String = ""
+    @ObservationIgnored private var backfillTask: Task<Void, Never>?
 
     init(firestoreService: FirestoreService, deviceCalendarService: DeviceCalendarService, familyId: String, displayName: String, currentUserUID: String) {
         self.firestoreService = firestoreService
@@ -83,14 +98,17 @@ final class CalendarViewModel {
 
     /// Filtered events for a day — respects member visibility and bill filter.
     func filteredEvents(for day: Date) -> [FamilyEvent] {
-        let dayEvents = events(for: day)
-        return dayEvents.filter { event in
+        events(for: day).filter { event in
             if hideBills && event.isBill == true { return false }
-            if hiddenMemberIds.isEmpty { return true }
-            let attendees = event.attendeeUIDs ?? []
-            if attendees.isEmpty { return true } // show unassigned events always
-            return attendees.contains { !hiddenMemberIds.contains($0) }
+            return passesMemberFilter(event)
         }
+    }
+
+    private func passesMemberFilter(_ event: FamilyEvent) -> Bool {
+        if hiddenMemberIds.isEmpty { return true }
+        let attendees = event.attendeeUIDs ?? []
+        if attendees.isEmpty { return true } // show unassigned events always
+        return attendees.contains { !hiddenMemberIds.contains($0) }
     }
 
     var familyMembers: [UserProfile] {
@@ -288,6 +306,58 @@ final class CalendarViewModel {
 
     func externalEvents(for day: Date) -> [EKEvent] {
         deviceCalendarService.events(on: day)
+    }
+
+    // MARK: - Classification
+
+    /// Debounced kick of the Haiku backfill — classifies any event whose stored
+    /// classification is missing or stale. Called on appear and on snapshot changes,
+    /// so a freshly created/edited event upgrades within seconds.
+    func kickClassificationBackfill() {
+        EventClassificationService.shared.reconcile(with: firestoreService.events)
+        backfillTask?.cancel()
+        backfillTask = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1.5))
+            guard let self, !Task.isCancelled else { return }
+            await EventClassificationService.shared.classifyStaleEvents(
+                self.firestoreService.events,
+                familyId: self.familyId,
+                firestoreService: self.firestoreService
+            )
+        }
+    }
+
+    // MARK: - Holiday bleed
+
+    /// Whether this day is the first day of a trip occurrence. Occurrence-aware,
+    /// so later occurrences of a recurring trip get a start day too.
+    func isTripOccurrenceStart(_ event: FamilyEvent, on day: Date) -> Bool {
+        guard let prev = Calendar.current.date(byAdding: .day, value: -1, to: day) else { return true }
+        return !event.occursOn(prev)
+    }
+
+    /// The classified multi-day trip covering this day, if any.
+    /// Overlaps: the earliest-starting trip wins the bleed. Respects the member
+    /// filter so a hidden member's trip doesn't paint an unexplained wash.
+    func tripSpan(on day: Date) -> TripSpanInfo? {
+        let key = "\(firestoreService.eventsVersion)-\(hiddenMemberIds.sorted().joined(separator: ","))"
+        if key != _tripCacheKey {
+            _tripCacheKey = key
+            _cachedTripEvents = firestoreService.events
+                .filter { $0.isTripSpan && passesMemberFilter($0) }
+                .sorted { $0.startDate < $1.startDate }
+        }
+        guard let trip = _cachedTripEvents.first(where: { $0.occursOn(day) }) else { return nil }
+        let cal = Calendar.current
+        let position: TripSpanPosition
+        if isTripOccurrenceStart(trip, on: day) {
+            position = .start
+        } else if let next = cal.date(byAdding: .day, value: 1, to: day), !trip.occursOn(next) {
+            position = .end
+        } else {
+            position = .middle
+        }
+        return TripSpanInfo(event: trip, position: position)
     }
 
     func publicHoliday(on day: Date) -> Holiday? {

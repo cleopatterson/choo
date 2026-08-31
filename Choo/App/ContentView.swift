@@ -6,11 +6,9 @@ struct ContentView: View {
     @State private var calendarViewModel: CalendarViewModel?
     @State private var notesViewModel: NotesViewModel?
     @State private var bugReportsViewModel: BugReportsViewModel?
-    @State private var briefingViewModel: WeeklyBriefingViewModel?
     @State private var dinnerPlannerViewModel: DinnerPlannerViewModel?
     @State private var exerciseViewModel: ExerciseViewModel?
     @State private var houseViewModel: HouseViewModel?
-    @State private var suppliesViewModel: SuppliesViewModel?
     @State private var deviceCalendarService = DeviceCalendarService()
 
     var body: some View {
@@ -29,22 +27,18 @@ struct ContentView: View {
                    let calendarVM = calendarViewModel,
                    let notesVM = notesViewModel,
                    let bugReportsVM = bugReportsViewModel,
-                   let briefingVM = briefingViewModel,
                    let dinnerVM = dinnerPlannerViewModel,
                    let exerciseVM = exerciseViewModel,
-                   let houseVM = houseViewModel,
-                   let suppliesVM = suppliesViewModel {
+                   let houseVM = houseViewModel {
                     MainTabView(
                         viewModel: viewModel,
                         shoppingViewModel: shoppingVM,
                         calendarViewModel: calendarVM,
                         notesViewModel: notesVM,
                         bugReportsViewModel: bugReportsVM,
-                        briefingViewModel: briefingVM,
                         dinnerPlannerViewModel: dinnerVM,
                         exerciseViewModel: exerciseVM,
-                        houseViewModel: houseVM,
-                        suppliesViewModel: suppliesVM
+                        houseViewModel: houseVM
                     )
                 } else {
                     LoadingView()
@@ -54,6 +48,11 @@ struct ContentView: View {
         .animation(.default, value: viewModel.authFlowState)
         .task { await viewModel.resolveAuthState() }
         .onChange(of: viewModel.authService.currentUser?.uid) {
+            Task { await viewModel.resolveAuthState() }
+        }
+        // Auth restore finishing with no user changes only isLoading (uid stays
+        // nil→nil), so watch it too or a cached session strands on a dead UI.
+        .onChange(of: viewModel.authService.isLoading) {
             Task { await viewModel.resolveAuthState() }
         }
         .onChange(of: viewModel.authFlowState) {
@@ -85,18 +84,11 @@ struct ContentView: View {
                     familyId: familyId,
                     displayName: displayName
                 )
-                briefingViewModel = WeeklyBriefingViewModel(
-                    firestoreService: firestore,
-                    claudeService: .shared,
-                    weatherService: WeatherService(),
-                    deviceCalendarService: deviceCalendarService,
-                    familyId: familyId
-                )
                 dinnerPlannerViewModel = DinnerPlannerViewModel(
                     firestoreService: firestore,
-                    claudeService: .shared,
                     familyId: familyId,
-                    displayName: displayName
+                    displayName: displayName,
+                    userUID: uid
                 )
                 exerciseViewModel = ExerciseViewModel(
                     firestoreService: firestore,
@@ -111,11 +103,6 @@ struct ContentView: View {
                     familyId: familyId,
                     displayName: displayName
                 )
-                suppliesViewModel = SuppliesViewModel(
-                    firestoreService: firestore,
-                    familyId: familyId,
-                    displayName: displayName
-                )
                 SharedUserContext.save(
                     uid: uid,
                     familyId: familyId,
@@ -127,11 +114,9 @@ struct ContentView: View {
                 calendarViewModel = nil
                 notesViewModel = nil
                 bugReportsViewModel = nil
-                briefingViewModel = nil
                 dinnerPlannerViewModel = nil
                 exerciseViewModel = nil
                 houseViewModel = nil
-                suppliesViewModel = nil
                 SharedUserContext.clear()
             }
         }

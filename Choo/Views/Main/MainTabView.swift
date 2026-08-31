@@ -6,11 +6,9 @@ struct MainTabView: View {
     @Bindable var calendarViewModel: CalendarViewModel
     @Bindable var notesViewModel: NotesViewModel
     @Bindable var bugReportsViewModel: BugReportsViewModel
-    @Bindable var briefingViewModel: WeeklyBriefingViewModel
     @Bindable var dinnerPlannerViewModel: DinnerPlannerViewModel
     @Bindable var exerciseViewModel: ExerciseViewModel
     @Bindable var houseViewModel: HouseViewModel
-    @Bindable var suppliesViewModel: SuppliesViewModel
 
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedTab = 0
@@ -19,13 +17,13 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            CalendarTabView(viewModel: calendarViewModel, briefingViewModel: briefingViewModel, showingProfile: $showingProfile)
+            CalendarTabView(viewModel: calendarViewModel, showingProfile: $showingProfile)
                 .tag(0)
                 .tabItem {
                     Label("Calendar", systemImage: "calendar")
                 }
 
-            ShoppingTabView(viewModel: shoppingViewModel, dinnerPlannerViewModel: dinnerPlannerViewModel, suppliesViewModel: suppliesViewModel, showingProfile: $showingProfile)
+            ShoppingTabView(viewModel: shoppingViewModel, dinnerPlannerViewModel: dinnerPlannerViewModel, showingProfile: $showingProfile)
                 .tag(1)
                 .tabItem {
                     Label("Shopping", systemImage: "cart")
@@ -109,38 +107,12 @@ struct MainTabView: View {
 
         print("[AutoPlan] Data ready. Recipes=\(firestore.recipes.count), ExCats=\(firestore.exerciseCategories.count), ChoreCats=\(firestore.choreCategories.count)")
 
-        // Fire all three concurrently — each has its own per-tab guard
-        async let dinnerResult: () = autoPlanDinners(manager: manager)
+        // Dinners are picked by hand now — only exercise and chores auto-plan.
         async let exerciseResult: () = autoPlanExercise(manager: manager)
         async let choresResult: () = autoPlanChores(manager: manager)
 
-        _ = await (dinnerResult, exerciseResult, choresResult)
+        _ = await (exerciseResult, choresResult)
         print("[AutoPlan] Done")
-    }
-
-    private func autoPlanDinners(manager: WeekPlanManager) async {
-        guard manager.shouldAutoPlanDinners() else { return }
-        guard manager.isMealPlanEmpty(dinnerPlannerViewModel.firestoreService.currentMealPlan) else {
-            print("[AutoPlan:Dinner] Skipped — plan not empty")
-            manager.markDinnerAutoPlanDone()
-            return
-        }
-        guard !dinnerPlannerViewModel.firestoreService.recipes.isEmpty else {
-            print("[AutoPlan:Dinner] Skipped — no recipes")
-            return
-        }
-        print("[AutoPlan:Dinner] Planning...")
-        manager.dinnerState = .planning
-        do {
-            try await dinnerPlannerViewModel.autoPlanWeek()
-            print("[AutoPlan:Dinner] Success")
-            manager.dinnerState = .done
-            manager.markDinnerAutoPlanDone()
-        } catch {
-            print("[AutoPlan:Dinner] Failed: \(error)")
-            manager.dinnerState = .failed(error.localizedDescription)
-            manager.markDinnerAutoPlanDone()  // Don't retry — brief says no retries
-        }
     }
 
     private func autoPlanExercise(manager: WeekPlanManager) async {

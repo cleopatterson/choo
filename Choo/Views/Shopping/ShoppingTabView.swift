@@ -3,7 +3,6 @@ import SwiftUI
 struct ShoppingTabView: View {
     @Bindable var viewModel: ShoppingViewModel
     @Bindable var dinnerPlannerViewModel: DinnerPlannerViewModel
-    @Bindable var suppliesViewModel: SuppliesViewModel
     @Binding var showingProfile: Bool
 
     @State private var editingItem: ShoppingItem?
@@ -15,38 +14,28 @@ struct ShoppingTabView: View {
     @State private var reorderMode = false
     @State private var runOpen = true
     @State private var showingDoneSheet = false
-    @State private var showingAddSheet = false
-    @State private var ingredientReviewRecipe: Recipe?
     @State private var itemToDelete: ShoppingItem?
+    @State private var showingDinnerPicker = false
 
     var body: some View {
         NavigationStack {
             ScrollViewReader { scrollProxy in
                 List {
-                    // Dinner planner strip
-                    DinnerStripView(
+                    // ── This week's dinners ──
+                    DinnerPicksView(
                         viewModel: dinnerPlannerViewModel,
-                        onRecipeAssigned: { recipe in
-                            ingredientReviewRecipe = recipe
-                        }
+                        showingPicker: $showingDinnerPicker
                     )
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 0, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16))
 
                     // ── This Week's Run ──
                     runCard(scrollProxy: scrollProxy)
                         .id("run")
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 20, leading: 16, bottom: 0, trailing: 16))
-
-                    // ── Supplies ──
-                    SuppliesSectionView(viewModel: suppliesViewModel, scrollProxy: scrollProxy)
-                        .id("supplies")
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 16, trailing: 16))
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 16, trailing: 16))
                 }
             }
             .listStyle(.plain)
@@ -72,7 +61,7 @@ struct ShoppingTabView: View {
                             .fontWeight(.semibold)
                     } else {
                         Button {
-                            showingAddSheet = true
+                            quickAddFocused = true
                         } label: {
                             Image(systemName: "plus")
                         }
@@ -81,29 +70,12 @@ struct ShoppingTabView: View {
             }
             .task { await viewModel.ensureDefaultList() }
             .task { await dinnerPlannerViewModel.load() }
-            .task { await suppliesViewModel.load() }
             .sheet(item: $editingItem) { item in
                 editSheet(for: item)
                     .presentationBackground(.ultraThinMaterial)
             }
-            .sheet(isPresented: Binding(
-                get: { dinnerPlannerViewModel.selectedDayIndex != nil },
-                set: { if !$0 { dinnerPlannerViewModel.selectedDayIndex = nil } }
-            )) {
-                RecipePickerView(viewModel: dinnerPlannerViewModel)
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.ultraThinMaterial)
-            }
-            .sheet(item: $ingredientReviewRecipe) { recipe in
-                IngredientReviewSheet(
-                    recipe: recipe,
-                    onAdd: { ingredients in
-                        Task { await addIngredientsToRun(ingredients, from: recipe) }
-                    },
-                    onDismiss: { ingredientReviewRecipe = nil }
-                )
-                .presentationDetents([.medium, .large])
-                .presentationBackground(.ultraThinMaterial)
+            .fullScreenCover(isPresented: $showingDinnerPicker) {
+                DinnerPickSheet(viewModel: dinnerPlannerViewModel)
             }
             .sheet(isPresented: $showingDoneSheet) {
                 RunDoneSheet(
@@ -118,16 +90,10 @@ struct ShoppingTabView: View {
                 .presentationDetents([.medium])
                 .presentationBackground(.ultraThinMaterial)
             }
-            .sheet(isPresented: $showingAddSheet) {
-                SupplyAddSheet(viewModel: suppliesViewModel)
-                    .presentationDetents([.medium, .large])
-                    .presentationBackground(.ultraThinMaterial)
-            }
             .overlay {
-                if let error = viewModel.errorMessage ?? suppliesViewModel.errorMessage {
+                if let error = viewModel.errorMessage {
                     ErrorBannerView(message: error) {
                         viewModel.errorMessage = nil
-                        suppliesViewModel.errorMessage = nil
                     }
                     .frame(maxHeight: .infinity, alignment: .top)
                 }
@@ -383,44 +349,6 @@ struct ShoppingTabView: View {
             }
         }
         .presentationDetents([.height(200)])
-    }
-
-    // MARK: - Ingredient → Run
-
-    private func addIngredientsToRun(_ ingredients: [Ingredient], from recipe: Recipe) async {
-        guard let listId = viewModel.firestoreService.shoppingLists.first?.id,
-              let recipeId = recipe.id else { return }
-
-        let existingNames = Set(viewModel.firestoreService.shoppingItems.map {
-            $0.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        })
-
-        let nextOrder = (viewModel.firestoreService.shoppingItems.compactMap { $0.sortOrder }.max() ?? -1) + 1
-
-        for (offset, ingredient) in ingredients.enumerated() {
-            let key = ingredient.name.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-            guard !existingNames.contains(key) else { continue }
-
-            let item = ShoppingItem(
-                listId: listId,
-                name: ingredient.name,
-                isChecked: false,
-                addedBy: viewModel.displayName,
-                createdAt: Date(),
-                sortOrder: nextOrder + offset,
-                sourceRecipeId: recipeId,
-                source: .meal
-            )
-            do {
-                try await viewModel.firestoreService.addShoppingItemFull(
-                    familyId: viewModel.familyId,
-                    listId: listId,
-                    item: item
-                )
-            } catch {
-                viewModel.errorMessage = error.localizedDescription
-            }
-        }
     }
 
     // MARK: - Item Emoji Matching
