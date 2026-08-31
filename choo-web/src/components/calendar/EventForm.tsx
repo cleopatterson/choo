@@ -1,7 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { useCalendarStore } from '../../stores/calendar-store'
 import type { RecurrenceFrequency } from '../../types/event'
+
+// iOS Safari: the keyboard shrinks only the visual viewport — fixed elements
+// still span the layout viewport, leaving the sheet buried under the keyboard.
+function useVisualViewport() {
+  const [box, setBox] = useState<{ height: number; offsetTop: number } | null>(null)
+  useEffect(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    // Pinch-zoom also shrinks the visual viewport — don't fight the user's zoom.
+    const update = () => setBox(vv.scale > 1.05 ? null : { height: vv.height, offsetTop: vv.offsetTop })
+    update()
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+    }
+  }, [])
+  return box
+}
 
 interface EventFormProps {
   familyId: string
@@ -13,6 +33,7 @@ interface EventFormProps {
 
 export default function EventForm({ familyId, displayName, userUID, onClose, editEvent }: EventFormProps) {
   const { createEvent, updateEvent } = useCalendarStore()
+  const viewport = useVisualViewport()
   const [title, setTitle] = useState(editEvent?.title ?? '')
   const [startDate, setStartDate] = useState(format(editEvent?.startDate ?? new Date(), "yyyy-MM-dd'T'HH:mm"))
   const [endDate, setEndDate] = useState(format(editEvent?.endDate ?? new Date(), "yyyy-MM-dd'T'HH:mm"))
@@ -77,10 +98,17 @@ export default function EventForm({ familyId, displayName, userUID, onClose, edi
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
+    <div
+      className="fixed inset-x-0 top-0 z-50 flex items-end sm:items-center justify-center"
+      style={{
+        height: viewport ? `${viewport.height}px` : '100%',
+        transform: viewport?.offsetTop ? `translateY(${viewport.offsetTop}px)` : undefined,
+      }}
+      onClick={onClose}
+    >
       <div className="absolute inset-0 bg-black/50" />
       <div
-        className="relative glass rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4 max-h-[90vh] overflow-y-auto"
+        className="relative glass rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4 max-h-full sm:max-h-[90vh] overflow-y-auto overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full bg-white/20 mx-auto sm:hidden" />
