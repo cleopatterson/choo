@@ -313,6 +313,15 @@
 - [x] **Scroll performance** — toolbar month title isolated into its own observable (no body re-eval during scroll); emoji scenes animate only near/today; glow as static blur not per-frame `.shadow`
 - [x] **New files** — `CalendarTheme`, `MonthHeroView`, `DayGutterView`, `EventRegisterCards`, `HolidayBleed`, `EventClassificationService` (pbxproj registered manually)
 
+### Web parity + platform fixes (Sep 1–3, branch `feat/calendar-registers`, PRs #22–27)
+- [x] **Ship the web calendar** — the registers rebuild was committed but never deployed; Firebase Hosting was still serving the old week-pager. Web deploy is manual (`cd choo-web && npm run build && npx firebase deploy --only hosting`); committing does NOT ship it. Railway deploys from `main` on merge.
+- [x] **Web event save was broken** — Firestore JS SDK rejects `undefined` field values the iOS SDK silently drops; `addDoc` threw and the New Event modal hung on "Saving…" forever. Fixed via `ignoreUndefinedProperties` in `choo-web/src/firebase.ts` + try/finally in `EventForm` so a failed save can't hang the modal.
+- [x] **iOS keyboard fix (visual viewport)** — the mobile New Event sheet stayed full-height under the keyboard (iOS overlays it instead of resizing layout); `useVisualViewport` sizes the sheet above the keyboard, with a pinch-zoom guard (ported from the SS trade-dashboard / Xylem composer handler).
+- [x] **Stack Start/End fields on phones** — iOS `datetime-local` inputs have an intrinsic min width; the two-column grid overflowed. One column below `sm`, `min-width: 0` on `glass-field`.
+- [x] **Self-updating web app** — home-screen copies ran their loaded bundle forever, so deploys never reached the phones. `auto-update.ts` polls `index.html` (5 min + on foreground) for a changed bundle hash and reloads (immediately when safe, else on next backgrounding).
+- [x] **Opaque modal sheets (Android)** — modals used `.glass` (6% white) and relied on `backdrop-filter` to hide the background, which Android Chrome often doesn't composite, so the calendar bled through. New `.glass-sheet` gives a near-opaque dark base (fully opaque without backdrop-filter), blur as enhancement.
+- [x] **iOS slow launch** — the instant-boot cached-session path was gated behind "auth restore in flight"; when Firebase restored auth fast the app fell through and blocked on a network `getUserProfile()` round-trip. Hoisted the cached render above the `isLoading` guard so cold starts show the agenda immediately from Firestore's disk cache.
+
 ---
 
 ## In Progress — Shopping List UX (Feb 12)
