@@ -39,7 +39,7 @@ export default function EventDetail({ event, day, familyId, onClose, onDelete }:
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" onClick={onClose}>
       <div className="absolute inset-0 bg-black/50" />
       <div
-        className="relative glass rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4"
+        className="relative glass-sheet rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full bg-white/20 mx-auto sm:hidden" />

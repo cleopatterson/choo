@@ -45,6 +45,23 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Modal sheet: like .glass, but with an opaque base so the calendar behind it
+   is fully hidden even where backdrop-filter doesn't render (Android Chrome /
+   WebView). The blur is enhancement, not the thing doing the hiding. */
+.glass-sheet {
+  background: rgb(28, 20, 62);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-sheet {
+    /* Near-opaque so the calendar is hidden even if the blur silently fails to
+       composite (Android). The blur is a subtle nicety on top, not the hide. */
+    background: rgba(28, 20, 62, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+}
+
 /* Glass field (input) */
 .glass-field {
   background: rgba(255, 255, 255, 0.08);
