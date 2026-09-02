@@ -108,7 +108,7 @@ export default function EventForm({ familyId, displayName, userUID, onClose, edi
     >
       <div className="absolute inset-0 bg-black/50" />
       <div
-        className="relative glass rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4 max-h-full sm:max-h-[90vh] overflow-y-auto overscroll-contain"
+        className="relative glass-sheet rounded-t-2xl sm:rounded-2xl w-full max-w-lg p-5 space-y-4 max-h-full sm:max-h-[90vh] overflow-y-auto overscroll-contain"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 rounded-full bg-white/20 mx-auto sm:hidden" />
