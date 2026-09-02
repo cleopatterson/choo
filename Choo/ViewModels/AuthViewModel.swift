@@ -72,16 +72,22 @@ final class AuthViewModel {
     /// Cold starts go straight to the app from the cached session (no loading
     /// screen) and the profile refreshes silently once auth confirms.
     func resolveAuthState() async {
-        guard !authService.isLoading else {
-            // Auth restore is in flight (fires within a frame). Trust the cached
-            // session so the agenda renders immediately from Firestore's disk cache.
-            if authFlowState == .loading, let cached = CachedSession.load() {
-                userProfile = cached.profile
-                firestoreService.listenToFamily(familyId: cached.familyId)
-                authFlowState = .ready
-            }
-            return
+        // Instant boot: the moment we have a cached session and haven't shown the
+        // app yet, render straight from Firestore's disk cache — don't wait on the
+        // auth listener or the profile fetch below. This must run BEFORE the
+        // isLoading guard: when Firebase restores auth fast, isLoading is already
+        // false on the first call and the app would otherwise block on the network
+        // getUserProfile() round-trip, stranding on the loading screen. The refresh
+        // below (or the next auth state change) reconciles silently.
+        if authFlowState == .loading, let cached = CachedSession.load() {
+            userProfile = cached.profile
+            firestoreService.listenToFamily(familyId: cached.familyId)
+            authFlowState = .ready
         }
+
+        // Auth restore still in flight (fires within a frame): nothing more to do
+        // until it resolves — the cached session above already showed the app.
+        guard !authService.isLoading else { return }
 
         guard let user = authService.currentUser else {
             authFlowState = .login
