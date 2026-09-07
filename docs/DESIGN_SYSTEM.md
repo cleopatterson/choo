@@ -156,6 +156,11 @@ Text("label")
 - Detail/action sheets may include a "Delete" button at the bottom (`role: .destructive`) with confirmation
 - Dinner long-press clear → confirmation dialog
 
+### Tick-off Flow (Shopping dinners)
+- **Tap a dinner tile** → toggles `isChecked` on the `MealAssignment` (medium haptic); checked tiles dim to 0.6, name strikethrough, amber `checkmark.circle.fill`, subtitle "in the trolley"
+- Opening the pick list is a separate **"Change"** capsule in the section header, not a tap on a tile
+- Pick list is a **2-column `LazyVGrid`** with a search field pinned under the header (case/diacritic-insensitive name match)
+
 ### Form Sheet Pattern
 ```swift
 NavigationStack {

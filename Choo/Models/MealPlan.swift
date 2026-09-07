@@ -6,6 +6,9 @@ struct MealAssignment: Codable, Hashable {
     var recipeName: String   // denormalized for display
     var recipeIcon: String   // denormalized for display
 
+    /// Ticked off on the shopping tab once its ingredients are in the trolley.
+    /// Optional so picks saved before the change still decode.
+    var isChecked: Bool?
 }
 
 struct MealPlan: Codable, Identifiable {
