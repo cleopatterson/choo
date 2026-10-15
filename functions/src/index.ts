@@ -484,6 +484,35 @@ export const backfillGoogleCalendar = onRequest(
       .collection("events")
       .get();
 
+    // ?resyncDates=1 re-pushes already-synced all-day events and recurring
+    // series with an end date, which were written a day early before dates
+    // were read in Sydney time.
+    if (req.query.resyncDates === "1") {
+      const toResync = allEventsSnap.docs.filter((doc) => {
+        const data = doc.data();
+        return (
+          data.googleCalendarEventId &&
+          shouldSyncToGoogle(data) &&
+          (data.isAllDay === true || data.recurrenceEndDate)
+        );
+      });
+
+      let resynced = 0;
+      let failed = 0;
+      for (const doc of toResync) {
+        try {
+          await syncUpdateToGoogle(doc.data(), familyId, doc.id);
+          resynced++;
+        } catch (err) {
+          console.error(`Failed to resync event ${doc.id}:`, err);
+          failed++;
+        }
+      }
+
+      res.send(`Resync complete: ${resynced} updated, ${failed} failed`);
+      return;
+    }
+
     const toSync = allEventsSnap.docs.filter((doc) => {
       const data = doc.data();
       return !data.googleCalendarEventId && shouldSyncToGoogle(data);
