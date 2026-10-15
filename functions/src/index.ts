@@ -37,6 +37,28 @@ function getCalendarClient(saKeyJson: string): calendar_v3.Calendar {
 
 const SYDNEY_TZ = "Australia/Sydney";
 
+// Functions run in UTC, so Date getters return the wrong day for Sydney
+// (e.g. midnight 1 Dec AEDT is 13:00 30 Nov UTC). Read calendar parts in Sydney.
+const sydneyFormatter = new Intl.DateTimeFormat("en-AU", {
+  timeZone: SYDNEY_TZ,
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+});
+
+function sydneyYMD(date: Date): { y: number; m: number; d: number } {
+  const parts = sydneyFormatter.formatToParts(date);
+  const get = (type: string) =>
+    Number(parts.find((p) => p.type === type)?.value);
+  return { y: get("year"), m: get("month"), d: get("day") };
+}
+
+/** Sydney calendar date as "YYYY-MM-DD", optionally shifted by whole days. */
+function sydneyDateString(date: Date, addDays = 0): string {
+  const { y, m, d } = sydneyYMD(date);
+  return new Date(Date.UTC(y, m - 1, d + addDays)).toISOString().split("T")[0];
+}
+
 function toRRule(frequency: string, endDate?: Date): string[] {
   const freqMap: Record<string, string> = {
     daily: "DAILY",
@@ -49,10 +71,7 @@ function toRRule(frequency: string, endDate?: Date): string[] {
   if (!rruleFreq) return [];
   let rule = `RRULE:FREQ=${rruleFreq}`;
   if (endDate) {
-    const y = endDate.getFullYear();
-    const m = String(endDate.getMonth() + 1).padStart(2, "0");
-    const d = String(endDate.getDate()).padStart(2, "0");
-    rule += `;UNTIL=${y}${m}${d}`;
+    rule += `;UNTIL=${sydneyDateString(endDate).replace(/-/g, "")}`;
   }
   return [rule];
 }
@@ -85,10 +104,8 @@ function buildGoogleEvent(
 
   if (isAllDay && startDate && endDate) {
     // Google Calendar all-day end date is exclusive, so add 1 day
-    const endPlusOne = new Date(endDate);
-    endPlusOne.setDate(endPlusOne.getDate() + 1);
-    event.start = { date: startDate.toISOString().split("T")[0] };
-    event.end = { date: endPlusOne.toISOString().split("T")[0] };
+    event.start = { date: sydneyDateString(startDate) };
+    event.end = { date: sydneyDateString(endDate, 1) };
   } else if (startDate && endDate) {
     event.start = { dateTime: startDate.toISOString(), timeZone: SYDNEY_TZ };
     event.end = { dateTime: endDate.toISOString(), timeZone: SYDNEY_TZ };
@@ -302,7 +319,9 @@ function formatEventDate(raw: unknown): string | null {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
   ];
-  return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
+  const { y, m, d } = sydneyYMD(date);
+  const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return `${days[weekday]} ${d} ${months[m - 1]}`;
 }
 
 /**
