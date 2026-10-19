@@ -3,7 +3,8 @@ import SwiftUI
 /// This week's dinners as a set of meals with no night attached — built to be
 /// glanced at while you walk the supermarket aisles.
 ///
-/// Tap any meal to open the pick list. Hold one to drop it from the week.
+/// Tap a meal to tick it off once its ingredients are in the trolley. Hold one
+/// to drop it from the week. "Change" opens the pick list.
 struct DinnerPicksView: View {
     @Bindable var viewModel: DinnerPlannerViewModel
     @Binding var showingPicker: Bool
@@ -14,6 +15,8 @@ struct DinnerPicksView: View {
     private static let cardBackground = Color.white.opacity(0.06)
     private static let cardBorder = Color.white.opacity(0.09)
     private static let chipBackground = Color.white.opacity(0.07)
+    private static let checkedBackground = Color.chooAmber.opacity(0.08)
+    private static let checkedBorder = Color.chooAmber.opacity(0.28)
     private static let removeBackground = Color(red: 0.937, green: 0.267, blue: 0.267).opacity(0.18)
     private static let removeBorder = Color(red: 0.973, green: 0.443, blue: 0.443).opacity(0.5)
     private static let removeChip = Color(red: 0.937, green: 0.267, blue: 0.267).opacity(0.20)
@@ -36,14 +39,29 @@ struct DinnerPicksView: View {
         return rows
     }
 
+    /// "Tony's out Wed · 2 of 5 in the trolley"
+    private var subtitle: String {
+        let checked = viewModel.checkedPickCount
+        guard checked > 0 else { return viewModel.contextLabel }
+        return "\(viewModel.contextLabel) · \(checked) of \(viewModel.picks.count) in the trolley"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("This week's dinners")
-                .font(.system(size: 22, weight: .bold, design: .serif))
-                .foregroundStyle(.white)
-                .padding(.bottom, 4)
+            HStack(alignment: .firstTextBaseline, spacing: 10) {
+                Text("This week's dinners")
+                    .font(.system(size: 22, weight: .bold, design: .serif))
+                    .foregroundStyle(.white)
 
-            Text(viewModel.contextLabel)
+                Spacer(minLength: 0)
+
+                if !viewModel.picks.isEmpty {
+                    changeButton
+                }
+            }
+            .padding(.bottom, 4)
+
+            Text(subtitle)
                 .font(.system(size: 13))
                 .foregroundStyle(.white.opacity(0.5))
                 .padding(.bottom, 14)
@@ -63,6 +81,24 @@ struct DinnerPicksView: View {
             }
         }
         .animation(.easeInOut(duration: 0.2), value: viewModel.picks.count)
+    }
+
+    // MARK: - Change button
+
+    private var changeButton: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            showingPicker = true
+        } label: {
+            Text("Change")
+                .font(.system(size: 12, weight: .bold))
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.chooAmber.opacity(0.16), in: Capsule())
+                .overlay(Capsule().strokeBorder(Color.chooAmber.opacity(0.35), lineWidth: 1))
+                .foregroundStyle(Color.chooAmber)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Empty state
@@ -95,18 +131,24 @@ struct DinnerPicksView: View {
     @ViewBuilder
     private func pickTile(_ meal: MealAssignment, isWide: Bool) -> some View {
         let holding = holdingId == meal.recipeId
+        let checked = viewModel.isChecked(meal)
         let recipe = viewModel.recipe(for: meal)
 
         Group {
             if isWide {
                 HStack(alignment: .center, spacing: 12) {
-                    iconChip(meal.recipeIcon, holding: holding)
-                    tileText(meal, recipe: recipe, holding: holding)
+                    iconChip(meal.recipeIcon, holding: holding, checked: checked)
+                    tileText(meal, recipe: recipe, holding: holding, checked: checked)
+                    checkMark(checked: checked)
                 }
             } else {
                 VStack(alignment: .leading, spacing: 9) {
-                    iconChip(meal.recipeIcon, holding: holding)
-                    tileText(meal, recipe: recipe, holding: holding)
+                    HStack(alignment: .top) {
+                        iconChip(meal.recipeIcon, holding: holding, checked: checked)
+                        Spacer(minLength: 0)
+                        checkMark(checked: checked)
+                    }
+                    tileText(meal, recipe: recipe, holding: holding, checked: checked)
                 }
             }
         }
@@ -114,21 +156,23 @@ struct DinnerPicksView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(
             RoundedRectangle(cornerRadius: 18)
-                .fill(holding ? Self.removeBackground : Self.cardBackground)
+                .fill(holding ? Self.removeBackground : (checked ? Self.checkedBackground : Self.cardBackground))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 18)
-                .strokeBorder(holding ? Self.removeBorder : Self.cardBorder, lineWidth: 1)
+                .strokeBorder(holding ? Self.removeBorder : (checked ? Self.checkedBorder : Self.cardBorder), lineWidth: 1)
         )
+        .opacity(checked && !holding ? 0.6 : 1)
         .scaleEffect(holding ? 0.96 : 1)
         .animation(.easeOut(duration: 0.25), value: holding)
+        .animation(.easeOut(duration: 0.2), value: checked)
         .contentShape(Rectangle())
         .onTapGesture {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            showingPicker = true
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            Task { await viewModel.toggleChecked(recipeId: meal.recipeId) }
         }
         .onLongPressGesture(minimumDuration: 0.65) {
-            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            UINotificationFeedbackGenerator().notificationOccurred(.warning)
             holdingId = nil
             Task { await viewModel.removePick(recipeId: meal.recipeId) }
         } onPressingChanged: { pressing in
@@ -136,7 +180,13 @@ struct DinnerPicksView: View {
         }
     }
 
-    private func iconChip(_ emoji: String, holding: Bool) -> some View {
+    private func checkMark(checked: Bool) -> some View {
+        Image(systemName: checked ? "checkmark.circle.fill" : "circle")
+            .font(.system(size: 22, weight: .regular))
+            .foregroundStyle(checked ? Color.chooAmber : .white.opacity(0.25))
+    }
+
+    private func iconChip(_ emoji: String, holding: Bool, checked: Bool) -> some View {
         Text(emoji)
             .font(.system(size: 17))
             .frame(width: 34, height: 34)
@@ -146,18 +196,19 @@ struct DinnerPicksView: View {
             )
     }
 
-    private func tileText(_ meal: MealAssignment, recipe: Recipe?, holding: Bool) -> some View {
+    private func tileText(_ meal: MealAssignment, recipe: Recipe?, holding: Bool, checked: Bool) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(meal.recipeName)
                 .font(.system(size: 15, weight: .semibold))
                 .lineSpacing(1)
+                .strikethrough(checked && !holding)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
 
-            Text(holding ? "keep holding to remove…" : (recipe?.prepTimeDisplay ?? ""))
+            Text(holding ? "keep holding to remove…" : (checked ? "in the trolley" : (recipe?.prepTimeDisplay ?? "")))
                 .font(.system(size: 11))
-                .foregroundStyle(holding ? Self.removeText : .white.opacity(0.4))
+                .foregroundStyle(holding ? Self.removeText : (checked ? Color.chooAmber.opacity(0.8) : .white.opacity(0.4)))
                 .lineLimit(1)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -166,17 +217,24 @@ struct DinnerPicksView: View {
 
 // MARK: - Pick list
 
-/// Full-screen "Pick this week" list — tick the meals you want, with when you
-/// last had each one.
+/// Full-screen "Pick this week" grid — tick the meals you want, with when you
+/// last had each one. Search at the top narrows a long library.
 struct DinnerPickSheet: View {
     @Bindable var viewModel: DinnerPlannerViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var creatingRecipe = false
+    @FocusState private var searchFocused: Bool
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 9),
+        GridItem(.flexible(), spacing: 9)
+    ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
+            searchField
 
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 6) {
@@ -186,19 +244,28 @@ struct DinnerPickSheet: View {
                         .foregroundStyle(.white.opacity(0.4))
                         .padding(.vertical, 8)
 
-                    ForEach(viewModel.libraryRecipes) { recipe in
-                        libraryRow(recipe)
+                    let recipes = viewModel.filteredLibraryRecipes
+                    if recipes.isEmpty {
+                        noMatches
+                    } else {
+                        LazyVGrid(columns: columns, spacing: 9) {
+                            ForEach(recipes) { recipe in
+                                libraryTile(recipe)
+                            }
+                        }
                     }
 
                     addMealRow
-                        .padding(.top, 6)
+                        .padding(.top, 12)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 22)
             }
+            .scrollDismissesKeyboard(.immediately)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .chooBackground()
+        .onAppear { viewModel.librarySearch = "" }
         .sheet(isPresented: $creatingRecipe) {
             RecipeEditView(
                 recipe: nil,
@@ -256,48 +323,105 @@ struct DinnerPickSheet: View {
         .padding(.bottom, 12)
     }
 
-    private func libraryRow(_ recipe: Recipe) -> some View {
-        let picked = viewModel.isPicked(recipe)
-        let staleLook = viewModel.hadItLastWeek(recipe)
+    // MARK: - Search
 
-        return HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(picked ? Color.chooAmber.opacity(0.9) : .clear)
-                Circle()
-                    .strokeBorder(picked ? Color.chooAmber.opacity(0.9) : .white.opacity(0.28), lineWidth: 1.5)
-                if picked {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color(red: 0.102, green: 0.063, blue: 0.020))
+    private var searchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.white.opacity(0.4))
+
+            TextField("Search meals", text: $viewModel.librarySearch)
+                .font(.system(size: 15))
+                .foregroundStyle(.white)
+                .tint(Color.chooAmber)
+                .focused($searchFocused)
+                .submitLabel(.search)
+                .autocorrectionDisabled()
+
+            if !viewModel.librarySearch.isEmpty {
+                Button {
+                    viewModel.librarySearch = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 15))
+                        .foregroundStyle(.white.opacity(0.4))
                 }
+                .buttonStyle(.plain)
             }
-            .frame(width: 22, height: 22)
-
-            Text(recipe.icon)
-                .font(.system(size: 16))
-                .frame(width: 32, height: 32)
-                .background(RoundedRectangle(cornerRadius: 11).fill(.white.opacity(0.06)))
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(recipe.name)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(.white)
-                Text(viewModel.librarySubtitle(for: recipe))
-                    .font(.system(size: 11))
-                    .foregroundStyle(.white.opacity(staleLook ? 0.32 : 0.45))
-            }
-
-            Spacer(minLength: 0)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 14)
-                .fill(picked ? Color.chooAmber.opacity(0.14) : .white.opacity(0.05))
+                .fill(.white.opacity(0.07))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 14)
+                .strokeBorder(.white.opacity(searchFocused ? 0.2 : 0.09), lineWidth: 1)
+        )
+        .padding(.horizontal, 16)
+        .padding(.bottom, 4)
+    }
+
+    private var noMatches: some View {
+        Text("No meals match “\(viewModel.librarySearch.trimmingCharacters(in: .whitespacesAndNewlines))”")
+            .font(.system(size: 14))
+            .foregroundStyle(.white.opacity(0.45))
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 22)
+    }
+
+    // MARK: - Meal tile
+
+    private func libraryTile(_ recipe: Recipe) -> some View {
+        let picked = viewModel.isPicked(recipe)
+        let staleLook = viewModel.hadItLastWeek(recipe)
+
+        return VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                Text(recipe.icon)
+                    .font(.system(size: 20))
+                    .frame(width: 38, height: 38)
+                    .background(RoundedRectangle(cornerRadius: 12).fill(.white.opacity(0.06)))
+
+                Spacer(minLength: 0)
+
+                ZStack {
+                    Circle()
+                        .fill(picked ? Color.chooAmber.opacity(0.9) : .clear)
+                    Circle()
+                        .strokeBorder(picked ? Color.chooAmber.opacity(0.9) : .white.opacity(0.28), lineWidth: 1.5)
+                    if picked {
+                        Image(systemName: "checkmark")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundStyle(Color(red: 0.102, green: 0.063, blue: 0.020))
+                    }
+                }
+                .frame(width: 24, height: 24)
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(recipe.name)
+                    .font(.system(size: 17, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                Text(viewModel.librarySubtitle(for: recipe))
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(staleLook ? 0.32 : 0.45))
+                    .lineLimit(1)
+            }
+        }
+        .padding(13)
+        .frame(maxWidth: .infinity, minHeight: 118, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(picked ? Color.chooAmber.opacity(0.14) : .white.opacity(0.05))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
                 .strokeBorder(picked ? Color.chooAmber.opacity(0.36) : .white.opacity(0.09), lineWidth: 1)
         )
         .contentShape(Rectangle())

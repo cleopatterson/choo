@@ -177,6 +177,24 @@ final class DinnerPlannerViewModel {
         await removeRecipeFromShoppingList(recipeId: recipeId)
     }
 
+    // MARK: - Tick off in the supermarket
+
+    /// Tap a meal on the shopping tab once its ingredients are in the trolley.
+    func toggleChecked(recipeId: String) async {
+        var updated = picks
+        guard let index = updated.firstIndex(where: { $0.recipeId == recipeId }) else { return }
+        updated[index].isChecked = !(updated[index].isChecked ?? false)
+        await savePicks(updated)
+    }
+
+    func isChecked(_ meal: MealAssignment) -> Bool {
+        meal.isChecked ?? false
+    }
+
+    var checkedPickCount: Int {
+        picks.filter { $0.isChecked ?? false }.count
+    }
+
     private func savePicks(_ updated: [MealAssignment]) async {
         let plan = MealPlan(
             familyId: familyId,
@@ -245,6 +263,19 @@ final class DinnerPlannerViewModel {
     func hadItLastWeek(_ recipe: Recipe) -> Bool {
         guard let id = recipe.id else { return false }
         return lastWeekRecipeIds.contains(id)
+    }
+
+    /// What's typed into the pick list's search box.
+    var librarySearch = ""
+
+    /// The pick list, narrowed by the search box. Matches anywhere in the name,
+    /// ignoring case and accents.
+    var filteredLibraryRecipes: [Recipe] {
+        let query = librarySearch.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return libraryRecipes }
+        return libraryRecipes.filter {
+            $0.name.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+        }
     }
 
     /// Meals you haven't had for longest float to the top of the pick list.
