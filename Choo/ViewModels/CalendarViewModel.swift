@@ -153,7 +153,8 @@ final class CalendarViewModel {
         }
 
         guard let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
-              let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31))
+              // Agenda covers the selected year plus the following year
+              let endOfYear = calendar.date(from: DateComponents(year: year + 1, month: 12, day: 31))
         else { return [] }
 
         var daysSet = Set<Date>()
@@ -165,9 +166,11 @@ final class CalendarViewModel {
         }
 
         // 1st of every month — ensures month banners always appear
-        for month in 1...12 {
-            if let firstOfMonth = calendar.date(from: DateComponents(year: year, month: month, day: 1)) {
-                daysSet.insert(firstOfMonth)
+        for y in year...(year + 1) {
+            for month in 1...12 {
+                if let firstOfMonth = calendar.date(from: DateComponents(year: y, month: month, day: 1)) {
+                    daysSet.insert(firstOfMonth)
+                }
             }
         }
 

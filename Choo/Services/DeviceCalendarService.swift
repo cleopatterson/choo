@@ -72,13 +72,13 @@ final class DeviceCalendarService {
 
     // MARK: - Year-level cache
 
-    /// Pre-fetch all events for the given year into a per-day dictionary.
+    /// Pre-fetch all events for the given year and the following year into a per-day dictionary.
     /// Call this when year changes, calendars change, or on a store notification.
     func refreshCache(for year: Int) {
         let cal = Calendar.current
         guard authorizationStatus == .fullAccess,
               let start = cal.date(from: DateComponents(year: year, month: 1, day: 1)),
-              let end = cal.date(from: DateComponents(year: year + 1, month: 1, day: 1))
+              let end = cal.date(from: DateComponents(year: year + 2, month: 1, day: 1))
         else {
             _cachedEventsByDay = [:]
             _cachedYear = year
