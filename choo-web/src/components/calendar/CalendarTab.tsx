@@ -52,12 +52,12 @@ export default function CalendarTab() {
   }, [familyId])
 
   // Agenda blocks: rendered days (today + any day with events; −6 months when
-  // showing past, matching the store's query window, through +6 months), with a
+  // showing past, matching the store's query window, through 31 Dec next year), with a
   // month hero before the first day of each month.
   const blocks = useMemo(() => {
     const today = startOfDay(new Date())
     const start = showPast ? addMonths(today, -6) : today
-    const end = addMonths(today, 6)
+    const end = new Date(today.getFullYear() + 1, 11, 31)
     const result: AgendaBlock[] = []
     let prevRendered: Date | null = null
 
